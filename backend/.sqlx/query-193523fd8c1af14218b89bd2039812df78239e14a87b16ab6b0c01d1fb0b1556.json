@@ -1,0 +1,81 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO media (id, filename, original_name, mime_type, size_bytes, url, uploaded_by)\n               VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6) RETURNING *",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "filename",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "original_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "mime_type",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "size_bytes",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 5,
+        "name": "url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "thumbnail_url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 7,
+        "name": "alt_text",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 8,
+        "name": "uploaded_by",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 9,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Varchar",
+        "Varchar",
+        "Varchar",
+        "Int8",
+        "Text",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      false
+    ]
+  },
+  "hash": "193523fd8c1af14218b89bd2039812df78239e14a87b16ab6b0c01d1fb0b1556"
+}

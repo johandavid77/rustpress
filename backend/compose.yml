@@ -1,0 +1,78 @@
+version: "3.9"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# RustCMS — Entorno de desarrollo con Podman Compose
+#
+# Servicios incluidos:
+#   • postgres  → Base de datos principal
+#   • pgadmin   → Panel web para explorar la BD visualmente
+#
+# Uso:
+#   podman-compose up -d        # levantar todo en segundo plano
+#   podman-compose logs -f      # ver logs en tiempo real
+#   podman-compose down         # apagar todo (los datos persisten en volumes)
+#   podman-compose down -v      # apagar TODO y borrar datos (fresh start)
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+
+  # ── PostgreSQL ──────────────────────────────────────────────────────────────
+  # El motor de base de datos. Guarda todos los datos del CMS:
+  # usuarios, posts, media, plugins, roles.
+  postgres:
+    image: postgres:16-alpine
+    container_name: rustcms-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER:     rustcms         # usuario de la BD
+      POSTGRES_PASSWORD: rustcms_secret  # contraseña (solo para desarrollo)
+      POSTGRES_DB:       rustcms         # nombre de la base de datos
+
+    ports:
+      - "5432:5432"   # expone postgres a tu máquina local
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data   # los datos persisten aunque reinicies
+
+    healthcheck:
+      # Podman verifica cada 5s que postgres está listo para recibir conexiones
+      test: ["CMD-SHELL", "pg_isready -U rustcms -d rustcms"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  # ── pgAdmin ─────────────────────────────────────────────────────────────────
+  # Panel web para ver y explorar la base de datos visualmente.
+  # Muy útil para ver las tablas que crea SQLx con las migrations.
+  # Acceso: http://localhost:5050
+  # Login:  admin@rustcms.dev / admin
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: rustcms-pgadmin
+    restart: unless-stopped
+
+    depends_on:
+      postgres:
+        condition: service_healthy   # espera a que postgres esté sano antes de arrancar
+
+    environment:
+      PGADMIN_DEFAULT_EMAIL:    admin@rustcms.dev
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: "False"        # modo desktop (sin login extra)
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+
+    ports:
+      - "5050:80"   # pgAdmin en http://localhost:5050
+
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      # Pre-configura la conexión a postgres automáticamente
+      - ./pgadmin-servers.json:/pgadmin4/servers.json:ro
+
+# ── Volúmenes ──────────────────────────────────────────────────────────────────
+# Podman gestiona estos volúmenes. Los datos sobreviven a reinicios del contenedor.
+volumes:
+  postgres_data:
+  pgadmin_data:

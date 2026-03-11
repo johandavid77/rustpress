@@ -1,0 +1,95 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE posts SET\n            title     = COALESCE($1, title),\n            slug      = COALESCE($2, slug),\n            content   = COALESCE($3, content),\n            excerpt   = COALESCE($4, excerpt),\n            post_type = COALESCE($5, post_type),\n            status    = COALESCE($6, status),\n            meta      = COALESCE($7, meta),\n            updated_at = NOW()\n           WHERE id = $8\n           RETURNING *",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "title",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "slug",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "content",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "excerpt",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "post_type",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 6,
+        "name": "status",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 7,
+        "name": "author_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 8,
+        "name": "meta",
+        "type_info": "Jsonb"
+      },
+      {
+        "ordinal": 9,
+        "name": "published_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 10,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 11,
+        "name": "updated_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Varchar",
+        "Varchar",
+        "Text",
+        "Text",
+        "Varchar",
+        "Varchar",
+        "Jsonb",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false
+    ]
+  },
+  "hash": "59845e7903162f07ae22a44ad7953648174bd1865ed986d584e3b103c5b051cb"
+}

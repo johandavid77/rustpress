@@ -1,0 +1,94 @@
+use actix_cors::Cors;
+use actix_files::Files;
+use actix_web::{middleware, web, App, HttpServer};
+use tracing::info;
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+
+use rustcms_lib::{
+    config::AppConfig,
+    db::pool::create_pool,
+    handlers,
+    plugins::registry::PluginRegistry,
+};
+
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    // ── Logging ───────────────────────────────────────────────────────────────
+    tracing_subscriber::registry()
+        .with(tracing_subscriber::EnvFilter::try_from_default_env()
+            .unwrap_or_else(|_| "rustcms=debug,actix_web=info".into()))
+        .with(tracing_subscriber::fmt::layer())
+        .init();
+
+    // ── Config ────────────────────────────────────────────────────────────────
+    dotenvy::dotenv().ok();
+    let cfg = AppConfig::from_env()?;
+    info!("🦀 RustCMS starting on {}:{}", cfg.host, cfg.port);
+
+    // ── Database ──────────────────────────────────────────────────────────────
+    let pool = create_pool(&cfg.database_url).await?;
+    sqlx::migrate!("./migrations").run(&pool).await?;
+    info!("✅ Database connected & migrations applied");
+
+    // ── Plugin registry ───────────────────────────────────────────────────────
+    let plugin_registry = PluginRegistry::new();
+    // TODO: load enabled plugins from DB on startup
+    let registry_data = web::Data::new(plugin_registry);
+
+    // ── HTTP Server ───────────────────────────────────────────────────────────
+    let pool_data    = web::Data::new(pool);
+    let cfg_data     = web::Data::new(cfg.clone());
+    let bind_addr    = format!("{}:{}", cfg.host, cfg.port);
+
+    HttpServer::new(move || {
+        let cors = Cors::default()
+            .allowed_origin(&cfg.frontend_url)
+            .allowed_methods(vec!["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+            .allowed_headers(vec![
+                actix_web::http::header::AUTHORIZATION,
+                actix_web::http::header::CONTENT_TYPE,
+            ])
+            .max_age(3600);
+
+        App::new()
+            .wrap(cors)
+            .wrap(middleware::Compress::default())
+            .wrap(tracing_actix_web::TracingLogger::default())
+            // ── Shared state
+            .app_data(pool_data.clone())
+            .app_data(cfg_data.clone())
+            .app_data(registry_data.clone())
+            .app_data(
+                web::JsonConfig::default()
+                    .error_handler(|err, _req| {
+                        let resp = actix_web::HttpResponse::BadRequest()
+                            .json(serde_json::json!({ "error": err.to_string() }));
+                        actix_web::error::InternalError::from_response(err, resp).into()
+                    })
+            )
+            // ── Routes
+            .service(
+                web::scope("/api/v1")
+                    .configure(handlers::auth::configure)
+                    .configure(handlers::posts::configure)
+                    .configure(handlers::media::configure)
+                    .configure(handlers::users::configure)
+                    .configure(handlers::plugins::configure)
+            )
+            // ── Health check
+            .route("/health", web::get().to(health_check))
+        .service(Files::new("/uploads", &cfg.upload_dir).show_files_listing())
+    })
+    .bind(&bind_addr)?
+    .run()
+    .await?;
+
+    Ok(())
+}
+
+async fn health_check() -> actix_web::HttpResponse {
+    actix_web::HttpResponse::Ok().json(serde_json::json!({
+        "status": "ok",
+        "version": env!("CARGO_PKG_VERSION")
+    }))
+}
