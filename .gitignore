@@ -12,3 +12,6 @@ frontend/dist/
 
 # Uploads
 backend/uploads/
+*.deb
+*.exe
+*.dmg
