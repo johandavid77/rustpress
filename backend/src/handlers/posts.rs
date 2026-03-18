@@ -7,7 +7,7 @@ use crate::{
     errors::{AppError, AppResult},
     models::post::{CreatePostDto, PostQuery, UpdatePostDto},
     plugins::registry::PluginRegistry,
-    middleware::auth::AuthUser,
+    middleware::auth::{AuthUser, AuthUserWithRole},
 };
 
 pub fn configure(cfg: &mut web::ServiceConfig) {
@@ -29,7 +29,7 @@ pub fn configure(cfg: &mut web::ServiceConfig) {
 async fn list_posts(
     pool:  Data<PgPool>,
     query: Query<PostQuery>,
-    _auth: AuthUser,
+    _auth: Option<AuthUser>,
 ) -> AppResult<HttpResponse> {
     let page     = query.page.unwrap_or(1).max(1);
     let per_page = query.per_page.unwrap_or(20).min(100);
@@ -78,9 +78,13 @@ async fn list_posts(
 async fn create_post(
     pool:     Data<PgPool>,
     registry: Data<PluginRegistry>,
-    auth:     AuthUser,
+    auth:     AuthUserWithRole,
     body:     Json<CreatePostDto>,
 ) -> AppResult<HttpResponse> {
+    // Check permissions for creating posts
+    if !auth.has_permission("posts:write") {
+        return Err(AppError::Forbidden("Insufficient permissions to create posts".into()));
+    }
     use validator::Validate;
     body.validate().map_err(|e| AppError::BadRequest(e.to_string()))?;
 
@@ -98,7 +102,7 @@ async fn create_post(
         body.content,
         body.excerpt,
         post_type,
-        auth.0.sub,
+        auth.user_id,
         meta,
     )
     .fetch_one(pool.get_ref())
@@ -114,7 +118,7 @@ async fn create_post(
 async fn get_post(
     pool: Data<PgPool>,
     id:   Path<Uuid>,
-    _auth: AuthUser,
+    _auth: Option<AuthUser>,
 ) -> AppResult<HttpResponse> {
     let post = sqlx::query_as!(
         crate::models::post::Post,
@@ -132,7 +136,7 @@ async fn get_post(
 async fn update_post(
     pool: Data<PgPool>,
     id:   Path<Uuid>,
-    auth: AuthUser,
+    auth: AuthUserWithRole,
     body: Json<UpdatePostDto>,
 ) -> AppResult<HttpResponse> {
     let existing = sqlx::query_as!(
@@ -144,9 +148,10 @@ async fn update_post(
     .await?
     .ok_or_else(|| AppError::NotFound(format!("Post {} not found", id)))?;
 
-    // Solo el autor o admin puede editar
-    if existing.author_id != auth.0.sub {
-        return Err(AppError::Forbidden("You don't own this post".into()));
+    // Check permissions: author can edit their own posts, or users with posts:write permission
+    let can_edit = existing.author_id == auth.user_id || auth.has_permission("posts:write");
+    if !can_edit {
+        return Err(AppError::Forbidden("Insufficient permissions to edit this post".into()));
     }
 
     let updated = sqlx::query_as!(
@@ -181,11 +186,26 @@ async fn update_post(
 async fn delete_post(
     pool: Data<PgPool>,
     id:   Path<Uuid>,
-    auth: AuthUser,
+    auth: AuthUserWithRole,
 ) -> AppResult<HttpResponse> {
+    let existing = sqlx::query_as!(
+        crate::models::post::Post,
+        "SELECT * FROM posts WHERE id = $1",
+        *id
+    )
+    .fetch_optional(pool.get_ref())
+    .await?
+    .ok_or_else(|| AppError::NotFound(format!("Post {} not found", id)))?;
+
+    // Check permissions: author can delete their own posts, or users with posts:delete permission
+    let can_delete = existing.author_id == auth.user_id || auth.has_permission("posts:delete");
+    if !can_delete {
+        return Err(AppError::Forbidden("Insufficient permissions to delete this post".into()));
+    }
+
     let result = sqlx::query!(
-        "DELETE FROM posts WHERE id = $1 AND author_id = $2",
-        *id, auth.0.sub
+        "DELETE FROM posts WHERE id = $1",
+        *id
     )
     .execute(pool.get_ref())
     .await?;
@@ -202,8 +222,22 @@ async fn publish_post(
     pool:     Data<PgPool>,
     registry: Data<PluginRegistry>,
     id:       Path<Uuid>,
-    _auth:    AuthUser,
+    auth:     AuthUserWithRole,
 ) -> AppResult<HttpResponse> {
+    let existing = sqlx::query_as!(
+        crate::models::post::Post,
+        "SELECT * FROM posts WHERE id = $1",
+        *id
+    )
+    .fetch_optional(pool.get_ref())
+    .await?
+    .ok_or_else(|| AppError::NotFound(format!("Post {} not found", id)))?;
+
+    // Check permissions: author can publish their own posts, or users with posts:write permission
+    let can_publish = existing.author_id == auth.user_id || auth.has_permission("posts:write");
+    if !can_publish {
+        return Err(AppError::Forbidden("Insufficient permissions to publish this post".into()));
+    }
     let post = sqlx::query_as!(
         crate::models::post::Post,
         r#"UPDATE posts SET
@@ -227,8 +261,22 @@ async fn publish_post(
 async fn unpublish_post(
     pool:  Data<PgPool>,
     id:    Path<Uuid>,
-    _auth: AuthUser,
+    auth:  AuthUserWithRole,
 ) -> AppResult<HttpResponse> {
+    let existing = sqlx::query_as!(
+        crate::models::post::Post,
+        "SELECT * FROM posts WHERE id = $1",
+        *id
+    )
+    .fetch_optional(pool.get_ref())
+    .await?
+    .ok_or_else(|| AppError::NotFound(format!("Post {} not found", id)))?;
+
+    // Check permissions: author can unpublish their own posts, or users with posts:write permission
+    let can_unpublish = existing.author_id == auth.user_id || auth.has_permission("posts:write");
+    if !can_unpublish {
+        return Err(AppError::Forbidden("Insufficient permissions to unpublish this post".into()));
+    }
     let post = sqlx::query_as!(
         crate::models::post::Post,
         "UPDATE posts SET status = 'draft', updated_at = NOW() WHERE id = $1 RETURNING *",
@@ -259,7 +307,7 @@ async fn get_post_by_slug(
 
 pub async fn get_stats(
     pool: Data<PgPool>,
-    _auth: crate::middleware::auth::AuthUser,
+    _auth: AuthUserWithRole,
 ) -> AppResult<HttpResponse> {
     let stats = sqlx::query!(
         r#"SELECT

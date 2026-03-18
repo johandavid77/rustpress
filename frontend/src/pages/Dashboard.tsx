@@ -5,6 +5,8 @@ import NewPost from './Posts/NewPost'
 import EditPost from './Posts/EditPost'
 import Stats from './Stats'
 import { LayoutDashboard, FileText, Image, Users, Puzzle } from 'lucide-react'
+import SlidersAdmin from './Plugins/SlidersAdmin'
+import MenusAdmin from './Plugins/MenusAdmin'
 
 type View = 'home' | 'posts' | 'media' | 'users' | 'plugins'
 
@@ -15,9 +17,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false)
   const [showNewPost, setShowNewPost] = useState(false)
   const [editingPost, setEditingPost] = useState<any>(null)
-
   useEffect(() => { if (view === 'posts') loadPosts() }, [view])
-
   const loadPosts = async () => {
     setLoading(true)
     try {
@@ -28,11 +28,11 @@ export default function Dashboard() {
   }
 
   const nav = [
-    { id: 'home' as View,    icon: LayoutDashboard, label: 'Resumen' },
-    { id: 'posts' as View,   icon: FileText,         label: 'Posts' },
-    { id: 'media' as View,   icon: Image,            label: 'Media' },
-    { id: 'users' as View,   icon: Users,            label: 'Usuarios' },
-    { id: 'plugins' as View, icon: Puzzle,           label: 'Plugins' },
+    { id: 'home'    as View, icon: LayoutDashboard, label: 'Resumen'  },
+    { id: 'posts'   as View, icon: FileText,         label: 'Posts'    },
+    { id: 'media'   as View, icon: Image,            label: 'Media'    },
+    { id: 'users'   as View, icon: Users,            label: 'Usuarios' },
+    { id: 'plugins' as View, icon: Puzzle,           label: 'Plugins'  },
   ]
 
   const resetPosts = () => { setShowNewPost(false); setEditingPost(null); loadPosts() }
@@ -77,8 +77,15 @@ export default function Dashboard() {
       </aside>
 
       <main className="flex-1 overflow-auto p-10">
-        {view === 'home' && <Stats />}
-
+        {view === 'home' && (
+          <div className="max-w-5xl">
+            <div className="mb-8">
+              <h1 className="text-4xl font-black tracking-tight mb-1">Resumen</h1>
+              <p className="text-[#888899] text-sm">Bienvenido de vuelta, {user?.username}</p>
+            </div>
+            <Stats />
+          </div>
+        )}
         {view === 'posts' && !showNewPost && !editingPost && (
           <PostsView posts={posts} loading={loading} onReload={loadPosts}
             onNewPost={() => setShowNewPost(true)}
@@ -90,11 +97,19 @@ export default function Dashboard() {
         {view === 'posts' && editingPost && (
           <EditPost post={editingPost} onBack={() => setEditingPost(null)} onSaved={resetPosts} />
         )}
-        {(view === 'media' || view === 'users' || view === 'plugins') && (
+        {(view === 'media' || view === 'users') && (
           <div className="h-full flex flex-col items-center justify-center gap-3 opacity-30">
-            <span className="text-6xl">◈</span>
+            <span className="text-6xl">⬡</span>
             <p className="text-xl font-bold">{nav.find(n => n.id === view)?.label}</p>
             <p className="text-sm font-mono">Próximamente</p>
+          </div>
+        )}
+        {view === 'plugins' && (
+          <div className="flex flex-col gap-12">
+            <SlidersAdmin />
+            <div className="border-t border-[#2a2a3a] pt-10">
+              <MenusAdmin />
+            </div>
           </div>
         )}
       </main>
@@ -114,18 +129,14 @@ function PostsView({ posts, loading, onReload, onNewPost, onEditPost }: {
           <p className="text-[#888899] text-sm">Gestiona el contenido de tu CMS</p>
         </div>
         <div className="flex gap-2">
-          <button className="px-5 py-2.5 border border-[#2a2a3a] rounded-lg text-sm font-bold text-[#888899] hover:text-white hover:border-[#7c6aff]" onClick={onReload}>
-            ↻ Recargar
-          </button>
-          <button className="px-5 py-2.5 bg-[#7c6aff] rounded-lg text-sm font-bold hover:bg-[#6b5be6]" onClick={onNewPost}>
-            + Nuevo Post
-          </button>
+          <button className="px-5 py-2.5 border border-[#2a2a3a] rounded-lg text-sm font-bold text-[#888899] hover:text-white hover:border-[#7c6aff]" onClick={onReload}>↺ Recargar</button>
+          <button className="px-5 py-2.5 bg-[#7c6aff] rounded-lg text-sm font-bold hover:bg-[#6b5be6]" onClick={onNewPost}>+ Nuevo Post</button>
         </div>
       </div>
       {loading && <p className="text-[#888899] font-mono text-sm">Cargando posts...</p>}
       {!loading && posts.length === 0 && (
         <div className="flex flex-col items-center gap-3 py-24 opacity-30">
-          <span className="text-6xl">✦</span>
+          <span className="text-6xl">+</span>
           <p className="font-bold">No hay posts todavía</p>
         </div>
       )}

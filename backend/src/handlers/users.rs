@@ -4,7 +4,7 @@ use uuid::Uuid;
 
 use crate::{
     errors::{AppError, AppResult},
-    middleware::auth::AuthUser,
+    middleware::auth::{AuthUser, AuthUserWithRole},
     models::user::{CreateUserDto, UpdateUserDto, User, UserPublic},
     services::auth_service::AuthService,
 };
@@ -20,7 +20,7 @@ pub fn configure(cfg: &mut web::ServiceConfig) {
     );
 }
 
-async fn list_users(pool: Data<PgPool>, _auth: AuthUser) -> AppResult<HttpResponse> {
+async fn list_users(pool: Data<PgPool>, _auth: AuthUserWithRole) -> AppResult<HttpResponse> {
     let users: Vec<User> = sqlx::query_as!(
         User,
         "SELECT * FROM users ORDER BY created_at DESC"
@@ -34,12 +34,16 @@ async fn list_users(pool: Data<PgPool>, _auth: AuthUser) -> AppResult<HttpRespon
 
 async fn create_user(
     pool: Data<PgPool>,
-    _auth: AuthUser,
+    auth: AuthUserWithRole,
     body: Json<CreateUserDto>,
 ) -> AppResult<HttpResponse> {
+    // Only admins can create users
+    if !auth.has_permission("users:write") {
+        return Err(AppError::Forbidden("Insufficient permissions to create users".into()));
+    }
+
     use validator::Validate;
     body.validate().map_err(|e| AppError::BadRequest(e.to_string()))?;
-
     let hashed = AuthService::hash_password(&body.password)?;
     let user: User = sqlx::query_as!(
         User,
@@ -60,7 +64,7 @@ async fn create_user(
 async fn get_user(
     pool: Data<PgPool>,
     id: Path<Uuid>,
-    _auth: AuthUser,
+    _auth: AuthUserWithRole,
 ) -> AppResult<HttpResponse> {
     let user: User = sqlx::query_as!(
         User,
@@ -77,9 +81,13 @@ async fn get_user(
 async fn update_user(
     pool: Data<PgPool>,
     id: Path<Uuid>,
-    _auth: AuthUser,
+    auth: AuthUserWithRole,
     body: Json<UpdateUserDto>,
 ) -> AppResult<HttpResponse> {
+    // Only admins can update users
+    if !auth.has_permission("users:write") {
+        return Err(AppError::Forbidden("Insufficient permissions to update users".into()));
+    }
     let new_password: Option<String> = if let Some(p) = &body.password {
         Some(AuthService::hash_password(p)?)
     } else {
@@ -114,8 +122,12 @@ async fn update_user(
 async fn delete_user(
     pool: Data<PgPool>,
     id: Path<Uuid>,
-    _auth: AuthUser,
+    auth: AuthUserWithRole,
 ) -> AppResult<HttpResponse> {
+    // Only admins can delete users
+    if !auth.has_permission("users:write") {
+        return Err(AppError::Forbidden("Insufficient permissions to delete users".into()));
+    }
     let result = sqlx::query!(
         "DELETE FROM users WHERE id = $1",
         *id
