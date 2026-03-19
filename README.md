@@ -1,341 +1,280 @@
 <div align="center">
 
-# 🦀 RustCMS / RustPress
+# 🦀 RustPress CMS
 
 **A fast, modern, full-stack CMS built with Rust + React**
 
 [![Rust](https://img.shields.io/badge/Rust-1.94-orange?logo=rust)](https://www.rust-lang.org/)
 [![Actix Web](https://img.shields.io/badge/Actix--Web-4-red)](https://actix.rs/)
-[![React](https://img.shields.io/badge/React-18-blue?logo=react)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue?logo=postgresql)](https://www.postgresql.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
+[![React](https://img.shields.io/badge/React-18-61dafb?logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript)](https://www.typescriptlang.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?logo=postgresql)](https://www.postgresql.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-[🇪🇸 Español](#español) · [🇬🇧 English](#english)
+[English](#english) · [Español](#español)
 
 </div>
 
 ---
 
-## 🇪🇸 Español
+## English
 
-### ¿Qué es RustCMS?
+### What is RustPress?
 
-RustCMS es un sistema de gestión de contenidos (CMS) de código abierto construido con **Rust** en el backend y **React + TypeScript** en el frontend. Está diseñado para ser rápido, seguro y fácil de extender, con soporte para posts, medios, usuarios, menús de navegación, sliders y un sistema de plugins.
+RustPress is a headless CMS (Content Management System) with a built-in admin dashboard, built entirely with Rust on the backend and React + TypeScript on the frontend. It is designed to be a fast, lightweight, self-hosted alternative to WordPress — with a modern developer experience.
 
-### 🛠️ Stack tecnológico
+### Why Rust?
 
-#### Backend — `./backend`
-| Tecnología | Uso |
-|---|---|
-| **Rust** | Lenguaje principal. Elegido por su rendimiento, seguridad de memoria y confiabilidad en producción |
-| **Actix-Web 4** | Framework HTTP asíncrono de alto rendimiento para construir la API REST |
-| **SQLx** | ORM/query builder async con verificación de queries en tiempo de compilación |
-| **PostgreSQL** | Base de datos principal. Robusta, confiable y con soporte nativo en SQLx |
-| **JWT (jsonwebtoken)** | Autenticación stateless mediante tokens. Cada request valida el token sin consultar la DB |
-| **Argon2** | Hashing seguro de contraseñas. Estándar moderno resistente a ataques de fuerza bruta |
-| **Lettre + MailHog** | Servicio de emails. MailHog captura emails en desarrollo para pruebas sin enviar correos reales |
-| **Tokio** | Runtime async para Rust. Permite manejar miles de conexiones concurrentes eficientemente |
-| **Tracing** | Logging estructurado y trazabilidad de requests |
-| **Docker** | Contenedorización para PostgreSQL y MailHog en desarrollo |
+- **Speed**: Rust compiles to native code — the API responds in microseconds, not milliseconds
+- **Safety**: Memory safety without a garbage collector — no null pointer exceptions, no data races
+- **Reliability**: If it compiles, it works — Rust's type system catches bugs at compile time
+- **Low resource usage**: Runs on minimal RAM compared to Node.js or Python equivalents
 
-#### Frontend — `./frontend`
-| Tecnología | Uso |
-|---|---|
-| **React 18** | UI library. Componentes reutilizables con hooks modernos |
-| **TypeScript** | Tipado estático para detectar errores en tiempo de desarrollo, no en producción |
-| **Vite** | Build tool ultra-rápido. Hot Module Replacement instantáneo durante desarrollo |
-| **Tailwind CSS** | Utilidades CSS inline. Permite diseñar sin salir del componente |
-| **Axios** | Cliente HTTP con interceptores para manejar tokens JWT automáticamente |
-| **Zustand** | Estado global minimalista. Maneja la sesión del usuario (token, datos) |
-| **React Router v6** | Navegación SPA con rutas protegidas (PrivateRoute) |
-| **Lucide React** | Iconos modernos y consistentes en toda la interfaz |
+### Tech Stack
 
-### 🏗️ Arquitectura del proyecto
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| Backend language | **Rust 1.94** | Core language — fast, safe, compiled |
+| Web framework | **Actix-Web 4** | HTTP server, routing, middleware |
+| Database ORM | **SQLx** | Async SQL queries with compile-time checking |
+| Database | **PostgreSQL 16** | Primary data store |
+| Migrations | **SQLx migrate** | Version-controlled schema changes |
+| Auth | **JWT (jsonwebtoken)** | Stateless authentication tokens |
+| Password hashing | **bcrypt** | Secure password storage |
+| Email | **Lettre + SMTP** | Password reset emails |
+| Frontend language | **TypeScript 5** | Type-safe React development |
+| UI framework | **React 18** | Component-based UI |
+| Styling | **Tailwind CSS** | Utility-first CSS |
+| State management | **Zustand** | Lightweight global state |
+| HTTP client | **Axios** | API communication with JWT interceptor |
+| Routing | **React Router v6** | Client-side navigation |
+| i18n | **i18next + react-i18next** | Bilingual support (ES/EN), extensible |
+| Build tool | **Vite** | Fast frontend bundler |
+| Dev email | **MailHog** | Local SMTP server for testing emails |
+| Containerization | **Docker / Podman Compose** | Local development environment |
+
+### Features
+
+- ✅ **Authentication** — JWT login, public register (with admin approval), password reset via email
+- ✅ **Posts** — Create, edit, publish/draft blog posts with slug management
+- ✅ **Media library** — Drag & drop upload, image gallery, file type filters, copy URL, delete
+- ✅ **Users** — Role-based access control, pending user approval, activate/deactivate
+- ✅ **Sliders** — Home page slider/carousel management with image preview
+- ✅ **Menus** — Navigation menu builder with items (label, URL, target, icon, order)
+- ✅ **Plugin system** — Extensible architecture for adding functionality
+- ✅ **Stats dashboard** — Post counts, recent activity overview
+- ✅ **Public blog** — SEO-friendly blog frontend
+- ✅ **i18n** — Full bilingual UI (Spanish + English), auto-detects browser language
+- ✅ **Preview button** — Open public site from admin panel in one click
+
+### Project Structure
 
 ```
 rustpress/
-├── backend/                    # API REST en Rust
+├── backend/                  # Rust Actix-Web API
 │   ├── src/
-│   │   ├── main.rs             # Entry point, configuración del servidor
-│   │   ├── config.rs           # Variables de entorno (AppConfig)
-│   │   ├── errors.rs           # Manejo centralizado de errores (AppError)
-│   │   ├── lib.rs              # Exports del crate
-│   │   ├── handlers/           # Controladores HTTP por dominio
-│   │   │   ├── auth.rs         # Login, register, forgot/reset password
-│   │   │   ├── posts.rs        # CRUD posts + stats
-│   │   │   ├── media.rs        # Upload y gestión de archivos
-│   │   │   ├── users.rs        # Gestión de usuarios
-│   │   │   ├── menus.rs        # Menús de navegación + ítems
-│   │   │   ├── sliders.rs      # Sliders del home público
-│   │   │   └── plugins.rs      # Sistema de plugins
-│   │   ├── middleware/
-│   │   │   └── auth.rs         # AuthUser y AuthUserWithRole (extrae JWT del request)
-│   │   ├── models/             # Structs de base de datos y DTOs
-│   │   ├── services/
-│   │   │   ├── auth_service.rs # Hash/verify passwords, generar/validar JWT
-│   │   │   └── email_service.rs# Envío de emails (reset password, bienvenida)
-│   │   └── plugins/
-│   │       └── registry.rs     # Plugin registry (hooks before_post_save, etc.)
-│   └── migrations/             # Migraciones SQL (SQLx)
-│
-├── frontend/                   # SPA React + TypeScript
+│   │   ├── handlers/         # Route handlers (auth, posts, media, menus, sliders, users)
+│   │   ├── middleware/        # JWT auth middleware (AuthUser, AuthUserWithRole)
+│   │   ├── models/           # Database models & DTOs
+│   │   ├── services/         # Business logic (auth, email, media)
+│   │   ├── plugins/          # Plugin registry system
+│   │   ├── errors.rs         # Centralized error handling
+│   │   ├── config.rs         # Environment config
+│   │   └── main.rs           # App entry point & route registration
+│   └── migrations/           # SQL migration files
+├── frontend/                 # React + TypeScript SPA
 │   ├── src/
-│   │   ├── App.tsx             # Router principal con rutas públicas y privadas
-│   │   ├── api/                # Clientes HTTP por dominio
-│   │   │   ├── client.ts       # Axios base con interceptor JWT y manejo 401
-│   │   │   ├── auth.ts         # login, register, forgotPassword, resetPassword
-│   │   │   ├── posts.ts        # CRUD posts
-│   │   │   ├── media.ts        # Upload media
-│   │   │   ├── sliders.ts      # CRUD sliders
-│   │   │   └── menus.ts        # CRUD menús e ítems
-│   │   ├── pages/
-│   │   │   ├── Login.tsx       # Autenticación
-│   │   │   ├── Register.tsx    # Registro público (requiere aprobación)
-│   │   │   ├── ForgotPassword.tsx
-│   │   │   ├── ResetPassword.tsx
-│   │   │   ├── Dashboard.tsx   # Panel admin principal
-│   │   │   ├── Stats.tsx       # Estadísticas del CMS
-│   │   │   ├── Blog/           # Frontend público del blog
-│   │   │   ├── Posts/          # CRUD posts en el admin
-│   │   │   └── Plugins/
-│   │   │       ├── SlidersAdmin.tsx  # Gestión de sliders
-│   │   │       └── MenusAdmin.tsx    # Gestión de menús y sus ítems
-│   │   ├── store/
-│   │   │   └── authStore.ts    # Estado global de sesión (Zustand)
-│   │   └── types/              # TypeScript interfaces
-│
-├── docker-compose.yml          # PostgreSQL + MailHog
+│   │   ├── api/              # API client modules (auth, posts, menus, sliders, media, users)
+│   │   ├── components/       # Shared components (LanguageSelector)
+│   │   ├── locales/          # i18n translation files
+│   │   │   ├── es/           # Spanish translations
+│   │   │   └── en/           # English translations
+│   │   ├── pages/            # Page components
+│   │   │   ├── Blog/         # Public blog (BlogIndex, BlogPost)
+│   │   │   ├── Media/        # Media library admin
+│   │   │   ├── Posts/        # Post management (NewPost, EditPost)
+│   │   │   ├── Plugins/      # Sliders & Menus admin
+│   │   │   └── Users/        # User management & approval
+│   │   ├── store/            # Zustand global state
+│   │   ├── types/            # TypeScript type definitions
+│   │   ├── i18n.ts           # i18next configuration
+│   │   └── App.tsx           # Router
+│   └── public/
+├── docker-compose.yml        # PostgreSQL + MailHog services
 └── README.md
 ```
 
-### 🚀 Instalación local
-
-#### Prerrequisitos
-- [Rust](https://rustup.rs/) >= 1.75
-- [Node.js](https://nodejs.org/) >= 18
-- [Docker](https://www.docker.com/) (para PostgreSQL y MailHog)
-
-#### 1. Clonar el repositorio
-```bash
-git clone https://github.com/tu-usuario/rustpress.git
-cd rustpress
-```
-
-#### 2. Levantar servicios con Docker
-```bash
-docker-compose up -d
-```
-Esto inicia:
-- **PostgreSQL** en `localhost:5432`
-- **MailHog** en `localhost:8025` (interfaz web para ver emails)
-
-#### 3. Configurar variables de entorno del backend
-```bash
-cd backend
-cp .env.example .env
-```
-Edita `.env` con tus valores (ver sección Variables de Entorno).
-
-#### 4. Ejecutar el backend
-```bash
-cd backend
-cargo run
-# El servidor inicia en http://localhost:8080
-# Las migraciones se aplican automáticamente al arrancar
-```
-
-#### 5. Configurar e iniciar el frontend
-```bash
-cd frontend
-npm install
-npm run dev
-# Disponible en http://localhost:5173
-```
-
-### ⚙️ Variables de entorno
-
-Crea `backend/.env` basándote en `.env.example`:
-
-```env
-# Base de datos
-DATABASE_URL=postgres://postgres:postgres@localhost:5432/rustcms
-
-# Servidor
-HOST=127.0.0.1
-PORT=8080
-
-# JWT — cambia esto en producción
-JWT_SECRET=tu_secreto_super_seguro_aqui
-
-# Frontend (para CORS y links en emails)
-FRONTEND_URL=http://localhost:5173
-
-# SMTP (MailHog en desarrollo)
-SMTP_HOST=localhost
-SMTP_PORT=1025
-SMTP_USERNAME=
-SMTP_PASSWORD=
-SMTP_FROM=noreply@rustcms.dev
-
-# Uploads
-UPLOAD_DIR=./uploads
-```
-
-### 🔐 Autenticación y roles
-
-El sistema usa **JWT stateless**. El token se almacena en `localStorage` del browser y se envía como `Authorization: Bearer <token>` en cada request.
-
-El middleware `AuthUserWithRole` carga el rol del usuario desde la DB en cada request autenticado, permitiendo control granular de permisos.
-
-**Roles disponibles:**
-- `admin` — acceso completo
-- `editor` — gestión de contenido
-- (extensible mediante la tabla `roles` y el campo `permissions` JSON)
-
-### 📡 API Endpoints principales
-
-```
-POST   /api/v1/auth/register          Registro de usuario
-POST   /api/v1/auth/login             Login → devuelve JWT
-GET    /api/v1/auth/me                Perfil del usuario autenticado
-POST   /api/v1/auth/forgot-password   Solicitar reset de contraseña
-POST   /api/v1/auth/reset-password    Resetear contraseña con token
-
-GET    /api/v1/posts                  Listar posts (público)
-POST   /api/v1/posts                  Crear post (autenticado)
-PUT    /api/v1/posts/:id              Editar post
-DELETE /api/v1/posts/:id              Eliminar post
-GET    /api/v1/posts/stats            Estadísticas
-
-GET    /api/v1/menus                  Listar menús
-POST   /api/v1/menus                  Crear menú
-GET    /api/v1/menu-items/:menu_id    Ítems de un menú
-POST   /api/v1/menu-items/:menu_id    Agregar ítem
-
-GET    /api/v1/sliders                Listar sliders
-POST   /api/v1/sliders                Crear slider
-
-GET    /health                        Health check
-```
-
-### 🗺️ Roadmap
-
-- [ ] Aprobación de usuarios pendientes desde el admin
-- [ ] Editor de contenido enriquecido (WYSIWYG)
-- [ ] SEO metadata por post
-- [ ] Sistema de comentarios
-- [ ] Múltiples idiomas (i18n)
-- [ ] API pública documentada con OpenAPI/Swagger
-- [ ] Deploy en producción (Docker + nginx)
-- [ ] Tests unitarios e integración
-
----
-
-## 🇬🇧 English
-
-### What is RustCMS?
-
-RustCMS is an open-source Content Management System built with **Rust** on the backend and **React + TypeScript** on the frontend. It's designed to be fast, secure, and easy to extend — with support for posts, media, users, navigation menus, sliders, and a plugin system.
-
-### 🛠️ Tech Stack
-
-#### Backend — `./backend`
-| Technology | Purpose |
-|---|---|
-| **Rust** | Primary language. Chosen for its performance, memory safety, and production reliability |
-| **Actix-Web 4** | High-performance async HTTP framework for building the REST API |
-| **SQLx** | Async ORM/query builder with compile-time query verification |
-| **PostgreSQL** | Primary database. Robust and natively supported by SQLx |
-| **JWT** | Stateless authentication. Each request validates the token without a DB call |
-| **Argon2** | Secure password hashing. Modern standard resistant to brute-force attacks |
-| **Lettre + MailHog** | Email service. MailHog captures emails in dev without sending real messages |
-| **Tokio** | Async runtime for Rust. Handles thousands of concurrent connections efficiently |
-| **Tracing** | Structured logging and request tracing |
-| **Docker** | Containerization for PostgreSQL and MailHog in development |
-
-#### Frontend — `./frontend`
-| Technology | Purpose |
-|---|---|
-| **React 18** | UI library with modern hooks |
-| **TypeScript** | Static typing to catch errors at development time, not in production |
-| **Vite** | Ultra-fast build tool with instant HMR during development |
-| **Tailwind CSS** | Inline CSS utilities for styling without leaving the component |
-| **Axios** | HTTP client with interceptors for automatic JWT token handling |
-| **Zustand** | Minimal global state management for user session |
-| **React Router v6** | SPA navigation with protected routes (PrivateRoute) |
-| **Lucide React** | Consistent modern icons throughout the UI |
-
-### 🚀 Local Setup
+### Local Installation
 
 #### Prerequisites
-- [Rust](https://rustup.rs/) >= 1.75
-- [Node.js](https://nodejs.org/) >= 18
-- [Docker](https://www.docker.com/) (for PostgreSQL and MailHog)
 
-#### 1. Clone the repository
+- [Rust](https://rustup.rs/) 1.70+
+- [Node.js](https://nodejs.org/) 18+
+- [Docker](https://www.docker.com/) or [Podman](https://podman.io/) + Compose
+- [sqlx-cli](https://github.com/launchbadge/sqlx): `cargo install sqlx-cli`
+
+#### 1. Clone the repo
+
 ```bash
 git clone https://github.com/your-username/rustpress.git
 cd rustpress
 ```
 
-#### 2. Start services with Docker
+#### 2. Start services (PostgreSQL + MailHog)
+
 ```bash
-docker-compose up -d
+docker compose up -d
+# or with Podman:
+podman-compose up -d
 ```
 
-#### 3. Configure backend environment variables
+#### 3. Configure environment variables
+
 ```bash
-cd backend
-cp .env.example .env
-# Edit .env with your values
+cp backend/.env.example backend/.env
 ```
 
-#### 4. Run the backend
+Edit `backend/.env`:
+
+```env
+DATABASE_URL=postgres://rustcms:rustcms_secret@localhost:5432/rustcms
+JWT_SECRET=your-super-secret-key-change-this
+SMTP_HOST=localhost
+SMTP_PORT=1025
+SMTP_USERNAME=test
+SMTP_PASSWORD=test
+SMTP_FROM=noreply@rustcms.dev
+FRONTEND_URL=http://localhost:5173
+HOST=0.0.0.0
+PORT=8080
+UPLOAD_DIR=./uploads
+MAX_UPLOAD_MB=10
+```
+
+#### 4. Run migrations
+
 ```bash
 cd backend
+sqlx migrate run
+```
+
+#### 5. Start the backend
+
+```bash
 cargo run
-# Server starts at http://localhost:8080
-# Migrations are applied automatically on startup
+# API available at http://localhost:8080
 ```
 
-#### 5. Set up and start the frontend
+#### 6. Start the frontend
+
 ```bash
 cd frontend
 npm install
 npm run dev
-# Available at http://localhost:5173
+# App available at http://localhost:5173
 ```
 
-### ⚙️ Environment Variables
+#### 7. Monitor emails (MailHog)
 
-```env
-DATABASE_URL=postgres://postgres:postgres@localhost:5432/rustcms
-HOST=127.0.0.1
-PORT=8080
-JWT_SECRET=your_super_secret_key_here
-FRONTEND_URL=http://localhost:5173
-SMTP_HOST=localhost
-SMTP_PORT=1025
-SMTP_USERNAME=
-SMTP_PASSWORD=
-SMTP_FROM=noreply@rustcms.dev
-UPLOAD_DIR=./uploads
+Open [http://localhost:8025](http://localhost:8025) to see all outgoing emails.
+
+#### 8. First admin setup
+
+Register at `/register`, then assign the admin role via DB:
+
+```sql
+UPDATE users SET role_id = '<admin-role-id>' WHERE email = 'your@email.com';
+-- Get the admin role id with:
+SELECT id FROM roles WHERE name = 'admin';
 ```
 
-### 🗺️ Roadmap
+### API Endpoints
 
-- [ ] Pending user approval from admin panel
-- [ ] Rich text editor (WYSIWYG)
-- [ ] SEO metadata per post
-- [ ] Comments system
-- [ ] Internationalization (i18n)
-- [ ] Public API documentation with OpenAPI/Swagger
-- [ ] Production deployment (Docker + nginx)
-- [ ] Unit and integration tests
+| Method | Endpoint | Auth |
+|--------|----------|------|
+| POST | `/api/v1/auth/register` | ❌ |
+| POST | `/api/v1/auth/login` | ❌ |
+| POST | `/api/v1/auth/forgot-password` | ❌ |
+| POST | `/api/v1/auth/reset-password` | ❌ |
+| GET | `/api/v1/auth/me` | ✅ |
+| GET/POST | `/api/v1/posts` | ❌/✅ |
+| PUT/DELETE | `/api/v1/posts/:id` | ✅ |
+| GET | `/api/v1/posts/stats` | ✅ |
+| GET | `/api/v1/media` | ✅ |
+| POST | `/api/v1/media/upload` | ✅ |
+| DELETE | `/api/v1/media/:id` | ✅ |
+| GET/POST | `/api/v1/menus` | ❌/✅ |
+| PUT/DELETE | `/api/v1/menus/:id` | ✅ |
+| GET/POST | `/api/v1/menu-items/:menu_id` | ❌/✅ |
+| GET/POST | `/api/v1/sliders` | ❌/✅ |
+| GET/PUT/DELETE | `/api/v1/users/:id` | ✅ |
+| GET | `/health` | ❌ |
+
+### Roadmap
+
+- [ ] Rich text editor (TipTap)
+- [ ] Image optimization on upload
+- [ ] Multi-language content (per-post language)
+- [ ] API rate limiting
+- [ ] Docker production setup
+- [ ] CI/CD pipeline
+- [ ] SEO meta tags per post
+- [ ] RSS feed
+- [ ] Dark/light theme toggle
 
 ---
 
-<div align="center">
-Built with 🦀 Rust + ⚛️ React · MIT License
-</div>
+## Español
+
+### ¿Qué es RustPress?
+
+RustPress es un CMS headless con panel de administración integrado, construido con Rust en el backend y React + TypeScript en el frontend. Es una alternativa moderna, rápida y auto-hospedada a WordPress.
+
+### Stack Tecnológico
+
+| Capa | Tecnología | Propósito |
+|------|-----------|-----------|
+| Lenguaje backend | **Rust 1.94** | Rápido, seguro, compilado |
+| Framework web | **Actix-Web 4** | Servidor HTTP, rutas, middleware |
+| ORM | **SQLx** | Consultas SQL async verificadas en compilación |
+| Base de datos | **PostgreSQL 16** | Almacén principal |
+| Auth | **JWT** | Tokens sin estado |
+| Email | **Lettre + SMTP** | Recuperación de contraseña |
+| Frontend | **React 18 + TypeScript** | UI basada en componentes |
+| Estilos | **Tailwind CSS** | Utilidades CSS |
+| Estado | **Zustand** | Estado global ligero |
+| i18n | **i18next + react-i18next** | Bilingüe ES/EN, extensible |
+| Build | **Vite** | Bundler rápido |
+| Email dev | **MailHog** | SMTP local para pruebas |
+| Contenedores | **Docker / Podman Compose** | Entorno de desarrollo |
+
+### Funcionalidades
+
+- ✅ **Autenticación** — Login JWT, registro público con aprobación, reset de contraseña por email
+- ✅ **Posts** — CRUD con slugs, borradores y publicados
+- ✅ **Media** — Subida drag & drop, galería, filtros por tipo, copiar URL
+- ✅ **Usuarios** — Roles, aprobación de pendientes, activar/desactivar
+- ✅ **Sliders** — Carrusel de la página principal
+- ✅ **Menús** — Constructor de menús de navegación
+- ✅ **Sistema de plugins** — Arquitectura extensible
+- ✅ **Dashboard de stats** — Resumen de actividad
+- ✅ **Blog público** — Frontend amigable con SEO
+- ✅ **i18n** — UI bilingüe (ES/EN), detecta idioma del navegador
+- ✅ **Botón Preview** — Abre el sitio público desde el admin
+
+### Instalación Rápida
+
+```bash
+git clone https://github.com/tu-usuario/rustpress.git
+cd rustpress
+podman-compose up -d          # PostgreSQL + MailHog
+cd backend && sqlx migrate run # Migraciones
+cargo run                      # Backend en :8080
+cd ../frontend && npm install && npm run dev  # Frontend en :5173
+```
+
+---
+
+## License / Licencia
+
+MIT © 2026 Johan Montes

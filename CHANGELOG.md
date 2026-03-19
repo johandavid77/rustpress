@@ -1,22 +1,51 @@
-# Changelog — RustCMS / RustPress
+# Changelog — RustPress CMS
 
-All notable changes to this project are documented here.
+All notable changes to this project will be documented in this file.
+Todos los cambios notables de este proyecto se documentarán en este archivo.
+
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
-
----
-
-Todos los cambios notables de este proyecto están documentados aquí.
-Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.0.0/).
 
 ---
 
 ## [Unreleased] / [Sin publicar]
 
-### Planned / Planeado
-- Pending user approval UI in admin panel
-- Rich text editor (WYSIWYG)
-- SEO metadata per post
-- OpenAPI / Swagger documentation
+### Planned / Planificado
+- Rich text editor / Editor de texto enriquecido (TipTap)
+- Image optimization on upload / Optimización de imágenes al subir
+- Production Docker setup / Setup de Docker para producción
+- CI/CD pipeline
+- SEO meta tags per post
+- RSS feed
+
+---
+
+## [0.3.0] — 2026-03-19
+
+### Added / Agregado
+
+#### Frontend
+- **Media section** — full media library with drag & drop upload, image gallery preview, file type filters (All, Images, Video, Audio, Docs), detail panel with copy URL, pagination, and delete
+- **`media.ts` API client** — list, upload (multipart), delete with helpers `formatBytes` and `isImage`
+- **i18n / Internationalization** — full bilingual support (Spanish + English) using `i18next` + `react-i18next` + `i18next-browser-languagedetector`
+  - Auto-detects browser language
+  - Manual selector in admin sidebar with flag buttons (🇪🇸 ES / 🇺🇸 EN)
+  - Persists preference in `localStorage`
+  - Covers: auth, nav, dashboard, posts, users, menus, sliders, blog, media
+  - Architecture ready for adding new languages (FR, PT, etc.)
+- **Translation files** — `src/locales/es/translation.json` and `src/locales/en/translation.json`
+- **`LanguageSelector` component** — compact flag selector shown in admin sidebar
+- **Admin top header** — fixed header bar showing current section name + "Preview site" button
+- **"Preview site" button** — opens public blog in new tab directly from admin panel
+- **Users admin section** (`UsersAdmin`) — manage pending and active users with approve/deactivate/delete actions
+- **`users.ts` API client** — getAll, approve, deactivate, delete
+- Role assignment fix — admin role correctly assigned via DB update to enable `users:write` permission
+
+#### Backend fixes
+- Fixed `handlers::menus::configure` outside `/api/v1` scope (was causing 404)
+- Fixed `AuthUserWithRole` FromRequest using `Pin<Box<dyn Future>>` for async DB queries
+- Fixed duplicate `use validator::Validate` in `users.rs`
+- Fixed `auth.0.user_id` field reference in `posts.rs`
+- Fixed `.fetch_optional + .await` chain in `auth.rs` middleware
 
 ---
 
@@ -25,36 +54,19 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.0.0/).
 ### Added / Agregado
 
 #### Backend
-- **Menus system** — Full CRUD for navigation menus (`/api/v1/menus`)
-- **Menu items** — Nested items per menu with `label`, `url`, `target`, `icon`, `order_index` (`/api/v1/menu-items/:menu_id`)
-- **Auth routes** — `/auth/forgot-password` and `/auth/reset-password` with token-based flow
-- **User registration** — `/auth/register` endpoint with validation (username min 3, password min 8)
-- **Password reset tokens** — Stored in `password_reset_tokens` table with expiry
-- **Email service** — Lettre SMTP integration with MailHog support for development
+- Navigation menus system (`/api/v1/menus`, `/api/v1/menu-items`) with full CRUD
+- Menu items support `label`, `url`, `target`, `icon`, `order_index`, `is_active`, `parent_id`
 
 #### Frontend
-- **MenusAdmin component** — Full admin UI for managing menus and their items, with `target` (`_self`/`_blank`) and `icon` fields
-- **menus.ts API client** — Typed client matching backend routes exactly
-- **Register page** (`/register`) — Public registration form with success state showing pending approval message
-- **ForgotPassword page** (`/forgot-password`) — Email form with success confirmation
-- **ResetPassword page** (`/reset-password?token=...`) — New password form with token validation
-- **Login page updated** — Added "Forgot password?" and "Don't have an account? Register" links
-- **Login success banner** — Green confirmation message when arriving from `/login?reset=ok`
-- **auth.ts updated** — Added `forgotPassword` and `resetPassword` methods
-
-### Fixed / Corregido
-
-#### Backend
-- `handlers::menus::configure` was registered outside the `/api/v1` scope in `main.rs` — moved inside, fixing 404 on all menu endpoints
-- `AuthUserWithRole::from_request` changed from sync closure to `Pin<Box<dyn Future>>` to allow `.await` inside, fixing `E0728` compile error
-- Duplicate `use validator::Validate` in `users.rs` causing `E0252` compile error — removed duplicate import and validate call
-- `auth.0.sub` field access on `AuthUserWithRole` in `posts.rs` — changed to `auth.user_id` matching the struct definition
-- `.fetch_optional(&pool)` in `auth.rs` — changed to `.fetch_optional(pool.get_ref()).await` fixing `E0277` trait bound error
-
-#### Frontend
-- `import authApi from '../api/auth'` in Login.tsx — changed to named import `{ authApi }` since there is no default export
-- `MenusAdmin.tsx` import path `../../api/menus` — `menus.ts` file was missing, created and placed at `./frontend/src/api/menus.ts`
-- `createItem` API call signature — corrected to pass `menuId` as path parameter, not query string
+- `MenusAdmin` component — full menu management UI
+- `menus.ts` API client
+- `Register.tsx` — public registration page with validation
+- `ForgotPassword.tsx` — password recovery request page
+- `ResetPassword.tsx` — password reset with token from URL
+- Updated `Login.tsx` — links to register and forgot password
+- Updated `auth.ts` API — `forgotPassword` and `resetPassword`
+- Updated `App.tsx` router — `/register`, `/forgot-password`, `/reset-password`
+- Plugins section shows both `SlidersAdmin` and `MenusAdmin`
 
 ---
 
@@ -62,39 +74,38 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.0.0/).
 
 ### Added / Agregado
 
-#### Backend
-- Initial Rust + Actix-Web 4 project setup
-- PostgreSQL integration with SQLx and automatic migrations on startup
-- JWT authentication with Argon2 password hashing
-- `AuthUser` and `AuthUserWithRole` middleware extractors
-- Role-based permissions system with JSON `permissions` field
-- **Posts** — Full CRUD with status (`draft`/`published`), slug, excerpt, post type, and stats endpoint
-- **Media** — File upload and management with `/uploads` static file serving
-- **Users** — Admin-only user creation and management
-- **Sliders** — Home page slider CRUD with `order_index` and `is_active` toggle
-- **Plugins** — Plugin registry with `before_post_save` hook
-- CORS configuration with allowed origins from environment
+#### Backend (Rust + Actix-Web)
+- Initial project setup with Actix-Web 4
+- PostgreSQL integration via SQLx with async queries
+- JWT authentication system (login, register, token validation)
+- Password hashing with bcrypt
+- Role-based access control middleware (`AuthUser`, `AuthUserWithRole`)
+- Posts CRUD with slug, status (draft/published), excerpt, meta
+- Post statistics endpoint (`/posts/stats`)
+- Media upload and management system
+- Users management with role assignment
+- Sliders CRUD for home page carousel
+- Plugin registry system
+- Email service using Lettre + SMTP (MailHog for dev)
+- Password reset flow with token + email
+- Centralized error handling (`AppError`)
+- Environment-based configuration (`AppConfig`)
+- Database migrations with SQLx migrate
+- Health check endpoint (`/health`)
+- CORS configuration
 - Request compression middleware
-- Structured logging with `tracing` + `tracing-actix-web`
-- Docker Compose setup for PostgreSQL and MailHog
-- Health check endpoint (`GET /health`)
+- Tracing/logging
 
-#### Frontend
-- React 18 + TypeScript + Vite project setup
-- Tailwind CSS dark theme (`#0a0a0f` base, `#7c6aff` accent)
-- **Login page** — JWT authentication with token stored in localStorage
-- **Dashboard** — Side navigation with Home, Posts, Media, Users, Plugins views
-- **Stats component** — Cards showing total posts, published, drafts, media files + recent posts list
-- **Posts admin** — List, create, edit, delete posts with status badges
-- **NewPost / EditPost** — Full post editor with title, slug (auto-generated), content, excerpt, status
-- **Blog frontend** — Public blog at `/blog` with post list and individual post view (`/blog/:slug`)
-- **SlidersAdmin** — Drag-handle list, image preview, create/edit/delete sliders
-- Zustand auth store for global session state
-- Axios client with JWT interceptor (auto-attach token, redirect to `/login` on 401)
-- React Router v6 with `PrivateRoute` wrapper
-- API clients: `auth.ts`, `posts.ts`, `media.ts`, `sliders.ts`, `plugins.ts`
+#### Frontend (React + TypeScript)
+- Vite + TypeScript setup
+- React Router v6
+- Zustand auth state
+- Axios API client with JWT interceptor
+- Login, Dashboard, Stats, PostsView, NewPost, EditPost
+- SlidersAdmin, BlogIndex, BlogPost
+- API clients: auth, posts, sliders, media, client
 
----
-
-*Formato: `[versión] — fecha` · Secciones: Added, Changed, Fixed, Removed*
-*Format: `[version] — date` · Sections: Added, Changed, Fixed, Removed*
+#### Infrastructure
+- `docker-compose.yml` with PostgreSQL 16 and MailHog
+- `.env.example`
+- `.gitignore`
