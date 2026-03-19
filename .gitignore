@@ -15,3 +15,6 @@ backend/uploads/
 *.deb
 *.exe
 *.dmg
+*.deb
+*.exe
+*.dmg
