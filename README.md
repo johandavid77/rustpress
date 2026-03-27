@@ -49,6 +49,7 @@ RustPress is a headless CMS (Content Management System) with a built-in admin da
 | HTTP client | **Axios** | API communication with JWT interceptor |
 | Routing | **React Router v6** | Client-side navigation |
 | i18n | **i18next + react-i18next** | Bilingual support (ES/EN) |
+| Image processing | **image 0.25** | Resize & optimize JPEG/PNG/WebP on upload |
 | Build tool | **Vite** | Fast frontend bundler |
 | Dev email | **MailHog** | Local SMTP server for testing emails |
 | Containerization | **Docker / Podman Compose** | Local development environment |
@@ -230,7 +231,7 @@ SELECT id FROM roles WHERE name = 'admin';
 - [x] Theme system (Dark, Minimal, Bold, Magazine)
 - [x] Comments with moderation
 - [x] Persistent settings (DB)
-- [ ] Image optimization on upload
+- [x] **Image optimization** — Auto-resize a 1920px y compresión al subir media (JPEG 85%, PNG, WebP)
 - [ ] Multi-language content (per-post language)
 - [ ] API rate limiting
 - [ ] Docker production setup
@@ -260,6 +261,7 @@ RustPress es un CMS headless con panel de administración integrado, construido 
 | Estilos | **Tailwind CSS** | Utilidades CSS |
 | Estado | **Zustand** | Estado global ligero |
 | i18n | **i18next + react-i18next** | Bilingüe ES/EN, extensible |
+| Procesamiento de imágenes | **image 0.25** | Resize y optimización JPEG/PNG/WebP al subir |
 | Build | **Vite** | Bundler rápido |
 | Email dev | **MailHog** | SMTP local para pruebas |
 | Contenedores | **Docker / Podman Compose** | Entorno de desarrollo |
