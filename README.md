@@ -9,7 +9,7 @@
 [![React](https://img.shields.io/badge/React-18-61dafb?logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript)](https://www.typescriptlang.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?logo=postgresql)](https://www.postgresql.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](LICENSE)
 
 [English](#english) · [Español](#español)
 
@@ -277,4 +277,4 @@ cd ../frontend && npm install && npm run dev  # Frontend en :5173
 
 ## License / Licencia
 
-MIT © 2026 Johan Montes
+GPL-3.0 © 2026 Johan Montes
