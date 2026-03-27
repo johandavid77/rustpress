@@ -22,7 +22,7 @@ async fn main() -> anyhow::Result<()> {
 
     dotenvy::dotenv().ok();
     let cfg: AppConfig = AppConfig::from_env()?;
-    info!("🦀 RustCMS starting on {}:{}", cfg.host, cfg.port);
+    info!("🚀 RustCMS starting on {}:{}", cfg.host, cfg.port);
 
     let pool = create_pool(&cfg.database_url).await?;
     sqlx::migrate!("./migrations").run(&pool).await?;
@@ -31,7 +31,7 @@ async fn main() -> anyhow::Result<()> {
     let plugin_registry: PluginRegistry = PluginRegistry::new();
     let registry_data = web::Data::new(plugin_registry);
 
-    // — Email Service ————————————————————————————————————————
+    // — Email Service ————————————————————————————
     let email_service = EmailService::new(
         &cfg.smtp_host,
         cfg.smtp_port,
@@ -80,6 +80,8 @@ async fn main() -> anyhow::Result<()> {
                     .configure(handlers::plugins::configure)
                     .configure(handlers::sliders::configure)
                     .configure(handlers::menus::configure)
+                    .configure(handlers::comments::configure)
+                    .configure(handlers::settings::configure)  // 👈 nuevo
             )
             .route("/health", web::get().to(health_check))
             .service(Files::new("/uploads", &cfg.upload_dir).show_files_listing())

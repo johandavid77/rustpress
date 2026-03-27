@@ -5,3 +5,4 @@ pub mod posts;
 pub mod users;
 pub mod sliders;
 pub mod menus;
+pub mod settings;pub mod comments;

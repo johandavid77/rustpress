@@ -5,14 +5,23 @@ import { postsApi } from '../api/posts'
 import NewPost from './Posts/NewPost'
 import EditPost from './Posts/EditPost'
 import Stats from './Stats'
-import { LayoutDashboard, FileText, Image, Users, Puzzle, ExternalLink } from 'lucide-react'
+import { LayoutDashboard, FileText, Image, Users, Puzzle, ExternalLink, Palette, MessageSquare } from 'lucide-react'
 import SlidersAdmin from './Plugins/SlidersAdmin'
 import MenusAdmin from './Plugins/MenusAdmin'
 import UsersAdmin from './Users/UsersAdmin'
 import MediaAdmin from './Media/MediaAdmin'
 import LanguageSelector from '../components/LanguageSelector'
+import { apiClient } from '../api/client'
+import CommentsAdmin from './Plugins/CommentsAdmin'
 
-type View = 'home' | 'posts' | 'media' | 'users' | 'plugins'
+type View = 'home' | 'posts' | 'media' | 'users' | 'plugins' | 'themes' | 'comments'
+
+const THEMES = [
+  { id: 'dark',     name: '🌑 Dark',     description: 'Oscuro, moderno, minimalista',              preview: 'bg-[#0a0a0f] border-[#2a2a3a]', accent: 'bg-[#7c6aff]' },
+  { id: 'minimal',  name: '⬜ Minimal',  description: 'Blanco, tipografía grande, mucho espacio',  preview: 'bg-white border-gray-200',       accent: 'bg-gray-900'   },
+  { id: 'bold',     name: '🎨 Bold',     description: 'Colores vibrantes, cards grandes, energético', preview: 'bg-black border-yellow-400',  accent: 'bg-yellow-400' },
+  { id: 'magazine', name: '📰 Magazine', description: 'Clásico blog/periódico, columnas, denso',   preview: 'bg-[#f5f0e8] border-black',     accent: 'bg-black'      },
+]
 
 export default function Dashboard() {
   const { t } = useTranslation()
@@ -22,8 +31,17 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false)
   const [showNewPost, setShowNewPost] = useState(false)
   const [editingPost, setEditingPost] = useState<any>(null)
+  const [activeTheme, setActiveTheme] = useState<string>('dark')
+  const [savingTheme, setSavingTheme] = useState(false)
+  const [themeSaved, setThemeSaved] = useState(false)
 
   useEffect(() => { if (view === 'posts') loadPosts() }, [view])
+
+  useEffect(() => {
+    apiClient.get('/settings/active-theme')
+      .then((res: any) => setActiveTheme(res?.value ?? 'dark'))
+      .catch(() => setActiveTheme('dark'))
+  }, [])
 
   const loadPosts = async () => {
     setLoading(true)
@@ -34,21 +52,32 @@ export default function Dashboard() {
     finally { setLoading(false) }
   }
 
+  const saveTheme = async (themeId: string) => {
+    setSavingTheme(true)
+    try {
+      await apiClient.put('/settings/active-theme', { value: themeId })
+      setActiveTheme(themeId)
+      setThemeSaved(true)
+      setTimeout(() => setThemeSaved(false), 2000)
+    } catch (e) { console.error(e) }
+    finally { setSavingTheme(false) }
+  }
+
   const nav = [
-    { id: 'home'    as View, icon: LayoutDashboard, label: t('nav.home')    },
-    { id: 'posts'   as View, icon: FileText,         label: t('nav.posts')   },
-    { id: 'media'   as View, icon: Image,            label: t('nav.media')   },
-    { id: 'users'   as View, icon: Users,            label: t('nav.users')   },
-    { id: 'plugins' as View, icon: Puzzle,           label: t('nav.plugins') },
+    { id: 'home'     as View, icon: LayoutDashboard, label: t('nav.home')    },
+    { id: 'posts'    as View, icon: FileText,         label: t('nav.posts')   },
+    { id: 'media'    as View, icon: Image,            label: t('nav.media')   },
+    { id: 'users'    as View, icon: Users,            label: t('nav.users')   },
+    { id: 'plugins'  as View, icon: Puzzle,           label: t('nav.plugins') },
+    { id: 'themes'   as View, icon: Palette,          label: 'Themes'         },
+    { id: 'comments' as View, icon: MessageSquare,    label: 'Comentarios'    },
   ]
 
   const resetPosts = () => { setShowNewPost(false); setEditingPost(null); loadPosts() }
-
   const viewTitle = nav.find(n => n.id === view)?.label ?? ''
 
   return (
     <div className="flex h-screen bg-[#0a0a0f] text-white overflow-hidden">
-      {/* Sidebar */}
       <aside className="w-60 min-w-60 bg-[#111118] border-r border-[#2a2a3a] flex flex-col justify-between p-5">
         <div className="flex flex-col gap-8">
           <div className="flex items-center gap-2 px-2">
@@ -73,9 +102,7 @@ export default function Dashboard() {
         </div>
 
         <div className="flex flex-col gap-3">
-          <div className="px-2 pb-1">
-            <LanguageSelector />
-          </div>
+          <div className="px-2 pb-1"><LanguageSelector /></div>
           <div className="flex items-center gap-2.5 px-2">
             <div className="w-8 h-8 rounded-full bg-[#7c6aff] flex items-center justify-center text-sm font-bold flex-shrink-0">
               {user?.username?.[0]?.toUpperCase() ?? 'U'}
@@ -90,25 +117,15 @@ export default function Dashboard() {
         </div>
       </aside>
 
-      {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Top header */}
         <header className="h-14 bg-[#111118] border-b border-[#2a2a3a] flex items-center justify-between px-6 flex-shrink-0">
-          <p className="text-sm text-[#888899] font-mono">
-            {viewTitle}
-          </p>
-          <a
-            href="/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 px-4 py-1.5 border border-[#2a2a3a] rounded-lg text-xs text-[#888899] hover:text-white hover:border-[#7c6aff] font-semibold transition-all"
-          >
-            <ExternalLink size={13} />
-            Preview site
+          <p className="text-sm text-[#888899] font-mono">{viewTitle}</p>
+          <a href="/" target="_blank" rel="noopener noreferrer"
+            className="flex items-center gap-2 px-4 py-1.5 border border-[#2a2a3a] rounded-lg text-xs text-[#888899] hover:text-white hover:border-[#7c6aff] font-semibold transition-all">
+            <ExternalLink size={13} /> Preview site
           </a>
         </header>
 
-        {/* Content area */}
         <main className="flex-1 overflow-auto p-10">
           {view === 'home' && (
             <div className="max-w-5xl">
@@ -130,13 +147,46 @@ export default function Dashboard() {
           {view === 'posts' && editingPost && (
             <EditPost post={editingPost} onBack={() => setEditingPost(null)} onSaved={resetPosts} />
           )}
-          {view === 'media' && <MediaAdmin />}
-          {view === 'users' && <UsersAdmin />}
-          {view === 'plugins' && (
+          {view === 'media'    && <MediaAdmin />}
+          {view === 'users'    && <UsersAdmin />}
+          {view === 'comments' && <CommentsAdmin />}
+          {view === 'plugins'  && (
             <div className="flex flex-col gap-12">
               <SlidersAdmin />
-              <div className="border-t border-[#2a2a3a] pt-10">
-                <MenusAdmin />
+              <div className="border-t border-[#2a2a3a] pt-10"><MenusAdmin /></div>
+            </div>
+          )}
+          {view === 'themes' && (
+            <div className="max-w-3xl">
+              <div className="mb-8 flex items-start justify-between">
+                <div>
+                  <h1 className="text-4xl font-black tracking-tight mb-1">Themes</h1>
+                  <p className="text-[#888899] text-sm">Selecciona el tema visual del blog público</p>
+                </div>
+                {themeSaved && (
+                  <span className="text-xs font-mono text-green-400 bg-green-500/10 px-3 py-1.5 rounded-full">
+                    ✓ Theme guardado
+                  </span>
+                )}
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {THEMES.map(theme => (
+                  <button key={theme.id} onClick={() => saveTheme(theme.id)} disabled={savingTheme}
+                    className={`relative p-5 rounded-xl border-2 text-left transition-all
+                      ${activeTheme === theme.id ? 'border-[#7c6aff] bg-[#1a1a24]' : 'border-[#2a2a3a] bg-[#111118] hover:border-[#7c6aff]/50'}`}>
+                    {activeTheme === theme.id && (
+                      <span className="absolute top-3 right-3 text-xs font-mono text-[#7c6aff] bg-[#7c6aff]/10 px-2 py-0.5 rounded-full">
+                        Activo
+                      </span>
+                    )}
+                    <div className={`w-full h-16 rounded-lg border-2 mb-4 flex items-end p-2 gap-1 ${theme.preview}`}>
+                      <div className={`h-2 w-16 rounded ${theme.accent} opacity-80`} />
+                      <div className={`h-1.5 w-10 rounded ${theme.accent} opacity-40`} />
+                    </div>
+                    <p className="font-bold text-sm mb-1">{theme.name}</p>
+                    <p className="text-xs text-[#888899]">{theme.description}</p>
+                  </button>
+                ))}
               </div>
             </div>
           )}
