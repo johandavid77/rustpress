@@ -1,4 +1,5 @@
 use actix_cors::Cors;
+use actix_governor::{Governor, GovernorConfigBuilder};
 use actix_files::Files;
 use actix_web::{middleware, web, App, HttpServer};
 use tracing::info;
@@ -43,6 +44,13 @@ async fn main() -> anyhow::Result<()> {
 
     let pool_data = web::Data::new(pool);
     let cfg_data  = web::Data::new(cfg.clone());
+    // Rate limiting: 60 requests/min por IP
+    let governor_conf = GovernorConfigBuilder::default()
+        .requests_per_second(1)
+        .burst_size(60)
+        .finish()
+        .unwrap();
+
     let bind_addr = format!("{}:{}", cfg.host, cfg.port);
 
     HttpServer::new(move || {
@@ -58,6 +66,7 @@ async fn main() -> anyhow::Result<()> {
         App::new()
             .wrap(cors)
             .wrap(middleware::Compress::default())
+            .wrap(Governor::new(&governor_conf))
             .wrap(tracing_actix_web::TracingLogger::default())
             .app_data(pool_data.clone())
             .app_data(cfg_data.clone())

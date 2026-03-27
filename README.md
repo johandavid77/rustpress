@@ -36,6 +36,7 @@ RustPress is a headless CMS (Content Management System) with a built-in admin da
 |-------|------------|---------|
 | Backend language | **Rust 1.94** | Core language — fast, safe, compiled |
 | Web framework | **Actix-Web 4** | HTTP server, routing, middleware |
+| Rate limiting | **actix-governor 0.7** | 60 req/min por IP, protección contra abuso | | HTTP server, routing, middleware |
 | Database ORM | **SQLx** | Async SQL queries with compile-time checking |
 | Database | **PostgreSQL 16** | Primary data store |
 | Migrations | **SQLx migrate** | Version-controlled schema migrations |
@@ -233,7 +234,7 @@ SELECT id FROM roles WHERE name = 'admin';
 - [x] Persistent settings (DB)
 - [x] **Image optimization** — Auto-resize a 1920px y compresión al subir media (JPEG 85%, PNG, WebP)
 - [ ] Multi-language content (per-post language)
-- [ ] API rate limiting
+- [x] **API rate limiting** — 60 req/min por IP con actix-governor
 - [ ] Docker production setup
 - [ ] CI/CD pipeline
 - [ ] SEO meta tags per post
