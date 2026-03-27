@@ -16,6 +16,26 @@ export default function BlogPost() {
       .finally(() => setLoading(false))
   }, [slug])
 
+  useEffect(() => {
+    if (!post) return
+    document.title = `${post.title} — RustCMS`
+    const setMeta = (name: string, content: string) => {
+      let el = document.querySelector(`meta[name="${name}"]`) as HTMLMetaElement
+      if (!el) { el = document.createElement("meta"); el.setAttribute("name", name); document.head.appendChild(el) }
+      el.content = content
+    }
+    const setOg = (prop: string, content: string) => {
+      let el = document.querySelector(`meta[property="${prop}"]`) as HTMLMetaElement
+      if (!el) { el = document.createElement("meta"); el.setAttribute("property", prop); document.head.appendChild(el) }
+      el.content = content
+    }
+    setMeta("description", post.excerpt ?? post.title)
+    setOg("og:title", post.title)
+    setOg("og:description", post.excerpt ?? post.title)
+    setOg("og:type", "article")
+    return () => { document.title = "RustCMS" }
+  }, [post])
+
   if (loading) return (
     <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
       <div className="w-6 h-6 border-2 border-[#7c6aff] border-t-transparent rounded-full animate-spin" />
