@@ -73,6 +73,9 @@ async fn upload_media(
             filename, original_name, content_type, size as i64, url, auth.0.sub,
         ).fetch_one(pool.get_ref()).await?;
 
+        // Optimizar imagen si aplica
+        let size = optimize_image(&filepath).unwrap_or(size);
+
         uploaded.push(record);
     }
 
@@ -94,4 +97,43 @@ async fn delete_media(pool: Data<PgPool>, cfg: Data<AppConfig>, id: Path<Uuid>, 
     sqlx::query!("DELETE FROM media WHERE id = $1", *id).execute(pool.get_ref()).await?;
     std::fs::remove_file(format!("{}/{}", cfg.upload_dir, file.filename)).ok();
     Ok(HttpResponse::NoContent().finish())
+}
+
+fn optimize_image(filepath: &str) -> Result<u64, Box<dyn std::error::Error>> {
+    let path = std::path::Path::new(filepath);
+    let ext = path.extension()
+        .and_then(|e: &std::ffi::OsStr| e.to_str())
+        .unwrap_or("")
+        .to_lowercase();
+
+    if !["jpg", "jpeg", "png", "webp"].contains(&ext.as_str()) {
+        return Ok(std::fs::metadata(filepath)?.len());
+    }
+
+    let img = image::open(filepath)?;
+
+    // Redimensionar si es más grande que 1920px
+    let img = if img.width() > 1920 || img.height() > 1920 {
+        img.resize(1920, 1920, image::imageops::FilterType::Lanczos3)
+    } else {
+        img
+    };
+
+    // Guardar optimizado
+    match ext.as_str() {
+        "jpg" | "jpeg" => {
+            let mut out = std::fs::File::create(filepath)?;
+            let mut encoder = image::codecs::jpeg::JpegEncoder::new_with_quality(&mut out, 85);
+            encoder.encode_image(&img)?;
+        }
+        "png" => {
+            img.save(filepath)?;
+        }
+        "webp" => {
+            img.save(filepath)?;
+        }
+        _ => {}
+    }
+
+    Ok(std::fs::metadata(filepath)?.len())
 }
