@@ -9,7 +9,7 @@
 [![React](https://img.shields.io/badge/React-18-61dafb?logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript)](https://www.typescriptlang.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?logo=postgresql)](https://www.postgresql.org/)
-[![License: MIT](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](LICENSE)
+[![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](LICENSE)
 
 [English](#english) · [Español](#español)
 
@@ -33,12 +33,12 @@ RustPress is a headless CMS (Content Management System) with a built-in admin da
 ### Tech Stack
 
 | Layer | Technology | Purpose |
-|-------|-----------|---------|
+|-------|------------|---------|
 | Backend language | **Rust 1.94** | Core language — fast, safe, compiled |
 | Web framework | **Actix-Web 4** | HTTP server, routing, middleware |
 | Database ORM | **SQLx** | Async SQL queries with compile-time checking |
 | Database | **PostgreSQL 16** | Primary data store |
-| Migrations | **SQLx migrate** | Version-controlled schema changes |
+| Migrations | **SQLx migrate** | Version-controlled schema migrations |
 | Auth | **JWT (jsonwebtoken)** | Stateless authentication tokens |
 | Password hashing | **bcrypt** | Secure password storage |
 | Email | **Lettre + SMTP** | Password reset emails |
@@ -48,7 +48,7 @@ RustPress is a headless CMS (Content Management System) with a built-in admin da
 | State management | **Zustand** | Lightweight global state |
 | HTTP client | **Axios** | API communication with JWT interceptor |
 | Routing | **React Router v6** | Client-side navigation |
-| i18n | **i18next + react-i18next** | Bilingual support (ES/EN), extensible |
+| i18n | **i18next + react-i18next** | Bilingual support (ES/EN) |
 | Build tool | **Vite** | Fast frontend bundler |
 | Dev email | **MailHog** | Local SMTP server for testing emails |
 | Containerization | **Docker / Podman Compose** | Local development environment |
@@ -66,41 +66,55 @@ RustPress is a headless CMS (Content Management System) with a built-in admin da
 - ✅ **Public blog** — SEO-friendly blog frontend
 - ✅ **i18n** — Full bilingual UI (Spanish + English), auto-detects browser language
 - ✅ **Preview button** — Open public site from admin panel in one click
+- ✅ **Theme system** — 4 built-in themes (Dark, Minimal, Bold, Magazine), switchable from admin
+- ✅ **Comments** — Authenticated comments with admin moderation (approve/delete)
+- ✅ **Settings** — Persistent key-value settings stored in DB (active theme, etc.)
 
 ### Project Structure
-
 ```
 rustpress/
-├── backend/                  # Rust Actix-Web API
-│   ├── src/
-│   │   ├── handlers/         # Route handlers (auth, posts, media, menus, sliders, users)
-│   │   ├── middleware/        # JWT auth middleware (AuthUser, AuthUserWithRole)
-│   │   ├── models/           # Database models & DTOs
-│   │   ├── services/         # Business logic (auth, email, media)
-│   │   ├── plugins/          # Plugin registry system
-│   │   ├── errors.rs         # Centralized error handling
-│   │   ├── config.rs         # Environment config
-│   │   └── main.rs           # App entry point & route registration
-│   └── migrations/           # SQL migration files
-├── frontend/                 # React + TypeScript SPA
-│   ├── src/
-│   │   ├── api/              # API client modules (auth, posts, menus, sliders, media, users)
-│   │   ├── components/       # Shared components (LanguageSelector)
-│   │   ├── locales/          # i18n translation files
-│   │   │   ├── es/           # Spanish translations
-│   │   │   └── en/           # English translations
-│   │   ├── pages/            # Page components
-│   │   │   ├── Blog/         # Public blog (BlogIndex, BlogPost)
-│   │   │   ├── Media/        # Media library admin
-│   │   │   ├── Posts/        # Post management (NewPost, EditPost)
-│   │   │   ├── Plugins/      # Sliders & Menus admin
-│   │   │   └── Users/        # User management & approval
-│   │   ├── store/            # Zustand global state
-│   │   ├── types/            # TypeScript type definitions
-│   │   ├── i18n.ts           # i18next configuration
-│   │   └── App.tsx           # Router
-│   └── public/
-├── docker-compose.yml        # PostgreSQL + MailHog services
+├── backend/                    # Rust Actix-Web API
+│   └── src/
+│       ├── handlers/           # Route handlers
+│       │   ├── auth.rs         # Auth endpoints
+│       │   ├── posts.rs        # Posts CRUD
+│       │   ├── media.rs        # Media upload
+│       │   ├── menus.rs        # Menus admin
+│       │   ├── sliders.rs      # Sliders admin
+│       │   ├── users.rs        # Users admin
+│       │   ├── comments.rs     # Comments + moderation
+│       │   └── settings.rs     # App settings (themes, etc.)
+│       ├── middleware/         # JWT auth middleware (AuthUser, AuthUserWithRole)
+│       ├── models/             # Database models & DTOs
+│       ├── services/           # Business logic (auth, email, media)
+│       ├── plugins/            # Plugin registry system
+│       ├── errors.rs           # Centralized error handling
+│       ├── config.rs           # Environment config
+│       └── main.rs             # App entry point & route registration
+│   └── migrations/             # SQL migration files
+├── frontend/                   # React + TypeScript SPA
+│   └── src/
+│       ├── api/                # API client modules
+│       ├── components/         # Shared components
+│       │   └── Comments/       # Reusable comments component (4 themes)
+│       ├── locales/            # i18n translation files (es/, en/)
+│       ├── pages/              # Page components
+│       │   ├── Blog/           # Public blog (BlogIndex, BlogPost)
+│       │   ├── Media/          # Media library admin
+│       │   ├── Posts/          # Post management (NewPost, EditPost)
+│       │   ├── Plugins/        # Sliders, Menus & Comments admin
+│       │   └── Users/          # User management & approval
+│       ├── themes/             # Theme system
+│       │   ├── dark/           # Dark theme (BlogIndex, BlogPost)
+│       │   ├── minimal/        # Minimal theme
+│       │   ├── bold/           # Bold theme
+│       │   ├── magazine/       # Magazine theme
+│       │   └── ThemeLoader.tsx # Dynamic theme loader
+│       ├── store/              # Zustand global state
+│       ├── types/              # TypeScript type definitions
+│       ├── i18n.ts             # i18next configuration
+│       └── App.tsx             # Router
+├── docker-compose.yml          # PostgreSQL + MailHog services
 └── README.md
 ```
 
@@ -114,14 +128,12 @@ rustpress/
 - [sqlx-cli](https://github.com/launchbadge/sqlx): `cargo install sqlx-cli`
 
 #### 1. Clone the repo
-
 ```bash
-git clone https://github.com/your-username/rustpress.git
+git clone https://github.com/johandavid77/rustpress.git
 cd rustpress
 ```
 
 #### 2. Start services (PostgreSQL + MailHog)
-
 ```bash
 docker compose up -d
 # or with Podman:
@@ -129,13 +141,11 @@ podman-compose up -d
 ```
 
 #### 3. Configure environment variables
-
 ```bash
 cp backend/.env.example backend/.env
 ```
 
 Edit `backend/.env`:
-
 ```env
 DATABASE_URL=postgres://rustcms:rustcms_secret@localhost:5432/rustcms
 JWT_SECRET=your-super-secret-key-change-this
@@ -152,21 +162,18 @@ MAX_UPLOAD_MB=10
 ```
 
 #### 4. Run migrations
-
 ```bash
 cd backend
 sqlx migrate run
 ```
 
 #### 5. Start the backend
-
 ```bash
 cargo run
 # API available at http://localhost:8080
 ```
 
 #### 6. Start the frontend
-
 ```bash
 cd frontend
 npm install
@@ -181,7 +188,6 @@ Open [http://localhost:8025](http://localhost:8025) to see all outgoing emails.
 #### 8. First admin setup
 
 Register at `/register`, then assign the admin role via DB:
-
 ```sql
 UPDATE users SET role_id = '<admin-role-id>' WHERE email = 'your@email.com';
 -- Get the admin role id with:
@@ -200,6 +206,7 @@ SELECT id FROM roles WHERE name = 'admin';
 | GET/POST | `/api/v1/posts` | ❌/✅ |
 | PUT/DELETE | `/api/v1/posts/:id` | ✅ |
 | GET | `/api/v1/posts/stats` | ✅ |
+| GET | `/api/v1/posts/slug/:slug` | ❌ |
 | GET | `/api/v1/media` | ✅ |
 | POST | `/api/v1/media/upload` | ✅ |
 | DELETE | `/api/v1/media/:id` | ✅ |
@@ -208,11 +215,21 @@ SELECT id FROM roles WHERE name = 'admin';
 | GET/POST | `/api/v1/menu-items/:menu_id` | ❌/✅ |
 | GET/POST | `/api/v1/sliders` | ❌/✅ |
 | GET/PUT/DELETE | `/api/v1/users/:id` | ✅ |
+| GET | `/api/v1/posts/:post_id/comments` | ❌ |
+| POST | `/api/v1/posts/:post_id/comments` | ✅ |
+| PUT | `/api/v1/comments/:id/approve` | ✅ |
+| DELETE | `/api/v1/comments/:id` | ✅ |
+| GET | `/api/v1/comments/all` | ✅ |
+| GET | `/api/v1/settings/active-theme` | ❌ |
+| PUT | `/api/v1/settings/active-theme` | ✅ |
 | GET | `/health` | ❌ |
 
 ### Roadmap
 
-- [ ] Rich text editor (TipTap)
+- [x] Rich text editor (TipTap)
+- [x] Theme system (Dark, Minimal, Bold, Magazine)
+- [x] Comments with moderation
+- [x] Persistent settings (DB)
 - [ ] Image optimization on upload
 - [ ] Multi-language content (per-post language)
 - [ ] API rate limiting
@@ -220,7 +237,6 @@ SELECT id FROM roles WHERE name = 'admin';
 - [ ] CI/CD pipeline
 - [ ] SEO meta tags per post
 - [ ] RSS feed
-- [ ] Dark/light theme toggle
 
 ---
 
@@ -233,7 +249,7 @@ RustPress es un CMS headless con panel de administración integrado, construido 
 ### Stack Tecnológico
 
 | Capa | Tecnología | Propósito |
-|------|-----------|-----------|
+|------|------------|-----------|
 | Lenguaje backend | **Rust 1.94** | Rápido, seguro, compilado |
 | Framework web | **Actix-Web 4** | Servidor HTTP, rutas, middleware |
 | ORM | **SQLx** | Consultas SQL async verificadas en compilación |
@@ -261,11 +277,13 @@ RustPress es un CMS headless con panel de administración integrado, construido 
 - ✅ **Blog público** — Frontend amigable con SEO
 - ✅ **i18n** — UI bilingüe (ES/EN), detecta idioma del navegador
 - ✅ **Botón Preview** — Abre el sitio público desde el admin
+- ✅ **Sistema de themes** — 4 themes incluidos (Dark, Minimal, Bold, Magazine), cambiable desde el admin
+- ✅ **Comentarios** — Comentarios autenticados con moderación admin (aprobar/eliminar)
+- ✅ **Settings** — Configuración persistente en DB (theme activo, etc.)
 
 ### Instalación Rápida
-
 ```bash
-git clone https://github.com/tu-usuario/rustpress.git
+git clone https://github.com/johandavid77/rustpress.git
 cd rustpress
 podman-compose up -d          # PostgreSQL + MailHog
 cd backend && sqlx migrate run # Migraciones
