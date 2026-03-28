@@ -34,7 +34,10 @@ pub struct Post {
     pub meta:         serde_json::Value,
     pub published_at: Option<DateTime<Utc>>,
     pub created_at:   DateTime<Utc>,
-    pub updated_at:   DateTime<Utc>,
+    pub updated_at:      DateTime<Utc>,
+    pub seo_title:       Option<String>,
+    pub seo_description: Option<String>,
+    pub og_image:        Option<String>,
 }
 
 // ─── DTOs ───────────────────────────────────────────────────────────────────
@@ -45,7 +48,10 @@ pub struct CreatePostDto {
     pub title:     String,
     pub slug:      Option<String>,    // auto-generated if None
     pub content:   Option<String>,
-    pub excerpt:   Option<String>,
+    pub excerpt:         Option<String>,
+    pub seo_title:       Option<String>,
+    pub seo_description: Option<String>,
+    pub og_image:        Option<String>,
     pub post_type: Option<String>,    // "post" | "page" | "custom"
     pub meta:      Option<serde_json::Value>,
 }
@@ -55,7 +61,10 @@ pub struct UpdatePostDto {
     pub title:     Option<String>,
     pub slug:      Option<String>,
     pub content:   Option<String>,
-    pub excerpt:   Option<String>,
+    pub excerpt:         Option<String>,
+    pub seo_title:       Option<String>,
+    pub seo_description: Option<String>,
+    pub og_image:        Option<String>,
     pub post_type: Option<String>,
     pub status:    Option<String>,
     pub meta:      Option<serde_json::Value>,
