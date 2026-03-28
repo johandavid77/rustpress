@@ -236,7 +236,7 @@ SELECT id FROM roles WHERE name = 'admin';
 - [ ] Multi-language content (per-post language)
 - [x] **API rate limiting** — 60 req/min por IP con actix-governor
 - [ ] Docker production setup
-- [ ] CI/CD pipeline
+- [x] **CI/CD pipeline** — GitHub Actions para backend (Rust + PostgreSQL) y frontend (TypeScript)
 - [ ] SEO meta tags per post
 - [ ] RSS feed
 
