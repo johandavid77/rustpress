@@ -1,24 +1,19 @@
-# ── Build stage ──────────────────────────────────────────────────────────────
-FROM rust:1.78-slim as builder
+# ── Stage 1: Build ──────────────────────────────────────────────
+FROM rust:1.94-slim AS builder
 
 RUN apt-get update && apt-get install -y \
     pkg-config libssl-dev libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-
-# Cache dependencies (trick: copy only manifests first)
 COPY Cargo.toml Cargo.lock ./
-RUN mkdir src && echo "fn main(){}" > src/main.rs
-RUN cargo build --release
-RUN rm src/main.rs
-
-# Build real source
 COPY src ./src
 COPY migrations ./migrations
-RUN touch src/main.rs && cargo build --release
 
-# ── Runtime stage ─────────────────────────────────────────────────────────────
+ENV SQLX_OFFLINE=true
+RUN cargo build --release
+
+# ── Stage 2: Runtime ────────────────────────────────────────────
 FROM debian:bookworm-slim
 
 RUN apt-get update && apt-get install -y \
@@ -26,10 +21,10 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-RUN mkdir -p uploads
-
 COPY --from=builder /app/target/release/rustcms .
 COPY --from=builder /app/migrations ./migrations
+
+RUN mkdir -p uploads
 
 EXPOSE 8080
 CMD ["./rustcms"]
