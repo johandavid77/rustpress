@@ -1,0 +1,67 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'backend/**'
+
+jobs:
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: rustcms
+          POSTGRES_PASSWORD: rustcms_secret
+          POSTGRES_DB: rustcms
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            backend/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('backend/Cargo.lock') }}
+
+      - name: Install sqlx-cli
+        run: cargo install sqlx-cli --no-default-features --features postgres
+
+      - name: Run migrations
+        working-directory: backend
+        env:
+          DATABASE_URL: postgres://rustcms:rustcms_secret@localhost:5432/rustcms
+        run: sqlx migrate run
+
+      - name: Build
+        working-directory: backend
+        env:
+          DATABASE_URL: postgres://rustcms:rustcms_secret@localhost:5432/rustcms
+        run: cargo build --release
+
+      - name: Test
+        working-directory: backend
+        env:
+          DATABASE_URL: postgres://rustcms:rustcms_secret@localhost:5432/rustcms
+        run: cargo test
