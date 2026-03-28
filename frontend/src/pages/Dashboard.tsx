@@ -5,7 +5,7 @@ import { postsApi } from '../api/posts'
 import NewPost from './Posts/NewPost'
 import EditPost from './Posts/EditPost'
 import Stats from './Stats'
-import { LayoutDashboard, FileText, Image, Users, Puzzle, ExternalLink, Palette, MessageSquare } from 'lucide-react'
+import { LayoutDashboard, FileText, Image, Users, Puzzle, ExternalLink, Palette, MessageSquare, Tag } from 'lucide-react'
 import SlidersAdmin from './Plugins/SlidersAdmin'
 import MenusAdmin from './Plugins/MenusAdmin'
 import UsersAdmin from './Users/UsersAdmin'
@@ -13,8 +13,9 @@ import MediaAdmin from './Media/MediaAdmin'
 import LanguageSelector from '../components/LanguageSelector'
 import { apiClient } from '../api/client'
 import CommentsAdmin from './Plugins/CommentsAdmin'
+import CategoriesAdmin from './Plugins/CategoriesAdmin'
 
-type View = 'home' | 'posts' | 'media' | 'users' | 'plugins' | 'themes' | 'comments'
+type View = 'home' | 'posts' | 'media' | 'users' | 'plugins' | 'themes' | 'comments' | 'categories'
 
 const THEMES = [
   { id: 'dark',     name: '🌑 Dark',     description: 'Oscuro, moderno, minimalista',              preview: 'bg-[#0a0a0f] border-[#2a2a3a]', accent: 'bg-[#7c6aff]' },
@@ -70,7 +71,8 @@ export default function Dashboard() {
     { id: 'users'    as View, icon: Users,            label: t('nav.users')   },
     { id: 'plugins'  as View, icon: Puzzle,           label: t('nav.plugins') },
     { id: 'themes'   as View, icon: Palette,          label: 'Themes'         },
-    { id: 'comments' as View, icon: MessageSquare,    label: 'Comentarios'    },
+    { id: 'comments'   as View, icon: MessageSquare, label: 'Comentarios' },
+    { id: 'categories' as View, icon: Tag,            label: 'Categorías'  },
   ]
 
   const resetPosts = () => { setShowNewPost(false); setEditingPost(null); loadPosts() }
@@ -149,7 +151,8 @@ export default function Dashboard() {
           )}
           {view === 'media'    && <MediaAdmin />}
           {view === 'users'    && <UsersAdmin />}
-          {view === 'comments' && <CommentsAdmin />}
+          {view === 'comments'    && <CommentsAdmin />}
+          {view === 'categories'  && <CategoriesAdmin />}
           {view === 'plugins'  && (
             <div className="flex flex-col gap-12">
               <SlidersAdmin />
