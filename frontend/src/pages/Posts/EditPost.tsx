@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { postsApi } from '../../api/posts'
 import RichEditor from '../../components/Editor/RichEditor'
+import CategorySelector from '../../components/CategorySelector/CategorySelector'
 
 interface Props {
   post: any
@@ -105,6 +106,11 @@ export default function EditPost({ post, onBack, onSaved }: Props) {
       <div className="mb-6">
         <label className="block text-xs font-semibold text-[#888899] uppercase tracking-widest mb-2 font-mono">Contenido</label>
         <RichEditor content={content} onChange={setContent} />
+      </div>
+
+      { /* Categorías */ }
+      <div className="mb-6">
+        <CategorySelector postId={post.id} />
       </div>
 
       {/* SEO */}
