@@ -54,6 +54,7 @@ RustPress is a headless CMS (Content Management System) with a built-in admin da
 | Build tool | **Vite** | Fast frontend bundler |
 | Dev email | **MailHog** | Local SMTP server for testing emails |
 | Containerization | **Docker / Podman Compose** | Local development environment |
+| Production | **Docker Compose prod** | Multi-stage builds, Nginx, SSL/Certbot, PostgreSQL |
 
 ### Features
 
@@ -196,6 +197,26 @@ UPDATE users SET role_id = '<admin-role-id>' WHERE email = 'your@email.com';
 SELECT id FROM roles WHERE name = 'admin';
 ```
 
+### Production Deploy
+
+```bash
+# 1. Clonar el repo en el VPS
+git clone https://github.com/johandavid77/rustpress.git
+cd rustpress
+
+# 2. Configurar variables de entorno
+cp .env.prod.example .env.prod
+nano .env.prod  # editar con tus valores reales
+
+# 3. Levantar los servicios
+docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build
+
+# 4. Obtener certificado SSL
+docker compose -f docker-compose.prod.yml run --rm certbot certonly \
+  --webroot --webroot-path /var/www/certbot \
+  --email tu@email.com --agree-tos -d tudominio.com
+```
+
 ### API Endpoints
 
 | Method | Endpoint | Auth |
@@ -235,7 +256,7 @@ SELECT id FROM roles WHERE name = 'admin';
 - [x] **Image optimization** — Auto-resize a 1920px y compresión al subir media (JPEG 85%, PNG, WebP)
 - [x] **Multi-language content** — selector de idioma por post (es, en, fr, pt)
 - [x] **API rate limiting** — 60 req/min por IP con actix-governor
-- [ ] Docker production setup
+- [x] **Docker production setup** — multi-stage builds, Nginx reverse proxy, SSL con Certbot
 - [x] **CI/CD pipeline** — GitHub Actions para backend (Rust + PostgreSQL) y frontend (TypeScript)
 - [x] **SEO meta tags per post** — seo_title, seo_description, og_image por post
 - [x] **RSS feed** — endpoint /api/v1/feed.xml con los últimos 20 posts
