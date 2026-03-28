@@ -19,7 +19,7 @@ export default function BlogPostBold() {
 
   useEffect(() => {
     if (!post) return
-    document.title = `${post.title} — RustCMS`
+    document.title = `${post.seo_title ?? post.title} — RustCMS`
     const setMeta = (name: string, content: string) => {
       let el = document.querySelector(`meta[name="${name}"]`) as HTMLMetaElement
       if (!el) { el = document.createElement("meta"); el.setAttribute("name", name); document.head.appendChild(el) }
@@ -30,9 +30,9 @@ export default function BlogPostBold() {
       if (!el) { el = document.createElement("meta"); el.setAttribute("property", prop); document.head.appendChild(el) }
       el.content = content
     }
-    setMeta("description", post.excerpt ?? post.title)
-    setOg("og:title", post.title)
-    setOg("og:description", post.excerpt ?? post.title)
+    setMeta("description", post.seo_description ?? post.excerpt ?? post.title)
+    setOg("og:title", post.seo_title ?? post.title)
+    setOg("og:description", post.seo_description ?? post.excerpt ?? post.title)
     setOg("og:type", "article")
     return () => { document.title = "RustCMS" }
   }, [post])

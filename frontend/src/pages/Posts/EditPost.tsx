@@ -9,17 +9,25 @@ interface Props {
 }
 
 export default function EditPost({ post, onBack, onSaved }: Props) {
-  const [title, setTitle]     = useState(post.title)
-  const [excerpt, setExcerpt] = useState(post.excerpt ?? '')
-  const [content, setContent] = useState(post.content ?? '')
-  const [saving, setSaving]   = useState(false)
-  const [error, setError]     = useState('')
+  const [title, setTitle]               = useState(post.title)
+  const [excerpt, setExcerpt]           = useState(post.excerpt ?? '')
+  const [content, setContent]           = useState(post.content ?? '')
+  const [seoTitle, setSeoTitle]         = useState(post.seo_title ?? '')
+  const [seoDescription, setSeoDescription] = useState(post.seo_description ?? '')
+  const [ogImage, setOgImage]           = useState(post.og_image ?? '')
+  const [saving, setSaving]             = useState(false)
+  const [error, setError]               = useState('')
 
   const handleSave = async () => {
     if (!title.trim()) { setError('El título es requerido'); return }
     setSaving(true); setError('')
     try {
-      await postsApi.update(post.id, { title, excerpt, content })
+      await postsApi.update(post.id, {
+        title, excerpt, content,
+        seo_title: seoTitle || undefined,
+        seo_description: seoDescription || undefined,
+        og_image: ogImage || undefined,
+      })
       onSaved()
     } catch (e: any) {
       setError(e?.response?.data?.error || 'Error al guardar')
@@ -39,6 +47,7 @@ export default function EditPost({ post, onBack, onSaved }: Props) {
 
   return (
     <div className="max-w-3xl">
+      {/* Header */}
       <div className="flex items-center gap-4 mb-8">
         <button onClick={onBack}
           className="text-[#888899] hover:text-white text-sm font-mono flex items-center gap-1">
@@ -69,9 +78,10 @@ export default function EditPost({ post, onBack, onSaved }: Props) {
           ${post.status === 'published' ? 'bg-green-500/10 text-green-400' : 'bg-yellow-500/10 text-yellow-400'}`}>
           {post.status === 'published' ? '● Publicado' : '○ Borrador'}
         </span>
-        <span className="text-xs text-[#888899] font-mono">/{post.slug}</span>
+        <span className="text-xs text-[#888899] font-mono">{post.slug}</span>
       </div>
 
+      {/* Título */}
       <div className="mb-5 mt-5">
         <label className="block text-xs font-semibold text-[#888899] uppercase tracking-widest mb-2 font-mono">Título</label>
         <input
@@ -80,6 +90,7 @@ export default function EditPost({ post, onBack, onSaved }: Props) {
         />
       </div>
 
+      {/* Excerpt */}
       <div className="mb-5">
         <label className="block text-xs font-semibold text-[#888899] uppercase tracking-widest mb-2 font-mono">Resumen</label>
         <input
@@ -88,9 +99,35 @@ export default function EditPost({ post, onBack, onSaved }: Props) {
         />
       </div>
 
+      {/* Editor */}
       <div className="mb-6">
         <label className="block text-xs font-semibold text-[#888899] uppercase tracking-widest mb-2 font-mono">Contenido</label>
         <RichEditor content={content} onChange={setContent} />
+      </div>
+
+      {/* SEO */}
+      <div className="border-t border-[#2a2a3a] pt-6">
+        <p className="text-xs font-mono text-[#555566] uppercase tracking-widest mb-4">SEO & Open Graph</p>
+        <div className="flex flex-col gap-4">
+          <div>
+            <label className="block text-xs font-semibold text-[#888899] uppercase tracking-widest mb-2 font-mono">SEO Title <span className="normal-case text-[#555566]">(opcional)</span></label>
+            <input className="w-full px-4 py-3 bg-[#1a1a24] border border-[#2a2a3a] rounded-xl text-white text-sm outline-none focus:border-[#7c6aff] placeholder-[#444455]"
+              placeholder="Título para buscadores..."
+              value={seoTitle} onChange={e => setSeoTitle(e.target.value)} />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-[#888899] uppercase tracking-widest mb-2 font-mono">SEO Description <span className="normal-case text-[#555566]">(opcional)</span></label>
+            <input className="w-full px-4 py-3 bg-[#1a1a24] border border-[#2a2a3a] rounded-xl text-white text-sm outline-none focus:border-[#7c6aff] placeholder-[#444455]"
+              placeholder="Meta description..."
+              value={seoDescription} onChange={e => setSeoDescription(e.target.value)} />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-[#888899] uppercase tracking-widest mb-2 font-mono">OG Image URL <span className="normal-case text-[#555566]">(opcional)</span></label>
+            <input className="w-full px-4 py-3 bg-[#1a1a24] border border-[#2a2a3a] rounded-xl text-white text-sm outline-none focus:border-[#7c6aff] placeholder-[#444455]"
+              placeholder="https://..."
+              value={ogImage} onChange={e => setOgImage(e.target.value)} />
+          </div>
+        </div>
       </div>
     </div>
   )

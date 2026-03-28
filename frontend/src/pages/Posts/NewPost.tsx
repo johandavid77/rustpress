@@ -8,17 +8,25 @@ interface Props {
 }
 
 export default function NewPost({ onBack, onCreated }: Props) {
-  const [title, setTitle]     = useState('')
-  const [excerpt, setExcerpt] = useState('')
-  const [content, setContent] = useState('')
-  const [saving, setSaving]   = useState(false)
-  const [error, setError]     = useState('')
+  const [title, setTitle]               = useState('')
+  const [excerpt, setExcerpt]           = useState('')
+  const [content, setContent]           = useState('')
+  const [seoTitle, setSeoTitle]         = useState('')
+  const [seoDescription, setSeoDescription] = useState('')
+  const [ogImage, setOgImage]           = useState('')
+  const [saving, setSaving]             = useState(false)
+  const [error, setError]               = useState('')
 
   const handleSave = async (publish = false) => {
     if (!title.trim()) { setError('El título es requerido'); return }
     setSaving(true); setError('')
     try {
-      const post = await postsApi.create({ title, excerpt, content, post_type: 'post' })
+      const post = await postsApi.create({
+        title, excerpt, content, post_type: 'post',
+        seo_title: seoTitle || undefined,
+        seo_description: seoDescription || undefined,
+        og_image: ogImage || undefined,
+      })
       if (publish) await postsApi.publish(post.id)
       onCreated()
     } catch (e: any) {
@@ -57,8 +65,7 @@ export default function NewPost({ onBack, onCreated }: Props) {
         <input
           className="w-full px-4 py-3 bg-[#1a1a24] border border-[#2a2a3a] rounded-xl text-white text-lg font-bold outline-none focus:border-[#7c6aff] placeholder-[#444455]"
           placeholder="Título del post..."
-          value={title}
-          onChange={e => setTitle(e.target.value)}
+          value={title} onChange={e => setTitle(e.target.value)}
         />
       </div>
 
@@ -68,8 +75,7 @@ export default function NewPost({ onBack, onCreated }: Props) {
         <input
           className="w-full px-4 py-3 bg-[#1a1a24] border border-[#2a2a3a] rounded-xl text-white text-sm outline-none focus:border-[#7c6aff] placeholder-[#444455]"
           placeholder="Breve descripción del post..."
-          value={excerpt}
-          onChange={e => setExcerpt(e.target.value)}
+          value={excerpt} onChange={e => setExcerpt(e.target.value)}
         />
       </div>
 
@@ -77,6 +83,31 @@ export default function NewPost({ onBack, onCreated }: Props) {
       <div className="mb-6">
         <label className="block text-xs font-semibold text-[#888899] uppercase tracking-widest mb-2 font-mono">Contenido</label>
         <RichEditor content={content} onChange={setContent} />
+      </div>
+
+      {/* SEO */}
+      <div className="border-t border-[#2a2a3a] pt-6">
+        <p className="text-xs font-mono text-[#555566] uppercase tracking-widest mb-4">SEO & Open Graph</p>
+        <div className="flex flex-col gap-4">
+          <div>
+            <label className="block text-xs font-semibold text-[#888899] uppercase tracking-widest mb-2 font-mono">SEO Title <span className="normal-case text-[#555566]">(opcional)</span></label>
+            <input className="w-full px-4 py-3 bg-[#1a1a24] border border-[#2a2a3a] rounded-xl text-white text-sm outline-none focus:border-[#7c6aff] placeholder-[#444455]"
+              placeholder="Título para buscadores..."
+              value={seoTitle} onChange={e => setSeoTitle(e.target.value)} />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-[#888899] uppercase tracking-widest mb-2 font-mono">SEO Description <span className="normal-case text-[#555566]">(opcional)</span></label>
+            <input className="w-full px-4 py-3 bg-[#1a1a24] border border-[#2a2a3a] rounded-xl text-white text-sm outline-none focus:border-[#7c6aff] placeholder-[#444455]"
+              placeholder="Meta description..."
+              value={seoDescription} onChange={e => setSeoDescription(e.target.value)} />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-[#888899] uppercase tracking-widest mb-2 font-mono">OG Image URL <span className="normal-case text-[#555566]">(opcional)</span></label>
+            <input className="w-full px-4 py-3 bg-[#1a1a24] border border-[#2a2a3a] rounded-xl text-white text-sm outline-none focus:border-[#7c6aff] placeholder-[#444455]"
+              placeholder="https://..."
+              value={ogImage} onChange={e => setOgImage(e.target.value)} />
+          </div>
+        </div>
       </div>
     </div>
   )
