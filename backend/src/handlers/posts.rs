@@ -94,8 +94,8 @@ async fn create_post(
 
     let mut post = sqlx::query_as!(
         crate::models::post::Post,
-        r#"INSERT INTO posts (id, title, slug, content, excerpt, post_type, status, author_id, meta, seo_title, seo_description, og_image)
-           VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, 'draft', $6, $7, $8, $9, $10)
+        r#"INSERT INTO posts (id, title, slug, content, excerpt, post_type, status, author_id, meta, seo_title, seo_description, og_image, language)
+           VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, 'draft', $6, $7, $8, $9, $10, $11)
            RETURNING *"#,
         body.title,
         slug,
@@ -107,6 +107,7 @@ async fn create_post(
         body.seo_title.clone(),
         body.seo_description.clone(),
         body.og_image.clone(),
+        body.language.clone().unwrap_or_else(|| "es".to_string()),
     )
     .fetch_one(pool.get_ref())
     .await?;
@@ -170,8 +171,9 @@ async fn update_post(
                     seo_title       = COALESCE($8, seo_title),
         seo_description = COALESCE($9, seo_description),
         og_image        = COALESCE($10, og_image),
+                language        = COALESCE($11, language),
         updated_at      = NOW()
-        WHERE id = $11
+        WHERE id = $12
            RETURNING *"#,
         body.title,
         body.slug,
@@ -183,6 +185,7 @@ async fn update_post(
         body.seo_title.clone(),
         body.seo_description.clone(),
         body.og_image.clone(),
+        body.language.clone(),
         *id,
     )
     .fetch_one(pool.get_ref())
