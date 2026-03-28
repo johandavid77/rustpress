@@ -14,6 +14,7 @@ export default function NewPost({ onBack, onCreated }: Props) {
   const [seoTitle, setSeoTitle]         = useState('')
   const [seoDescription, setSeoDescription] = useState('')
   const [ogImage, setOgImage]           = useState('')
+  const [language, setLanguage]         = useState('es')
   const [saving, setSaving]             = useState(false)
   const [error, setError]               = useState('')
 
@@ -26,6 +27,7 @@ export default function NewPost({ onBack, onCreated }: Props) {
         seo_title: seoTitle || undefined,
         seo_description: seoDescription || undefined,
         og_image: ogImage || undefined,
+        language,
       })
       if (publish) await postsApi.publish(post.id)
       onCreated()
@@ -106,6 +108,16 @@ export default function NewPost({ onBack, onCreated }: Props) {
             <input className="w-full px-4 py-3 bg-[#1a1a24] border border-[#2a2a3a] rounded-xl text-white text-sm outline-none focus:border-[#7c6aff] placeholder-[#444455]"
               placeholder="https://..."
               value={ogImage} onChange={e => setOgImage(e.target.value)} />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-[#888899] uppercase tracking-widest mb-2 font-mono">Idioma</label>
+            <select className="w-full px-4 py-3 bg-[#1a1a24] border border-[#2a2a3a] rounded-xl text-white text-sm outline-none focus:border-[#7c6aff]"
+              value={language} onChange={e => setLanguage(e.target.value)}>
+              <option value="es">🇨🇴 Español</option>
+              <option value="en">🇺🇸 English</option>
+              <option value="fr">🇫🇷 Français</option>
+              <option value="pt">🇧🇷 Português</option>
+            </select>
           </div>
         </div>
       </div>

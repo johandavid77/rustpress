@@ -15,6 +15,7 @@ export default function EditPost({ post, onBack, onSaved }: Props) {
   const [seoTitle, setSeoTitle]         = useState(post.seo_title ?? '')
   const [seoDescription, setSeoDescription] = useState(post.seo_description ?? '')
   const [ogImage, setOgImage]           = useState(post.og_image ?? '')
+  const [language, setLanguage]         = useState(post.language ?? 'es')
   const [saving, setSaving]             = useState(false)
   const [error, setError]               = useState('')
 
@@ -27,6 +28,7 @@ export default function EditPost({ post, onBack, onSaved }: Props) {
         seo_title: seoTitle || undefined,
         seo_description: seoDescription || undefined,
         og_image: ogImage || undefined,
+        language,
       })
       onSaved()
     } catch (e: any) {
@@ -126,6 +128,16 @@ export default function EditPost({ post, onBack, onSaved }: Props) {
             <input className="w-full px-4 py-3 bg-[#1a1a24] border border-[#2a2a3a] rounded-xl text-white text-sm outline-none focus:border-[#7c6aff] placeholder-[#444455]"
               placeholder="https://..."
               value={ogImage} onChange={e => setOgImage(e.target.value)} />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-[#888899] uppercase tracking-widest mb-2 font-mono">Idioma</label>
+            <select className="w-full px-4 py-3 bg-[#1a1a24] border border-[#2a2a3a] rounded-xl text-white text-sm outline-none focus:border-[#7c6aff]"
+              value={language} onChange={e => setLanguage(e.target.value)}>
+              <option value="es">🇨🇴 Español</option>
+              <option value="en">🇺🇸 English</option>
+              <option value="fr">🇫🇷 Français</option>
+              <option value="pt">🇧🇷 Português</option>
+            </select>
           </div>
         </div>
       </div>
