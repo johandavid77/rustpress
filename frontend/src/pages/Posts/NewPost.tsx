@@ -15,6 +15,7 @@ export default function NewPost({ onBack, onCreated }: Props) {
   const [seoDescription, setSeoDescription] = useState('')
   const [ogImage, setOgImage]           = useState('')
   const [language, setLanguage]         = useState('es')
+  const [publishAt, setPublishAt]       = useState('')
   const [saving, setSaving]             = useState(false)
   const [error, setError]               = useState('')
 
@@ -28,6 +29,7 @@ export default function NewPost({ onBack, onCreated }: Props) {
         seo_description: seoDescription || undefined,
         og_image: ogImage || undefined,
         language,
+        publish_at: publishAt ? new Date(publishAt).toISOString() : undefined,
       })
       if (publish) await postsApi.publish(post.id)
       onCreated()
@@ -118,6 +120,14 @@ export default function NewPost({ onBack, onCreated }: Props) {
               <option value="fr">🇫🇷 Français</option>
               <option value="pt">🇧🇷 Português</option>
             </select>
+          </div>
+        </div>
+          <div>
+            <label className="block text-xs font-semibold text-[#888899] uppercase tracking-widest mb-2 font-mono">Publicar en <span className="normal-case text-[#555566]">(opcional)</span></label>
+            <input type="datetime-local"
+              className="w-full px-4 py-3 bg-[#1a1a24] border border-[#2a2a3a] rounded-xl text-white text-sm outline-none focus:border-[#7c6aff]"
+              value={publishAt} onChange={e => setPublishAt(e.target.value)} />
+            {publishAt && <p className="text-xs text-[#7c6aff] font-mono mt-1">Se publicará automáticamente el {new Date(publishAt).toLocaleString('es-CO')}</p>}
           </div>
         </div>
       </div>

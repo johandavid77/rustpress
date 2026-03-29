@@ -40,6 +40,7 @@ pub struct Post {
     pub og_image:        Option<String>,
     pub language:        String,
     pub views:           i64,
+    pub publish_at:      Option<chrono::DateTime<chrono::Utc>>,
 }
 
 // ─── DTOs ───────────────────────────────────────────────────────────────────
@@ -54,6 +55,7 @@ pub struct CreatePostDto {
     pub seo_title:       Option<String>,
     pub seo_description: Option<String>,
     pub og_image:        Option<String>,
+    pub publish_at:      Option<chrono::DateTime<chrono::Utc>>,
     pub language:        Option<String>,
     pub post_type: Option<String>,    // "post" | "page" | "custom"
     pub meta:      Option<serde_json::Value>,
@@ -68,6 +70,7 @@ pub struct UpdatePostDto {
     pub seo_title:       Option<String>,
     pub seo_description: Option<String>,
     pub og_image:        Option<String>,
+    pub publish_at:      Option<chrono::DateTime<chrono::Utc>>,
     pub language:        Option<String>,
     pub post_type: Option<String>,
     pub status:    Option<String>,
