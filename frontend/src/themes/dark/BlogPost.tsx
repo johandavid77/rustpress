@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { apiClient } from '../../api/client'
+import RelatedPosts from '../../components/RelatedPosts/RelatedPosts'
 import Comments from '../../components/Comments/Comments'
 
 export default function BlogPost() {

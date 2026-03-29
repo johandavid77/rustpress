@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Comments from '../../components/Comments/Comments'
 import { Link, useParams, useNavigate } from 'react-router-dom'
+import RelatedPosts from '../../components/RelatedPosts/RelatedPosts'
 import Comments from '../../components/Comments/Comments'
 import { apiClient } from '../../api/client'
 
