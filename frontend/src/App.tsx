@@ -8,8 +8,6 @@ import Dashboard from './pages/Dashboard'
 import { ThemedBlogIndex, ThemedBlogPost } from './themes/ThemeLoader'
 import AuthorProfile from './pages/Blog/AuthorProfile'
 import PostPreview from './pages/Posts/PostPreview'
-import PostPreview from './pages/Posts/PostPreview'
-import PostPreview from './pages/Posts/PostPreview'
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { token } = useAuthStore()
