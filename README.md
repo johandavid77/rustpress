@@ -262,8 +262,8 @@ docker compose -f docker-compose.prod.yml run --rm certbot certonly \
 - [x] **RSS feed** — endpoint /api/v1/feed.xml con los últimos 20 posts
 - [x] **Categories & Tags** — CRUD completo, selector en editor, panel admin
 - [x] **Search** — full-text search en el blog público (debounce 300ms, 5 resultados)
-- [ ] **Author profile** — public author page with their posts
-- [ ] **Related posts** — show similar posts at end of BlogPost
+- [x] **Author profile** — página pública del autor con sus posts
+- [x] **Related posts** — posts relacionados por categoría al final de cada BlogPost (4 themes)
 - [x] **Pagination** — 10 posts por página en los 4 themes
 - [ ] **Redis cache** — cache published posts to reduce DB queries
 - [ ] **Webhooks** — notify external services on post publish (Slack, Discord)
