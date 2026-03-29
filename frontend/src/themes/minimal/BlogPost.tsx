@@ -72,7 +72,7 @@ export default function BlogPostMinimal() {
               ● Publicado
             </span>
             <span className="text-xs text-gray-300 font-mono">
-              {new Date(post.published_at ?? post.created_at).toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' })} · {post.views ?? 0} vistas
+              {new Date(post.published_at ?? post.created_at).toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' })} · {post.views ?? 0} vistas · {post.views ?? 0} vistas
             </span>
           </div>
 
