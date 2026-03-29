@@ -369,3 +369,21 @@ pub async fn increment_view(
 
     Ok(HttpResponse::Ok().json(serde_json::json!({ "views": views })))
 }
+
+// — GET /posts/:id/preview (admin — incluye borradores)
+pub async fn get_post_preview(
+    pool: web::Data<PgPool>,
+    id: web::Path<uuid::Uuid>,
+    _auth: crate::middleware::auth::AuthUserWithRole,
+) -> AppResult<HttpResponse> {
+    let post = sqlx::query_as!(
+        crate::models::post::Post,
+        "SELECT * FROM posts WHERE id = $1",
+        *id
+    )
+    .fetch_optional(pool.get_ref())
+    .await?
+    .ok_or_else(|| crate::errors::AppError::NotFound("Post not found".into()))?;
+
+    Ok(HttpResponse::Ok().json(post))
+}
