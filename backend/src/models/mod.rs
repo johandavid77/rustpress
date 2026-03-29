@@ -6,3 +6,4 @@ pub mod slider;
 pub mod menu;
 pub mod comment;
 pub mod category;
+pub mod webhook;

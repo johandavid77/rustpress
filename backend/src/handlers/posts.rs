@@ -287,6 +287,18 @@ async fn publish_post(
 
     registry.fire_after_post_publish(&post).await?;
 
+    // Disparar webhooks en background
+    {
+        let payload = serde_json::json!({
+            "event": "post.published",
+            "post": { "id": post.id, "title": post.title, "slug": post.slug }
+        });
+        let pool_ref = pool.get_ref().clone();
+        tokio::spawn(async move {
+            crate::handlers::webhooks::fire_webhooks(&pool_ref, "post.published", payload).await;
+        });
+    }
+
     Ok(HttpResponse::Ok().json(post))
 }
 

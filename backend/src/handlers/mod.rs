@@ -8,3 +8,4 @@ pub mod menus;
 pub mod settings;pub mod comments;
 pub mod feed;
 pub mod categories;
+pub mod webhooks;

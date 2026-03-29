@@ -78,6 +78,9 @@ image = { version = "0.25", features = ["jpeg", "png", "webp"] }
 # Redis cache
 redis = { version = "0.25", features = ["tokio-comp", "connection-manager"] }
 
+# HTTP client para webhooks
+reqwest = { version = "0.12", features = ["json"] }
+
 # Rate limiting
 actix-governor = "0.7"
 

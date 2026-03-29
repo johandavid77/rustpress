@@ -5,7 +5,7 @@ import { postsApi } from '../api/posts'
 import NewPost from './Posts/NewPost'
 import EditPost from './Posts/EditPost'
 import Stats from './Stats'
-import { LayoutDashboard, FileText, Image, Users, Puzzle, ExternalLink, Palette, MessageSquare, Tag } from 'lucide-react'
+import { LayoutDashboard, FileText, Image, Users, Puzzle, ExternalLink, Palette, MessageSquare, Tag, Webhook } from 'lucide-react'
 import SlidersAdmin from './Plugins/SlidersAdmin'
 import MenusAdmin from './Plugins/MenusAdmin'
 import UsersAdmin from './Users/UsersAdmin'
@@ -14,8 +14,9 @@ import LanguageSelector from '../components/LanguageSelector'
 import { apiClient } from '../api/client'
 import CommentsAdmin from './Plugins/CommentsAdmin'
 import CategoriesAdmin from './Plugins/CategoriesAdmin'
+import WebhooksAdmin from './Plugins/WebhooksAdmin'
 
-type View = 'home' | 'posts' | 'media' | 'users' | 'plugins' | 'themes' | 'comments' | 'categories'
+type View = 'home' | 'posts' | 'media' | 'users' | 'plugins' | 'themes' | 'comments' | 'categories' | 'webhooks'
 
 const THEMES = [
   { id: 'dark',     name: '🌑 Dark',     description: 'Oscuro, moderno, minimalista',              preview: 'bg-[#0a0a0f] border-[#2a2a3a]', accent: 'bg-[#7c6aff]' },
@@ -72,7 +73,8 @@ export default function Dashboard() {
     { id: 'plugins'  as View, icon: Puzzle,           label: t('nav.plugins') },
     { id: 'themes'   as View, icon: Palette,          label: 'Themes'         },
     { id: 'comments'   as View, icon: MessageSquare, label: 'Comentarios' },
-    { id: 'categories' as View, icon: Tag,            label: 'Categorías'  },
+    { id: 'categories' as View, icon: Tag,     label: 'Categorías' },
+    { id: 'webhooks'   as View, icon: Webhook, label: 'Webhooks'   },
   ]
 
   const resetPosts = () => { setShowNewPost(false); setEditingPost(null); loadPosts() }
@@ -153,6 +155,7 @@ export default function Dashboard() {
           {view === 'users'    && <UsersAdmin />}
           {view === 'comments'    && <CommentsAdmin />}
           {view === 'categories'  && <CategoriesAdmin />}
+          {view === 'webhooks'    && <WebhooksAdmin />}
           {view === 'plugins'  && (
             <div className="flex flex-col gap-12">
               <SlidersAdmin />

@@ -96,7 +96,8 @@ async fn main() -> anyhow::Result<()> {
                     .configure(handlers::comments::configure)
                     .configure(handlers::settings::configure)
                     .configure(handlers::feed::configure)
-                    .configure(handlers::categories::configure)  // 👈 nuevo
+                    .configure(handlers::categories::configure)
+                    .configure(handlers::webhooks::configure)  // 👈 nuevo
             )
             .route("/health", web::get().to(health_check))
             .service(Files::new("/uploads", &cfg.upload_dir).show_files_listing())
