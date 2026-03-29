@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Lock } from 'lucide-react'
+import SearchBar from '../../components/Search/SearchBar'
 import { apiClient } from '../../api/client'
 import HeroSlider from '../../components/Slider/HeroSlider'
 import { Slider } from '../../types/slider'
@@ -40,6 +41,7 @@ export default function BlogIndex() {
             <span className="text-[#7c6aff] text-2xl group-hover:rotate-12 transition-transform">○</span>
             <span className="text-lg font-black tracking-tight">RustCMS</span>
           </Link>
+          <div className="w-64"><SearchBar theme="dark" /></div>
           <Link to="/login" className="flex items-center gap-1.5 text-xs font-mono px-3 py-1.5 border border-[#2a2a3a] rounded-lg text-[#888899] hover:text-white hover:border-[#7c6aff] transition-all">
             <Lock size={12} />Admin
           </Link>
