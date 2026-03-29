@@ -260,11 +260,11 @@ docker compose -f docker-compose.prod.yml run --rm certbot certonly \
 - [x] **CI/CD pipeline** — GitHub Actions para backend (Rust + PostgreSQL) y frontend (TypeScript)
 - [x] **SEO meta tags per post** — seo_title, seo_description, og_image por post
 - [x] **RSS feed** — endpoint /api/v1/feed.xml con los últimos 20 posts
-- [ ] **Categories & Tags** — filter blog by category/tag
-- [ ] **Search** — full-text search in public blog
+- [x] **Categories & Tags** — CRUD completo, selector en editor, panel admin
+- [x] **Search** — full-text search en el blog público (debounce 300ms, 5 resultados)
 - [ ] **Author profile** — public author page with their posts
 - [ ] **Related posts** — show similar posts at end of BlogPost
-- [ ] **Pagination** — paginate blog index (currently loads all posts)
+- [x] **Pagination** — 10 posts por página en los 4 themes
 - [ ] **Redis cache** — cache published posts to reduce DB queries
 - [ ] **Webhooks** — notify external services on post publish (Slack, Discord)
 - [ ] **Post preview** — preview post before publishing
