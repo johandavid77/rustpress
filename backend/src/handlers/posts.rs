@@ -1,6 +1,8 @@
 // handlers/posts.rs  —  CRUD completo de posts/páginas
 use actix_web::{web::{self, Data, Json, Path, Query}, HttpResponse};
 use sqlx::PgPool;
+use tokio::sync::Mutex;
+use crate::cache::{get_cached, set_cached, invalidate_pattern, RedisPool};
 use uuid::Uuid;
 
 use crate::{
@@ -28,11 +30,27 @@ pub fn configure(cfg: &mut web::ServiceConfig) {
 // ── GET /posts ───────────────────────────────────────────────────────────────
 async fn list_posts(
     pool:  Data<PgPool>,
+    redis: Data<Mutex<RedisPool>>,
     query: Query<PostQuery>,
     _auth: Option<AuthUser>,
 ) -> AppResult<HttpResponse> {
     let page     = query.page.unwrap_or(1).max(1);
     let per_page = query.per_page.unwrap_or(20).min(100);
+
+    // Cache solo para requests públicos sin filtros especiales
+    let cache_key = format!("posts:list:{}:{}:{}:{}",
+        query.status.as_deref().unwrap_or("published"),
+        query.search.as_deref().unwrap_or(""),
+        page, per_page
+    );
+    {
+        let mut r = redis.lock().await;
+        if let Some(cached) = get_cached(&mut r, &cache_key).await {
+            if let Ok(val) = serde_json::from_str::<serde_json::Value>(&cached) {
+                return Ok(HttpResponse::Ok().json(val));
+            }
+        }
+    }
     let offset   = ((page - 1) * per_page) as i64;
 
     let rows = sqlx::query_as!(
@@ -77,6 +95,7 @@ async fn list_posts(
 // ── POST /posts ──────────────────────────────────────────────────────────────
 async fn create_post(
     pool:     Data<PgPool>,
+    redis: Data<Mutex<RedisPool>>,
     registry: Data<PluginRegistry>,
     auth:     AuthUserWithRole,
     body:     Json<CreatePostDto>,
@@ -139,6 +158,7 @@ async fn get_post(
 // ── PUT /posts/:id ───────────────────────────────────────────────────────────
 async fn update_post(
     pool: Data<PgPool>,
+    redis: Data<Mutex<RedisPool>>,
     id:   Path<Uuid>,
     auth: AuthUserWithRole,
     body: Json<UpdatePostDto>,
@@ -197,6 +217,7 @@ async fn update_post(
 // ── DELETE /posts/:id ────────────────────────────────────────────────────────
 async fn delete_post(
     pool: Data<PgPool>,
+    redis: Data<Mutex<RedisPool>>,
     id:   Path<Uuid>,
     auth: AuthUserWithRole,
 ) -> AppResult<HttpResponse> {

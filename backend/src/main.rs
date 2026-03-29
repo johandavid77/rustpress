@@ -6,6 +6,7 @@ use tracing::info;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 use rustcms_lib::{
+    cache,
     config::AppConfig,
     db::pool::create_pool,
     handlers,
@@ -43,6 +44,8 @@ async fn main() -> anyhow::Result<()> {
     let email_data = web::Data::new(email_service);
 
     let pool_data = web::Data::new(pool);
+    let redis = crate::cache::create_redis_pool(&cfg.redis_url).await.expect("Failed to connect to Redis");
+    let redis_data = web::Data::new(tokio::sync::Mutex::new(redis));
     let cfg_data  = web::Data::new(cfg.clone());
     // Rate limiting: 60 requests/min por IP
     let governor_conf = GovernorConfigBuilder::default()
@@ -69,6 +72,7 @@ async fn main() -> anyhow::Result<()> {
             .wrap(Governor::new(&governor_conf))
             .wrap(tracing_actix_web::TracingLogger::default())
             .app_data(pool_data.clone())
+                    .app_data(redis_data.clone())
             .app_data(cfg_data.clone())
             .app_data(registry_data.clone())
             .app_data(email_data.clone())

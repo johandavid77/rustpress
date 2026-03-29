@@ -48,6 +48,24 @@ services:
       - "1025:1025"   # SMTP
       - "8025:8025"   # Web UI
 
+
+  # Redis - Cache
+  redis:
+    image: docker.io/library/redis:7-alpine
+    container_name: rustcms-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
 volumes:
   postgres_data:
   pgadmin_data:
+  redis_data:

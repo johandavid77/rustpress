@@ -75,6 +75,9 @@ lettre = { version = "0.11", features = ["tokio1", "tokio1-native-tls", "builder
 # Image optimization
 image = { version = "0.25", features = ["jpeg", "png", "webp"] }
 
+# Redis cache
+redis = { version = "0.25", features = ["tokio-comp", "connection-manager"] }
+
 # Rate limiting
 actix-governor = "0.7"
 

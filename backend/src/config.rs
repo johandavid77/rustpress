@@ -16,6 +16,7 @@ pub struct AppConfig {
     pub smtp_from:       String,
     pub smtp_username:   String,
     pub smtp_password:   String,
+    pub redis_url:       String,
 }
 
 impl AppConfig {
@@ -34,6 +35,7 @@ impl AppConfig {
             smtp_from:        std::env::var("SMTP_FROM").unwrap_or_else(|_| "noreply@rustcms.dev".into()),
             smtp_username:    std::env::var("SMTP_USERNAME").unwrap_or_else(|_| "".into()),
             smtp_password:    std::env::var("SMTP_PASSWORD").unwrap_or_else(|_| "".into()),
+            redis_url:          std::env::var("REDIS_URL").unwrap_or_else(|_| "redis://127.0.0.1:6379".into()),
         })
     }
 }
