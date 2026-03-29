@@ -15,6 +15,7 @@ pub fn configure(cfg: &mut web::ServiceConfig) {
             .route("",      web::get().to(list_users))
             .route("",      web::post().to(create_user))
             .route("/{id}", web::get().to(get_user))
+            .route("/{id}/profile", web::get().to(get_author_profile))
             .route("/{id}", web::put().to(update_user))
             .route("/{id}", web::delete().to(delete_user))
     );
@@ -140,4 +141,36 @@ async fn delete_user(
     }
 
     Ok(HttpResponse::NoContent().finish())
+}
+
+// — GET /users/:id/profile (público)
+pub async fn get_author_profile(
+    pool: web::Data<PgPool>,
+    id: web::Path<Uuid>,
+) -> AppResult<HttpResponse> {
+    let user = sqlx::query!(
+        r#"SELECT id, username, email, created_at FROM users WHERE id = $1 AND is_active = true"#,
+        *id
+    )
+    .fetch_optional(pool.get_ref())
+    .await?
+    .ok_or_else(|| crate::errors::AppError::NotFound("Author not found".into()))?;
+
+    let posts = sqlx::query_as!(
+        crate::models::post::Post,
+        r#"SELECT * FROM posts WHERE author_id = $1 AND status = 'published'
+           ORDER BY published_at DESC LIMIT 20"#,
+        *id
+    )
+    .fetch_all(pool.get_ref())
+    .await?;
+
+    Ok(HttpResponse::Ok().json(serde_json::json!({
+        "id":         user.id,
+        "username":   user.username,
+        "email":      user.email,
+        "created_at": user.created_at,
+        "posts":      posts,
+        "post_count": posts.len()
+    })))
 }

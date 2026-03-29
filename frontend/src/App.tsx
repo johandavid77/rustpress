@@ -6,6 +6,7 @@ import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import Dashboard from './pages/Dashboard'
 import { ThemedBlogIndex, ThemedBlogPost } from './themes/ThemeLoader'
+import AuthorProfile from './pages/Blog/AuthorProfile'
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { token } = useAuthStore()
@@ -19,6 +20,7 @@ export default function App() {
         <Route path="/" element={<Navigate to="/blog" />} />
         <Route path="/blog" element={<ThemedBlogIndex />} />
         <Route path="/blog/:slug" element={<ThemedBlogPost />} />
+        <Route path="/author/:id" element={<AuthorProfile />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
