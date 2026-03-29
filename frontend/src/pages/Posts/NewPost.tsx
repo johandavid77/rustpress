@@ -131,6 +131,5 @@ export default function NewPost({ onBack, onCreated }: Props) {
           </div>
         </div>
       </div>
-    </div>
   )
 }
