@@ -169,6 +169,5 @@ export default function EditPost({ post, onBack, onSaved }: Props) {
           </div>
         </div>
       </div>
-    </div>
   )
 }
