@@ -300,7 +300,7 @@ docker compose -f docker-compose.prod.yml run --rm certbot certonly \
 - [x] Pagination — 10 posts per page across all 4 themes
 - [x] Related posts — posts related by category at end of BlogPost (all 4 themes)
 - [x] **Author profile** — página pública del autor con sus posts y contador de posts
-- [ ] **View counter** — track post visits in admin stats
+- [x] **View counter** — contador de visitas por post, se incrementa al leer, visible en BlogPost
 - [ ] **Post preview** — preview post before publishing
 - [ ] **Redis cache** — cache published posts to reduce DB queries
 - [ ] **Webhooks** — notify external services on publish (Slack, Discord)
