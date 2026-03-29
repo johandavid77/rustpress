@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { apiClient } from '../../api/client'
+import SearchBar from '../../components/Search/SearchBar'
 import HeroSlider from '../../components/Slider/HeroSlider'
 import { Slider } from '../../types/slider'
 
@@ -38,6 +39,7 @@ export default function BlogIndexMagazine() {
           <div className="flex items-center justify-between text-xs font-mono text-gray-500 mb-3 border-b border-gray-300 pb-2">
             <span>Vol. I — RustCMS</span>
             <span>{new Date().toLocaleDateString('es-CO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+            <div className="w-48"><SearchBar theme="magazine" /></div>
             <Link to="/login" className="hover:text-black transition-colors">Admin</Link>
           </div>
           <div className="text-center py-4 border-b-2 border-black mb-0">

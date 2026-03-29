@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { apiClient } from '../../api/client'
+import SearchBar from '../../components/Search/SearchBar'
 import HeroSlider from '../../components/Slider/HeroSlider'
 import { Slider } from '../../types/slider'
 
@@ -36,6 +37,7 @@ export default function BlogIndexMinimal() {
       <header className="border-b border-gray-100 py-6">
         <div className="max-w-3xl mx-auto px-6 flex items-center justify-between">
           <Link to="/" className="text-2xl font-black tracking-tighter">RustCMS</Link>
+          <div className="w-56"><SearchBar theme="minimal" /></div>
           <Link to="/login" className="text-xs text-gray-400 hover:text-gray-900 transition-colors">Admin</Link>
         </div>
       </header>

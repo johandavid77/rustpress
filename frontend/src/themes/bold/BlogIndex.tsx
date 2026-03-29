@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { apiClient } from '../../api/client'
+import SearchBar from '../../components/Search/SearchBar'
 import HeroSlider from '../../components/Slider/HeroSlider'
 import { Slider } from '../../types/slider'
 
@@ -41,6 +42,7 @@ export default function BlogIndexBold() {
             <span className="text-yellow-400 text-3xl font-black">●</span>
             <span className="text-2xl font-black tracking-tighter uppercase">RustCMS</span>
           </Link>
+          <div className="w-56"><SearchBar theme="bold" /></div>
           <Link to="/login" className="text-xs font-mono border-2 border-white px-3 py-1.5 hover:bg-white hover:text-black transition-all">Admin</Link>
         </div>
       </header>
