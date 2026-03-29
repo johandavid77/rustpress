@@ -25,7 +25,6 @@ export default function PostPreview() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-white">
-      {/* Barra de preview */}
       <div className="sticky top-0 z-50 bg-yellow-500/10 border-b border-yellow-500/30 px-6 py-2 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <span className="text-yellow-400 text-xs font-black uppercase tracking-widest">● Preview</span>
@@ -33,19 +32,16 @@ export default function PostPreview() {
             {post.status === 'published' ? 'Publicado' : 'Borrador — no visible al público'}
           </span>
         </div>
-        <Link to={`/dashboard`}
+        <Link to="/dashboard"
           className="flex items-center gap-1.5 text-xs font-mono text-yellow-400/60 hover:text-yellow-400 transition-colors">
           <X size={14} /> Cerrar preview
         </Link>
       </div>
 
-      {/* Contenido del post */}
       <div className="max-w-3xl mx-auto px-6 py-16">
         <div className="flex items-center gap-3 mb-8 text-sm font-mono text-[#555566]">
           <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-            post.status === 'published'
-              ? 'bg-green-500/10 text-green-400'
-              : 'bg-yellow-500/10 text-yellow-400'
+            post.status === 'published' ? 'bg-green-500/10 text-green-400' : 'bg-yellow-500/10 text-yellow-400'
           }`}>
             {post.status === 'published' ? '● Publicado' : '○ Borrador'}
           </span>
