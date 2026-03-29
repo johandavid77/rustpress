@@ -15,6 +15,11 @@ export default function BlogPostMagazine() {
   useEffect(() => {
     apiClient.get(`/posts/slug/${slug}`)
       .then((res: any) => setPost(res))
+      .then((res: any) => {
+        setPost(res)
+        // Incrementar contador de visitas
+        apiClient.post(`/posts/${slug}/view`, {}).catch(() => {})
+      })
       .catch(() => navigate('/blog'))
       .finally(() => setLoading(false))
   }, [slug])
@@ -73,7 +78,7 @@ export default function BlogPostMagazine() {
           <div className="flex items-center gap-3 mb-4 text-xs font-mono text-gray-400 uppercase tracking-widest">
             <span className="text-green-700 bg-green-100 px-2 py-0.5 border border-green-300">● Publicado</span>
             <span>
-              {new Date(post.published_at ?? post.created_at).toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' })}
+              {new Date(post.published_at ?? post.created_at).toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' })} · {post.views ?? 0} vistas
             </span>
           </div>
           <h1 className="text-4xl md:text-5xl font-black leading-tight mb-6" style={{ fontFamily: 'Georgia, serif' }}>

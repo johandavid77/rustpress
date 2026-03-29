@@ -14,6 +14,11 @@ export default function BlogPost() {
   useEffect(() => {
     apiClient.get(`/posts/slug/${slug}`)
       .then((res: any) => setPost(res))
+      .then((res: any) => {
+        setPost(res)
+        // Incrementar contador de visitas
+        apiClient.post(`/posts/${slug}/view`, {}).catch(() => {})
+      })
       .catch(() => navigate('/blog'))
       .finally(() => setLoading(false))
   }, [slug])
@@ -61,7 +66,7 @@ export default function BlogPost() {
         <div className="flex items-center gap-3 mb-6">
           <span className="text-xs font-mono px-3 py-1 rounded-full bg-green-500/10 text-green-400 font-semibold">● Publicado</span>
           <span className="text-xs text-[#888899] font-mono">
-            {new Date(post.published_at ?? post.created_at).toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' })}
+            {new Date(post.published_at ?? post.created_at).toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' })} · {post.views ?? 0} vistas
           </span>
         </div>
         <h1 className="text-4xl font-black tracking-tight mb-4 leading-tight">{post.title}</h1>

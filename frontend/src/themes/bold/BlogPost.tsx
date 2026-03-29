@@ -15,6 +15,11 @@ export default function BlogPostBold() {
   useEffect(() => {
     apiClient.get(`/posts/slug/${slug}`)
       .then((res: any) => setPost(res))
+      .then((res: any) => {
+        setPost(res)
+        // Incrementar contador de visitas
+        apiClient.post(`/posts/${slug}/view`, {}).catch(() => {})
+      })
       .catch(() => navigate('/blog'))
       .finally(() => setLoading(false))
   }, [slug])
@@ -70,7 +75,7 @@ export default function BlogPostBold() {
               ● Publicado
             </span>
             <span className="text-xs font-mono text-gray-500">
-              {new Date(post.published_at ?? post.created_at).toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' })}
+              {new Date(post.published_at ?? post.created_at).toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' })} · {post.views ?? 0} vistas
             </span>
           </div>
           <h1 className="text-5xl md:text-6xl font-black tracking-tighter uppercase leading-tight mb-6">

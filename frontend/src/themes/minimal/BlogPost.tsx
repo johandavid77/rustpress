@@ -15,6 +15,11 @@ export default function BlogPostMinimal() {
   useEffect(() => {
     apiClient.get(`/posts/slug/${slug}`)
       .then((res: any) => setPost(res))
+      .then((res: any) => {
+        setPost(res)
+        // Incrementar contador de visitas
+        apiClient.post(`/posts/${slug}/view`, {}).catch(() => {})
+      })
       .catch(() => navigate('/blog'))
       .finally(() => setLoading(false))
   }, [slug])
@@ -67,7 +72,7 @@ export default function BlogPostMinimal() {
               ● Publicado
             </span>
             <span className="text-xs text-gray-300 font-mono">
-              {new Date(post.published_at ?? post.created_at).toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' })}
+              {new Date(post.published_at ?? post.created_at).toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' })} · {post.views ?? 0} vistas
             </span>
           </div>
 
