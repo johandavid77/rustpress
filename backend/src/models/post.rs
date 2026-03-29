@@ -39,6 +39,7 @@ pub struct Post {
     pub seo_description: Option<String>,
     pub og_image:        Option<String>,
     pub language:        String,
+    pub views:           i64,
 }
 
 // ─── DTOs ───────────────────────────────────────────────────────────────────

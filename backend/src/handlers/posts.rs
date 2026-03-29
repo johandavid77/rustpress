@@ -54,7 +54,7 @@ async fn list_posts(
     .fetch_all(pool.get_ref())
     .await?;
 
-    let total: i64 = sqlx::query_scalar!(
+    let total = sqlx::query_scalar!(
         r#"SELECT COUNT(*) FROM posts
            WHERE ($1::text IS NULL OR status = $1)
              AND ($2::text IS NULL OR post_type = $2)"#,
@@ -62,8 +62,8 @@ async fn list_posts(
         query.post_type.as_deref(),
     )
     .fetch_one(pool.get_ref())
-    .await?
-    .unwrap_or(0);
+    .await
+    .unwrap_or(Some(0)).unwrap_or(0);
 
     Ok(HttpResponse::Ok().json(serde_json::json!({
         "data":        rows,
@@ -351,4 +351,21 @@ pub async fn get_stats(
         "total_media": media_count.unwrap_or(0),
         "recent_posts": recent_posts,
     })))
+}
+
+// — POST /posts/:slug/view (incrementar contador)
+pub async fn increment_view(
+    pool: web::Data<PgPool>,
+    slug: web::Path<String>,
+) -> AppResult<HttpResponse> {
+    let result = sqlx::query!(
+        "UPDATE posts SET views = views + 1 WHERE slug = $1 AND status = 'published' RETURNING views",
+        *slug
+    )
+    .fetch_optional(pool.get_ref())
+    .await?;
+
+    let views = result.map(|r| r.views).unwrap_or(0);
+
+    Ok(HttpResponse::Ok().json(serde_json::json!({ "views": views })))
 }
