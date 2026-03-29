@@ -299,7 +299,7 @@ docker compose -f docker-compose.prod.yml run --rm certbot certonly \
 - [x] Search — full-text search in public blog (debounce 300ms, 5 results)
 - [x] Pagination — 10 posts per page across all 4 themes
 - [x] Related posts — posts related by category at end of BlogPost (all 4 themes)
-- [ ] **Author profile** — public author page with their posts
+- [x] **Author profile** — página pública del autor con sus posts y contador de posts
 - [ ] **View counter** — track post visits in admin stats
 - [ ] **Post preview** — preview post before publishing
 - [ ] **Redis cache** — cache published posts to reduce DB queries
@@ -391,7 +391,7 @@ cd ../frontend && npm install && npm run dev      # Frontend en :5173
 - [x] Búsqueda — full-text search en el blog público (debounce 300ms, 5 resultados)
 - [x] Paginación — 10 posts por página en los 4 themes
 - [x] Posts relacionados — posts relacionados por categoría al final del BlogPost
-- [ ] **Perfil de autor** — página pública del autor con sus posts
+- [x] **Perfil de autor** — página pública /author/:id con posts y fecha de registro
 - [ ] **Contador de visitas** — estadísticas de visitas por post en el admin
 - [ ] **Preview de post** — previsualizar post antes de publicar
 - [ ] **Cache con Redis** — cachear posts publicados para reducir queries a la DB
