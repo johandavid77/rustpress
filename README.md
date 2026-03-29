@@ -302,7 +302,7 @@ docker compose -f docker-compose.prod.yml run --rm certbot certonly \
 - [x] **Author profile** — página pública del autor con sus posts y contador de posts
 - [x] **View counter** — contador de visitas por post, se incrementa al leer, visible en BlogPost
 - [ ] **Post preview** — preview post before publishing
-- [ ] **Redis cache** — cache published posts to reduce DB queries
+- [x] **Redis cache** — cache de posts publicados con TTL 5min, invalidación automática
 - [ ] **Webhooks** — notify external services on publish (Slack, Discord)
 - [ ] **Scheduled publishing** — publish a post at a future date
 - [ ] **DB auto-backup** — automatic backups to S3/Backblaze
@@ -394,7 +394,7 @@ cd ../frontend && npm install && npm run dev      # Frontend en :5173
 - [x] **Perfil de autor** — página pública /author/:id con posts y fecha de registro
 - [ ] **Contador de visitas** — estadísticas de visitas por post en el admin
 - [ ] **Preview de post** — previsualizar post antes de publicar
-- [ ] **Cache con Redis** — cachear posts publicados para reducir queries a la DB
+- [x] **Cache con Redis** — TTL 5min en list_posts, invalidación en create/update/delete
 - [ ] **Webhooks** — notificar servicios externos al publicar (Slack, Discord)
 - [ ] **Publicación programada** — publicar un post en fecha futura
 - [ ] **Backup automático** — backups automáticos a S3/Backblaze
