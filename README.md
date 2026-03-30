@@ -301,11 +301,11 @@ docker compose -f docker-compose.prod.yml run --rm certbot certonly \
 - [x] Related posts — posts related by category at end of BlogPost (all 4 themes)
 - [x] **Author profile** — página pública del autor con sus posts y contador de posts
 - [x] **View counter** — contador de visitas por post, se incrementa al leer, visible en BlogPost
-- [ ] **Post preview** — preview post before publishing
+- [x] **Post preview** — preview post before publishing
 - [x] **Redis cache** — cache de posts publicados con TTL 5min, invalidación automática
 - [x] **Webhooks** — notificaciones al publicar (Slack, Discord), panel admin, toggle activo/inactivo
-- [ ] **Scheduled publishing** — publish a post at a future date
-- [ ] **DB auto-backup** — automatic backups to S3/Backblaze
+- [x] **Scheduled publishing** — publish a post at a future date
+- [x] **DB auto-backup** — automatic backups to S3/Backblaze
 - [ ] **Healthcheck dashboard** — server monitoring panel
 
 ---
@@ -392,12 +392,12 @@ cd ../frontend && npm install && npm run dev      # Frontend en :5173
 - [x] Paginación — 10 posts por página en los 4 themes
 - [x] Posts relacionados — posts relacionados por categoría al final del BlogPost
 - [x] **Perfil de autor** — página pública /author/:id con posts y fecha de registro
-- [ ] **Contador de visitas** — estadísticas de visitas por post en el admin
-- [ ] **Preview de post** — previsualizar post antes de publicar
+- [x] **Contador de visitas** — estadísticas de visitas por post en el admin
+- [x] **Preview de post** — previsualizar post antes de publicar
 - [x] **Cache con Redis** — TTL 5min en list_posts, invalidación en create/update/delete
 - [x] **Webhooks** — notificaciones al publicar (Slack, Discord), CRUD + fire en background
-- [ ] **Publicación programada** — publicar un post en fecha futura
-- [ ] **Backup automático** — backups automáticos a S3/Backblaze
+- [x] **Publicación programada** — publicar un post en fecha futura
+- [x] **Backup automático** — backups automáticos a S3/Backblaze
 - [ ] **Dashboard de monitoreo** — healthcheck del servidor
 
 ---
