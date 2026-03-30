@@ -343,7 +343,7 @@ docker compose -f docker-compose.prod.yml run --rm certbot certonly \
 - [x] Webhooks — notify Slack/Discord on publish, CRUD panel, toggle active/inactive
 - [x] Scheduled publishing — `publish_at` field + background scheduler every 60s
 - [x] DB auto-backup — automatic pg_dump every 24h, keeps last 30, configurable path
-- [ ] **Healthcheck dashboard** — server monitoring panel
+- [x] **Healthcheck dashboard** — real-time DB, Redis & stats monitoring panel
 
 ---
 
@@ -452,7 +452,7 @@ cd ../frontend && npm install && npm run dev      # Frontend en :5173
 - [x] Webhooks — notificaciones al publicar (Slack, Discord), CRUD + fire en background
 - [x] Publicación programada — campo `publish_at` + scheduler automático cada 60s
 - [x] Backup automático — pg_dump cada 24h, conserva los últimos 30, ruta configurable
-- [ ] **Dashboard de monitoreo** — healthcheck del servidor
+- [x] **Dashboard de monitoreo** — panel en tiempo real: estado DB, Redis y estadísticas
 
 ---
 
