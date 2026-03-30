@@ -18,6 +18,13 @@ export default function BlogPostMagazine() {
   const [post, setPost] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 
+  // Lazy loading para imágenes del contenido
+  useEffect(() => {
+    document.querySelectorAll('article img').forEach(img => {
+      img.setAttribute('loading', 'lazy')
+    })
+  }, [post])
+
   useEffect(() => {
     apiClient.get(`/posts/slug/${slug}`)
       .then((res: any) => setPost(res))
