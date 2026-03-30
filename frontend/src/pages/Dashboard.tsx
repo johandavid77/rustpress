@@ -47,6 +47,20 @@ export default function Dashboard() {
       .catch(() => setActiveTheme('dark'))
   }, [])
 
+  const toggleSelect = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    setSelected(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n })
+  }
+  const selectAll = () => setSelected(prev => prev.size === posts.length ? new Set() : new Set(posts.map((p:any) => p.id)))
+  const bulkAction = async (action: 'publish' | 'unpublish' | 'delete') => {
+    if (!selected.size) return
+    if (action === 'delete' && !confirm(`¿Eliminar ${selected.size} posts?`)) return
+    await Promise.all(Array.from(selected).map(id =>
+      action === 'publish' ? postsApi.publish(id) : action === 'unpublish' ? postsApi.unpublish(id) : postsApi.delete(id)
+    ))
+    setSelected(new Set()); loadPosts()
+  }
+
   const loadPosts = async () => {
     setLoading(true)
     try {
@@ -228,7 +242,8 @@ function PostsView({ posts, loading, onReload, onNewPost, onEditPost }: {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {posts.map((post: any) => (
           <div key={post.id} onClick={() => onEditPost(post)}
-            className="bg-[#111118] border border-[#2a2a3a] rounded-xl p-6 flex flex-col gap-3 hover:border-[#7c6aff] transition-all cursor-pointer group">
+            className={`bg-[#111118] border rounded-xl p-6 flex flex-col gap-3 hover:border-[#7c6aff] transition-all cursor-pointer group ${selected.has(post.id) ? 'border-[#7c6aff]' : 'border-[#2a2a3a]'}`}>
+            <input type="checkbox" checked={selected.has(post.id)} onClick={e => toggleSelect(post.id, e)} onChange={() => {}} className="absolute w-4 h-4 accent-[#7c6aff] cursor-pointer" />
             <div className="flex items-center justify-between">
               <span className={`text-xs font-mono px-3 py-1 rounded-full font-semibold
                 ${post.status === 'published' ? 'bg-green-500/10 text-green-400' : 'bg-yellow-500/10 text-yellow-400'}`}>
