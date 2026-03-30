@@ -17,10 +17,8 @@ import CategoriesAdmin from './Plugins/CategoriesAdmin'
 import WebhooksAdmin from './Plugins/WebhooksAdmin'
 import PluginsHome from './Plugins/PluginsHome'
 import HealthDashboard from './Dashboard/HealthDashboard'
-import HealthDashboard from './Dashboard/HealthDashboard'
-import HealthDashboard from './Dashboard/HealthDashboard'
 
-type View = 'home' | 'posts' | 'media' | 'users' | 'plugins' | 'themes' | 'comments' | 'categories' | 'webhooks' | 'health' | 'health' | 'health'
+type View = 'home' | 'posts' | 'media' | 'users' | 'plugins' | 'themes' | 'comments' | 'categories' | 'webhooks' | 'health'
 
 const THEMES = [
   { id: 'dark',     name: '🌑 Dark',     description: 'Oscuro, moderno, minimalista',              preview: 'bg-[#0a0a0f] border-[#2a2a3a]', accent: 'bg-[#7c6aff]' },
