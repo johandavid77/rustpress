@@ -3,9 +3,11 @@ import Comments from '../../components/Comments/Comments'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import RelatedPosts from '../../components/RelatedPosts/RelatedPosts'
 import ShareButtons from '../../components/ShareButtons/ShareButtons'
+import TableOfContents from '../../components/TableOfContents/TableOfContents'
 import { readingTime } from '../../utils/readingTime'
 import RelatedPosts from '../../components/RelatedPosts/RelatedPosts'
 import ShareButtons from '../../components/ShareButtons/ShareButtons'
+import TableOfContents from '../../components/TableOfContents/TableOfContents'
 import { readingTime } from '../../utils/readingTime'
 import Comments from '../../components/Comments/Comments'
 import { apiClient } from '../../api/client'
@@ -105,7 +107,8 @@ export default function BlogPostMinimal() {
             prose-blockquote:border-l-4 prose-blockquote:border-gray-200 prose-blockquote:text-gray-400
             prose-img:rounded-xl prose-img:my-6
             prose-hr:border-gray-100"
-          dangerouslySetInnerHTML={{ __html: post.content ?? '' }}
+          <TableOfContents content={post.content ?? ''} theme="minimal" />
+          <div dangerouslySetInnerHTML={{ __html: post.content ?? '' }}
           />
           <Comments postId={post.id} theme="minimal" 
         />

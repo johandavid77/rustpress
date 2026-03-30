@@ -3,9 +3,11 @@ import Comments from '../../components/Comments/Comments'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import RelatedPosts from '../../components/RelatedPosts/RelatedPosts'
 import ShareButtons from '../../components/ShareButtons/ShareButtons'
+import TableOfContents from '../../components/TableOfContents/TableOfContents'
 import { readingTime } from '../../utils/readingTime'
 import RelatedPosts from '../../components/RelatedPosts/RelatedPosts'
 import ShareButtons from '../../components/ShareButtons/ShareButtons'
+import TableOfContents from '../../components/TableOfContents/TableOfContents'
 import { readingTime } from '../../utils/readingTime'
 import Comments from '../../components/Comments/Comments'
 import { apiClient } from '../../api/client'
@@ -111,7 +113,8 @@ export default function BlogPostMagazine() {
             prose-img:rounded-none prose-img:my-6 prose-img:border-2 prose-img:border-black
             prose-hr:border-black"
           style={{ fontFamily: 'Georgia, serif', columns: '2', columnGap: '2.5rem' }}
-          dangerouslySetInnerHTML={{ __html: post.content ?? '' }}
+          <TableOfContents content={post.content ?? ''} theme="magazine" />
+          <div dangerouslySetInnerHTML={{ __html: post.content ?? '' }}
           />
           <Comments postId={post.id} theme="magazine" 
         />

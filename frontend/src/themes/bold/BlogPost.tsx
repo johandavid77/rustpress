@@ -3,9 +3,11 @@ import Comments from '../../components/Comments/Comments'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import RelatedPosts from '../../components/RelatedPosts/RelatedPosts'
 import ShareButtons from '../../components/ShareButtons/ShareButtons'
+import TableOfContents from '../../components/TableOfContents/TableOfContents'
 import { readingTime } from '../../utils/readingTime'
 import RelatedPosts from '../../components/RelatedPosts/RelatedPosts'
 import ShareButtons from '../../components/ShareButtons/ShareButtons'
+import TableOfContents from '../../components/TableOfContents/TableOfContents'
 import { readingTime } from '../../utils/readingTime'
 import Comments from '../../components/Comments/Comments'
 import { apiClient } from '../../api/client'
@@ -107,7 +109,8 @@ export default function BlogPostBold() {
             prose-blockquote:border-l-4 prose-blockquote:border-yellow-400 prose-blockquote:text-gray-400
             prose-img:rounded-none prose-img:my-6 prose-img:border-2 prose-img:border-gray-800
             prose-hr:border-gray-800"
-          dangerouslySetInnerHTML={{ __html: post.content ?? '' }}
+          <TableOfContents content={post.content ?? ''} theme="bold" />
+          <div dangerouslySetInnerHTML={{ __html: post.content ?? '' }}
           />
           <Comments postId={post.id} theme="bold" 
         />
