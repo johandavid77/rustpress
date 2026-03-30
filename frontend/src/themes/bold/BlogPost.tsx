@@ -19,6 +19,13 @@ export default function BlogPostBold() {
   const [loading, setLoading] = useState(true)
 
   // Lazy loading para imágenes del contenido
+  // Lazy loading para imágenes del contenido
+  useEffect(() => {
+    document.querySelectorAll('article img').forEach(img => {
+      img.setAttribute('loading', 'lazy')
+    })
+  }, [post])
+
   useEffect(() => {
     document.querySelectorAll('article img').forEach(img => {
       img.setAttribute('loading', 'lazy')
