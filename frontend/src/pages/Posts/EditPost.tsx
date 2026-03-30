@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { postsApi } from '../../api/posts'
 import RichEditor from '../../components/Editor/RichEditor'
 import CategorySelector from '../../components/CategorySelector/CategorySelector'
@@ -17,32 +17,13 @@ export default function EditPost({ post, onBack, onSaved }: Props) {
   const [seoDescription, setSeoDescription] = useState(post.seo_description ?? '')
   const [ogImage, setOgImage]           = useState(post.og_image ?? '')
   const [language, setLanguage]         = useState(post.language ?? 'es')
-
-  const markDirty = () => setIsDirty(true)
-
-  // Marcar como modificado al cambiar cualquier campo
-  const markDirty = () => setIsDirty(true)
   const [publishAt, setPublishAt]       = useState(post.publish_at ? new Date(post.publish_at).toISOString().slice(0,16) : '')
   const [saving, setSaving]             = useState(false)
   const [error, setError]               = useState('')
+  const [isDirty, setIsDirty]           = useState(false)
+  const [autoSaved, setAutoSaved]       = useState<Date | null>(null)
 
-  // Autosave cada 30s si hay cambios
-  useEffect(() => {
-    if (!isDirty) return
-    const t = setTimeout(async () => {
-      try {
-        await postsApi.update(post.id, { title, excerpt, content, language,
-          seo_title: seoTitle || undefined,
-          seo_description: seoDescription || undefined,
-          og_image: ogImage || undefined,
-          publish_at: publishAt ? new Date(publishAt).toISOString() : undefined,
-        })
-        setAutoSaved(new Date())
-        setIsDirty(false)
-      } catch(e) { console.error('Autosave failed:', e) }
-    }, 30000)
-    return () => clearTimeout(t)
-  }, [isDirty, title, excerpt, content, language, seoTitle, seoDescription, ogImage, publishAt])
+  const markDirty = () => setIsDirty(true)
 
   // Autosave cada 30s si hay cambios
   useEffect(() => {
@@ -75,6 +56,7 @@ export default function EditPost({ post, onBack, onSaved }: Props) {
         language,
         publish_at: publishAt ? new Date(publishAt).toISOString() : undefined,
       })
+      setIsDirty(false)
       onSaved()
     } catch (e: any) {
       setError(e?.response?.data?.error || 'Error al guardar')
@@ -103,23 +85,19 @@ export default function EditPost({ post, onBack, onSaved }: Props) {
         <div className="flex-1">
           <h1 className="text-3xl font-black tracking-tight">Editar Post</h1>
         </div>
-        <div className="flex gap-2">
-          {autoSaved && (
-            <span className="text-xs font-mono text-[#555566] flex items-center gap-1">
-              ✓ Guardado {autoSaved.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}
-            </span>
-          )}
-          {isDirty && !autoSaved && (
-            <span className="text-xs font-mono text-[#555566]">● Sin guardar</span>
-          )}
+        <div className="flex items-center gap-2">
           {autoSaved && (
             <span className="text-xs font-mono text-[#555566]">
-              ✓ Guardado {autoSaved.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}
+              ✓ {autoSaved.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}
             </span>
           )}
           {isDirty && (
             <span className="text-xs font-mono text-yellow-500/60">● Sin guardar</span>
           )}
+          <a href={`/preview/${post.id}`} target="_blank" rel="noopener noreferrer"
+            className="px-4 py-2 border border-yellow-500/30 rounded-lg text-sm font-mono text-yellow-400 hover:bg-yellow-500/10 transition-all">
+            👁 Preview
+          </a>
           <button onClick={handleTogglePublish} disabled={saving}
             className={`px-4 py-2 border rounded-lg text-sm font-bold disabled:opacity-50
               ${post.status === 'published'
@@ -127,18 +105,6 @@ export default function EditPost({ post, onBack, onSaved }: Props) {
                 : 'border-green-500/30 text-green-400 hover:bg-green-500/10'}`}>
             {post.status === 'published' ? '○ Despublicar' : '● Publicar'}
           </button>
-          <a href={`/preview/${post.id}`} target="_blank" rel="noopener noreferrer"
-            className="px-4 py-2 border border-yellow-500/30 rounded-lg text-sm font-mono text-yellow-400 hover:bg-yellow-500/10 transition-all">
-            👁 Preview
-          </a>
-          <a href={`/preview/${post.id}`} target="_blank" rel="noopener noreferrer"
-            className="px-4 py-2 border border-yellow-500/30 rounded-lg text-sm font-mono text-yellow-400 hover:bg-yellow-500/10 transition-all">
-            👁 Preview
-          </a>
-          <a href={`/preview/${post.id}`} target="_blank" rel="noopener noreferrer"
-            className="px-4 py-2 border border-yellow-500/30 rounded-lg text-sm font-mono text-yellow-400 hover:bg-yellow-500/10 transition-all">
-            👁 Preview
-          </a>
           <button onClick={handleSave} disabled={saving}
             className="px-4 py-2 bg-[#7c6aff] rounded-lg text-sm font-bold hover:bg-[#6b5be6] disabled:opacity-50">
             {saving ? 'Guardando...' : 'Guardar cambios'}
@@ -177,10 +143,10 @@ export default function EditPost({ post, onBack, onSaved }: Props) {
       {/* Editor */}
       <div className="mb-6">
         <label className="block text-xs font-semibold text-[#888899] uppercase tracking-widest mb-2 font-mono">Contenido</label>
-        <RichEditor content={content} onChange={setContent} />
+        <RichEditor content={content} onChange={v => { setContent(v); markDirty() }} />
       </div>
 
-      { /* Categorías */ }
+      {/* Categorías */}
       <div className="mb-6">
         <CategorySelector postId={post.id} />
       </div>
@@ -193,39 +159,39 @@ export default function EditPost({ post, onBack, onSaved }: Props) {
             <label className="block text-xs font-semibold text-[#888899] uppercase tracking-widest mb-2 font-mono">SEO Title <span className="normal-case text-[#555566]">(opcional)</span></label>
             <input className="w-full px-4 py-3 bg-[#1a1a24] border border-[#2a2a3a] rounded-xl text-white text-sm outline-none focus:border-[#7c6aff] placeholder-[#444455]"
               placeholder="Título para buscadores..."
-              value={seoTitle} onChange={e => setSeoTitle(e.target.value)} />
+              value={seoTitle} onChange={e => { setSeoTitle(e.target.value); markDirty() }} />
           </div>
           <div>
             <label className="block text-xs font-semibold text-[#888899] uppercase tracking-widest mb-2 font-mono">SEO Description <span className="normal-case text-[#555566]">(opcional)</span></label>
             <input className="w-full px-4 py-3 bg-[#1a1a24] border border-[#2a2a3a] rounded-xl text-white text-sm outline-none focus:border-[#7c6aff] placeholder-[#444455]"
               placeholder="Meta description..."
-              value={seoDescription} onChange={e => setSeoDescription(e.target.value)} />
+              value={seoDescription} onChange={e => { setSeoDescription(e.target.value); markDirty() }} />
           </div>
           <div>
             <label className="block text-xs font-semibold text-[#888899] uppercase tracking-widest mb-2 font-mono">OG Image URL <span className="normal-case text-[#555566]">(opcional)</span></label>
             <input className="w-full px-4 py-3 bg-[#1a1a24] border border-[#2a2a3a] rounded-xl text-white text-sm outline-none focus:border-[#7c6aff] placeholder-[#444455]"
               placeholder="https://..."
-              value={ogImage} onChange={e => setOgImage(e.target.value)} />
+              value={ogImage} onChange={e => { setOgImage(e.target.value); markDirty() }} />
           </div>
           <div>
             <label className="block text-xs font-semibold text-[#888899] uppercase tracking-widest mb-2 font-mono">Idioma</label>
             <select className="w-full px-4 py-3 bg-[#1a1a24] border border-[#2a2a3a] rounded-xl text-white text-sm outline-none focus:border-[#7c6aff]"
-              value={language} onChange={e => setLanguage(e.target.value)}>
+              value={language} onChange={e => { setLanguage(e.target.value); markDirty() }}>
               <option value="es">🇨🇴 Español</option>
               <option value="en">🇺🇸 English</option>
               <option value="fr">🇫🇷 Français</option>
               <option value="pt">🇧🇷 Português</option>
             </select>
           </div>
-        </div>
           <div>
             <label className="block text-xs font-semibold text-[#888899] uppercase tracking-widest mb-2 font-mono">Publicar en <span className="normal-case text-[#555566]">(opcional)</span></label>
             <input type="datetime-local"
               className="w-full px-4 py-3 bg-[#1a1a24] border border-[#2a2a3a] rounded-xl text-white text-sm outline-none focus:border-[#7c6aff]"
-              value={publishAt} onChange={e => setPublishAt(e.target.value)} />
+              value={publishAt} onChange={e => { setPublishAt(e.target.value); markDirty() }} />
             {publishAt && <p className="text-xs text-[#7c6aff] font-mono mt-1">Se publicará el {new Date(publishAt).toLocaleString('es-CO')}</p>}
           </div>
         </div>
       </div>
+    </div>
   )
 }
