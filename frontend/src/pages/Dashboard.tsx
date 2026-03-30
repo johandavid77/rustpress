@@ -5,7 +5,7 @@ import { postsApi } from '../api/posts'
 import NewPost from './Posts/NewPost'
 import EditPost from './Posts/EditPost'
 import Stats from './Stats'
-import { LayoutDashboard, FileText, Image, Users, Puzzle, ExternalLink, Palette, MessageSquare, Tag, Webhook } from 'lucide-react'
+import { LayoutDashboard, FileText, Image, Users, Puzzle, ExternalLink, Palette, MessageSquare, Tag, Webhook, Activity } from 'lucide-react'
 import SlidersAdmin from './Plugins/SlidersAdmin'
 import MenusAdmin from './Plugins/MenusAdmin'
 import UsersAdmin from './Users/UsersAdmin'
@@ -16,8 +16,9 @@ import CommentsAdmin from './Plugins/CommentsAdmin'
 import CategoriesAdmin from './Plugins/CategoriesAdmin'
 import WebhooksAdmin from './Plugins/WebhooksAdmin'
 import PluginsHome from './Plugins/PluginsHome'
+import HealthDashboard from './Dashboard/HealthDashboard'
 
-type View = 'home' | 'posts' | 'media' | 'users' | 'plugins' | 'themes' | 'comments' | 'categories' | 'webhooks'
+type View = 'home' | 'posts' | 'media' | 'users' | 'plugins' | 'themes' | 'comments' | 'categories' | 'webhooks' | 'health'
 
 const THEMES = [
   { id: 'dark',     name: '🌑 Dark',     description: 'Oscuro, moderno, minimalista',              preview: 'bg-[#0a0a0f] border-[#2a2a3a]', accent: 'bg-[#7c6aff]' },
@@ -75,7 +76,7 @@ export default function Dashboard() {
     { id: 'themes'   as View, icon: Palette,          label: 'Themes'         },
     { id: 'comments'   as View, icon: MessageSquare, label: 'Comentarios' },
     { id: 'categories' as View, icon: Tag,     label: 'Categorías' },
-    { id: 'webhooks'   as View, icon: Webhook, label: 'Webhooks'   },
+    { id: 'webhooks' | 'health'   as View, icon: Webhook, label: 'Webhooks'   },
   ]
 
   const resetPosts = () => { setShowNewPost(false); setEditingPost(null); loadPosts() }
@@ -156,7 +157,7 @@ export default function Dashboard() {
           {view === 'users'    && <UsersAdmin />}
           {view === 'comments'    && <CommentsAdmin />}
           {view === 'categories'  && <CategoriesAdmin />}
-          {view === 'webhooks'    && <WebhooksAdmin />}
+          {view === 'webhooks' | 'health'    && <WebhooksAdmin />}
           {view === 'plugins'  && <PluginsHome onNavigate={(v) => setView(v as any)} />}
           {view === 'themes' && (
             <div className="max-w-3xl">

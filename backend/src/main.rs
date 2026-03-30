@@ -100,6 +100,7 @@ async fn main() -> anyhow::Result<()> {
                     .configure(handlers::webhooks::configure)  // 👈 nuevo
             )
             .route("/health", web::get().to(health_check))
+            .route("/health/detailed", web::get().to(handlers::settings::health_detailed))
             .service(Files::new("/uploads", &cfg.upload_dir).show_files_listing())
     })
     .bind(&bind_addr)?
