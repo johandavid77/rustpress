@@ -547,3 +547,8 @@ cd ../frontend && npm install && npm run dev      # Frontend en :5173
 ## License / Licencia
 
 GPL-3.0 © 2026 Johan Montes
+
+## Estadísticas de visitas
+![Visitas](https://komarev.com/ghpvc/?username=johan&color=green&style=flat-square&label=VISITANTES)
+![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fjohan%2Ftu-repo&count_bg=%23FFD700&title_bg=%23FF0000&icon=&icon_color=%23E7E7E7&title=HITS&edge_flat=true)
+
