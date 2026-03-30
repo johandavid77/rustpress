@@ -56,3 +56,48 @@ async fn rss_feed(pool: web::Data<PgPool>) -> AppResult<HttpResponse> {
         .content_type("application/rss+xml; charset=utf-8")
         .body(xml))
 }
+
+// — GET /sitemap.xml
+pub async fn sitemap(pool: web::Data<sqlx::PgPool>) -> crate::errors::AppResult<actix_web::HttpResponse> {
+    let posts = sqlx::query!(
+        r#"SELECT slug, updated_at FROM posts
+           WHERE status = 'published'
+           ORDER BY updated_at DESC"#
+    )
+    .fetch_all(pool.get_ref())
+    .await?;
+
+    let base_url = std::env::var("FRONTEND_URL").unwrap_or_else(|_| "http://localhost:5173".into());
+
+    let mut xml = String::from(r#"<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">"#);
+
+    // Home
+    xml.push_str(&format!(r#"
+  <url>
+    <loc>{}</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>"#, base_url));
+
+    // Posts
+    for post in &posts {
+        xml.push_str(&format!(r#"
+  <url>
+    <loc>{}/blog/{}</loc>
+    <lastmod>{}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>"#,
+            base_url,
+            post.slug,
+            post.updated_at.format("%Y-%m-%d")
+        ));
+    }
+
+    xml.push_str("\n</urlset>");
+
+    Ok(actix_web::HttpResponse::Ok()
+        .content_type("application/xml; charset=utf-8")
+        .body(xml))
+}

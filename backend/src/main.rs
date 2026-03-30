@@ -101,6 +101,7 @@ async fn main() -> anyhow::Result<()> {
             )
             .route("/health", web::get().to(health_check))
             .route("/health/detailed", web::get().to(handlers::settings::health_detailed))
+            .route("/sitemap.xml", web::get().to(handlers::feed::sitemap))
             .service(Files::new("/uploads", &cfg.upload_dir).show_files_listing())
     })
     .bind(&bind_addr)?

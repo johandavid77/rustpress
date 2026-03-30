@@ -17,9 +17,30 @@ export default function EditPost({ post, onBack, onSaved }: Props) {
   const [seoDescription, setSeoDescription] = useState(post.seo_description ?? '')
   const [ogImage, setOgImage]           = useState(post.og_image ?? '')
   const [language, setLanguage]         = useState(post.language ?? 'es')
+
+  // Marcar como modificado al cambiar cualquier campo
+  const markDirty = () => setIsDirty(true)
   const [publishAt, setPublishAt]       = useState(post.publish_at ? new Date(post.publish_at).toISOString().slice(0,16) : '')
   const [saving, setSaving]             = useState(false)
   const [error, setError]               = useState('')
+
+  // Autosave cada 30s si hay cambios
+  useEffect(() => {
+    if (!isDirty) return
+    const t = setTimeout(async () => {
+      try {
+        await postsApi.update(post.id, { title, excerpt, content, language,
+          seo_title: seoTitle || undefined,
+          seo_description: seoDescription || undefined,
+          og_image: ogImage || undefined,
+          publish_at: publishAt ? new Date(publishAt).toISOString() : undefined,
+        })
+        setAutoSaved(new Date())
+        setIsDirty(false)
+      } catch(e) { console.error('Autosave failed:', e) }
+    }, 30000)
+    return () => clearTimeout(t)
+  }, [isDirty, title, excerpt, content, language, seoTitle, seoDescription, ogImage, publishAt])
 
   const handleSave = async () => {
     if (!title.trim()) { setError('El título es requerido'); return }
@@ -62,6 +83,14 @@ export default function EditPost({ post, onBack, onSaved }: Props) {
           <h1 className="text-3xl font-black tracking-tight">Editar Post</h1>
         </div>
         <div className="flex gap-2">
+          {autoSaved && (
+            <span className="text-xs font-mono text-[#555566] flex items-center gap-1">
+              ✓ Guardado {autoSaved.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}
+            </span>
+          )}
+          {isDirty && !autoSaved && (
+            <span className="text-xs font-mono text-[#555566]">● Sin guardar</span>
+          )}
           <button onClick={handleTogglePublish} disabled={saving}
             className={`px-4 py-2 border rounded-lg text-sm font-bold disabled:opacity-50
               ${post.status === 'published'
@@ -103,7 +132,7 @@ export default function EditPost({ post, onBack, onSaved }: Props) {
         <label className="block text-xs font-semibold text-[#888899] uppercase tracking-widest mb-2 font-mono">Título</label>
         <input
           className="w-full px-4 py-3 bg-[#1a1a24] border border-[#2a2a3a] rounded-xl text-white text-lg font-bold outline-none focus:border-[#7c6aff]"
-          value={title} onChange={e => setTitle(e.target.value)}
+          value={title} onChange={e => { setTitle(e.target.value); markDirty() }}
         />
       </div>
 
@@ -112,7 +141,7 @@ export default function EditPost({ post, onBack, onSaved }: Props) {
         <label className="block text-xs font-semibold text-[#888899] uppercase tracking-widest mb-2 font-mono">Resumen</label>
         <input
           className="w-full px-4 py-3 bg-[#1a1a24] border border-[#2a2a3a] rounded-xl text-white text-sm outline-none focus:border-[#7c6aff]"
-          value={excerpt} onChange={e => setExcerpt(e.target.value)}
+          value={excerpt} onChange={e => { setExcerpt(e.target.value); markDirty() }}
         />
       </div>
 
