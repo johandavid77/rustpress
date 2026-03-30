@@ -74,7 +74,7 @@ async fn upload_media(
         ).fetch_one(pool.get_ref()).await?;
 
         // Optimizar imagen si aplica
-        let size = optimize_image(&filepath).unwrap_or(size);
+        let _size = optimize_image(&filepath).unwrap_or(size);
 
         uploaded.push(record);
     }

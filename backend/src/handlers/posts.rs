@@ -1,3 +1,4 @@
+#![allow(unused_imports, unused_variables)]
 // handlers/posts.rs  —  CRUD completo de posts/páginas
 use actix_web::{web::{self, Data, Json, Path, Query}, HttpResponse};
 use sqlx::PgPool;

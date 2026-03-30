@@ -1,4 +1,4 @@
-import { Tag, Webhook, MessageSquare, SlidersHorizontal, Navigation, Zap } from 'lucide-react'
+import { Tag, Webhook, MessageSquare, SlidersHorizontal, Navigation, Zap, Activity } from 'lucide-react'
 
 const plugins = [
   { id: 'sliders',    icon: <SlidersHorizontal size={24} />, title: 'Sliders',      description: 'Gestiona el carrusel de imágenes de la página principal.',          color: 'from-violet-500/20 to-violet-600/5 border-violet-500/20 hover:border-violet-500/50' },
@@ -6,6 +6,7 @@ const plugins = [
   { id: 'comments',   icon: <MessageSquare size={24} />,     title: 'Comentarios',  description: 'Modera los comentarios de los lectores. Aprueba o elimina.',         color: 'from-emerald-500/20 to-emerald-600/5 border-emerald-500/20 hover:border-emerald-500/50' },
   { id: 'categories', icon: <Tag size={24} />,               title: 'Categorías',   description: 'Organiza tus posts con categorías.',                                  color: 'from-orange-500/20 to-orange-600/5 border-orange-500/20 hover:border-orange-500/50' },
   { id: 'webhooks',   icon: <Webhook size={24} />,           title: 'Webhooks',     description: 'Notifica a Slack, Discord u otros servicios al publicar.',            color: 'from-pink-500/20 to-pink-600/5 border-pink-500/20 hover:border-pink-500/50' },
+  { id: 'health',     icon: <Activity size={24} />,          title: 'Healthcheck',  description: 'Monitorea el estado del servidor, base de datos y cache en tiempo real.', color: 'from-cyan-500/20 to-cyan-600/5 border-cyan-500/20 hover:border-cyan-500/50' },
 ]
 
 interface Props {

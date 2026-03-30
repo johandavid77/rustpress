@@ -4,7 +4,7 @@ use uuid::Uuid;
 
 use crate::{
     errors::{AppError, AppResult},
-    middleware::auth::{AuthUser, AuthUserWithRole},
+    middleware::auth::{AuthUserWithRole},
     models::user::{CreateUserDto, UpdateUserDto, User, UserPublic},
     services::auth_service::AuthService,
 };
