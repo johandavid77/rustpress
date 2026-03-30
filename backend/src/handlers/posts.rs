@@ -421,3 +421,29 @@ pub async fn get_post_preview(
 
     Ok(HttpResponse::Ok().json(post))
 }
+
+// — GET /posts/stats/views — visitas por día últimos 30 días
+pub async fn views_by_day(
+    pool: web::Data<sqlx::PgPool>,
+    _auth: crate::middleware::auth::AuthUserWithRole,
+) -> crate::errors::AppResult<actix_web::HttpResponse> {
+    let rows = sqlx::query!(
+        r#"SELECT
+            DATE(updated_at) as day,
+            SUM(views)::bigint as total_views
+           FROM posts
+           WHERE updated_at >= NOW() - INTERVAL '30 days'
+             AND status = 'published'
+           GROUP BY DATE(updated_at)
+           ORDER BY day ASC"#
+    )
+    .fetch_all(pool.get_ref())
+    .await?;
+
+    let data: Vec<_> = rows.iter().map(|r| serde_json::json!({
+        "day":   r.day.map(|d| d.to_string()).unwrap_or_default(),
+        "views": r.total_views.unwrap_or(0),
+    })).collect();
+
+    Ok(actix_web::HttpResponse::Ok().json(data))
+}

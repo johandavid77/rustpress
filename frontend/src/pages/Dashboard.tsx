@@ -17,6 +17,7 @@ import CategoriesAdmin from './Plugins/CategoriesAdmin'
 import WebhooksAdmin from './Plugins/WebhooksAdmin'
 import PluginsHome from './Plugins/PluginsHome'
 import HealthDashboard from './Dashboard/HealthDashboard'
+import ViewsChart from '../components/ViewsChart/ViewsChart'
 
 type View = 'home' | 'posts' | 'media' | 'users' | 'plugins' | 'themes' | 'comments' | 'categories' | 'webhooks' | 'health'
 
@@ -147,7 +148,7 @@ export default function Dashboard() {
         </header>
 
         <main className="flex-1 overflow-auto p-10">
-          {view === 'home' && (
+          {view === 'home' && (<>
             <div className="max-w-5xl">
               <div className="mb-8">
                 <h1 className="text-4xl font-black tracking-tight mb-1">{t('dashboard.summary')}</h1>
