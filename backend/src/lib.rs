@@ -1,6 +1,7 @@
 pub mod config;
 pub mod cache;
 pub mod scheduler;
+pub mod backup;
 pub mod db;
 pub mod errors;
 pub mod handlers;

@@ -17,6 +17,7 @@ pub struct AppConfig {
     pub smtp_username:   String,
     pub smtp_password:   String,
     pub redis_url:       String,
+    pub backup_dir:      String,
 }
 
 impl AppConfig {
@@ -36,6 +37,7 @@ impl AppConfig {
             smtp_username:    std::env::var("SMTP_USERNAME").unwrap_or_else(|_| "".into()),
             smtp_password:    std::env::var("SMTP_PASSWORD").unwrap_or_else(|_| "".into()),
             redis_url:          std::env::var("REDIS_URL").unwrap_or_else(|_| "redis://127.0.0.1:6379".into()),
+            backup_dir:         std::env::var("BACKUP_DIR").unwrap_or_else(|_| "./backups".into()),
         })
     }
 }

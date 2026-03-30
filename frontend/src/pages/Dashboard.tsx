@@ -15,6 +15,7 @@ import { apiClient } from '../api/client'
 import CommentsAdmin from './Plugins/CommentsAdmin'
 import CategoriesAdmin from './Plugins/CategoriesAdmin'
 import WebhooksAdmin from './Plugins/WebhooksAdmin'
+import PluginsHome from './Plugins/PluginsHome'
 
 type View = 'home' | 'posts' | 'media' | 'users' | 'plugins' | 'themes' | 'comments' | 'categories' | 'webhooks'
 
@@ -156,12 +157,7 @@ export default function Dashboard() {
           {view === 'comments'    && <CommentsAdmin />}
           {view === 'categories'  && <CategoriesAdmin />}
           {view === 'webhooks'    && <WebhooksAdmin />}
-          {view === 'plugins'  && (
-            <div className="flex flex-col gap-12">
-              <SlidersAdmin />
-              <div className="border-t border-[#2a2a3a] pt-10"><MenusAdmin /></div>
-            </div>
-          )}
+          {view === 'plugins'  && <PluginsHome onNavigate={(v) => setView(v as any)} />}
           {view === 'themes' && (
             <div className="max-w-3xl">
               <div className="mb-8 flex items-start justify-between">
