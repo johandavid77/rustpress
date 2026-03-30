@@ -345,6 +345,50 @@ docker compose -f docker-compose.prod.yml run --rm certbot certonly \
 - [x] DB auto-backup — automatic pg_dump every 24h, keeps last 30, configurable path
 - [x] **Healthcheck dashboard** — real-time DB, Redis & stats monitoring panel
 
+
+### Next — Pre-ecommerce improvements
+
+#### Quality & Robustness
+- [ ] **Unit & integration tests** — cargo test suite for handlers, models and services
+- [ ] **Differentiated rate limiting** — stricter on auth endpoints, relaxed on reads
+- [ ] **Structured logs** — info/warn/error levels, exportable format
+
+#### Admin UX
+- [ ] **Drag & drop post ordering** — reorder posts from the list view
+- [ ] **Autosave editor** — auto-save draft every 30s while writing
+- [ ] **Bulk actions** — publish/delete/unpublish multiple posts at once
+- [ ] **Visits chart** — bar chart of daily visits for last 30 days on home dashboard
+
+#### Public Blog
+- [ ] **Table of contents** — auto-generated TOC for long posts
+- [ ] **Reading mode** — distraction-free reading with optimized typography
+- [ ] **Social share buttons** — native share for Twitter/X, LinkedIn, WhatsApp
+- [ ] **Reading time** — estimated read time shown on each post
+
+#### SEO & Performance
+- [ ] **Sitemap.xml** — auto-generated sitemap with all published posts
+- [ ] **Lazy loading images** — lazy load in all 4 themes
+- [ ] **Open Graph preview** — preview OG card before publishing
+
+#### Pre-ecommerce
+- [ ] **Granular permissions** — custom roles with fine-grained permissions
+- [ ] **API keys** — external API access with scoped keys
+- [ ] **Multi-author support** — multiple authors with public profiles
+
+---
+
+### Ecommerce (WooCommerce-style module)
+- [ ] **Products** — CRUD with images, variants, stock, price
+- [ ] **Categories** — product categories separate from blog categories
+- [ ] **Shopping cart** — persistent cart with localStorage + DB sync
+- [ ] **Checkout** — order flow with address and payment
+- [ ] **Orders** — order management in admin (pending, processing, shipped, delivered)
+- [ ] **Payment gateways** — Stripe + PayPal integration
+- [ ] **Inventory** — stock tracking, low stock alerts
+- [ ] **Discounts & coupons** — percentage and fixed amount coupons
+- [ ] **Product reviews** — authenticated reviews with rating
+- [ ] **Order emails** — confirmation and status update emails
+
 ---
 
 ## Español
@@ -453,6 +497,50 @@ cd ../frontend && npm install && npm run dev      # Frontend en :5173
 - [x] Publicación programada — campo `publish_at` + scheduler automático cada 60s
 - [x] Backup automático — pg_dump cada 24h, conserva los últimos 30, ruta configurable
 - [x] **Dashboard de monitoreo** — panel en tiempo real: estado DB, Redis y estadísticas
+
+
+### Siguiente — Mejoras pre-ecommerce
+
+#### Calidad y robustez
+- [ ] **Tests unitarios e integración** — suite cargo test para handlers, modelos y servicios
+- [ ] **Rate limiting diferenciado** — más estricto en auth, más permisivo en lectura
+- [ ] **Logs estructurados** — niveles info/warn/error, formato exportable
+
+#### UX del admin
+- [ ] **Drag & drop de posts** — reordenar posts desde la lista
+- [ ] **Autosave en editor** — guardar borrador automáticamente cada 30s
+- [ ] **Acciones en masa** — publicar/eliminar/despublicar varios posts a la vez
+- [ ] **Gráfica de visitas** — barras de visitas diarias últimos 30 días en el home
+
+#### Blog público
+- [ ] **Tabla de contenidos** — TOC automático en posts largos
+- [ ] **Modo lectura** — tipografía optimizada sin distracciones
+- [ ] **Botones de compartir** — compartir nativo en Twitter/X, LinkedIn, WhatsApp
+- [ ] **Tiempo de lectura** — estimado visible en cada post
+
+#### SEO y performance
+- [ ] **Sitemap.xml** — sitemap automático con todos los posts publicados
+- [ ] **Lazy loading de imágenes** — carga diferida en los 4 themes
+- [ ] **Preview Open Graph** — previsualizar tarjeta OG antes de publicar
+
+#### Pre-ecommerce
+- [ ] **Permisos granulares** — roles custom con permisos detallados
+- [ ] **API keys** — acceso externo con claves de API con alcance definido
+- [ ] **Soporte multi-autor** — múltiples autores con perfiles públicos
+
+---
+
+### Ecommerce (módulo estilo WooCommerce)
+- [ ] **Productos** — CRUD con imágenes, variantes, stock, precio
+- [ ] **Categorías de productos** — separadas de las categorías del blog
+- [ ] **Carrito de compras** — carrito persistente con localStorage + sync DB
+- [ ] **Checkout** — flujo de pedido con dirección y pago
+- [ ] **Pedidos** — gestión en admin (pendiente, procesando, enviado, entregado)
+- [ ] **Pasarelas de pago** — integración Stripe + PayPal
+- [ ] **Inventario** — seguimiento de stock, alertas de stock bajo
+- [ ] **Descuentos y cupones** — cupones de porcentaje y monto fijo
+- [ ] **Reseñas de productos** — reseñas autenticadas con calificación
+- [ ] **Emails de pedidos** — confirmación y actualización de estado por email
 
 ---
 
