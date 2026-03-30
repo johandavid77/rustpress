@@ -47,6 +47,32 @@ export default function Dashboard() {
       .catch(() => setActiveTheme('dark'))
   }, [])
 
+  const toggleSelect = (id: string) => {
+    setSelected(prev => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }
+
+  const selectAll = () => {
+    if (selected.size === posts.length) setSelected(new Set())
+    else setSelected(new Set(posts.map((p: any) => p.id)))
+  }
+
+  const bulkAction = async (action: 'publish' | 'unpublish' | 'delete') => {
+    if (selected.size === 0) return
+    if (action === 'delete' && !confirm(`¿Eliminar ${selected.size} posts?`)) return
+    const ids = Array.from(selected)
+    await Promise.all(ids.map(id => {
+      if (action === 'publish')   return postsApi.publish(id)
+      if (action === 'unpublish') return postsApi.unpublish(id)
+      if (action === 'delete')    return postsApi.delete(id)
+    }))
+    setSelected(new Set())
+    loadPosts()
+  }
+
   const loadPosts = async () => {
     setLoading(true)
     try {
@@ -227,6 +253,10 @@ function PostsView({ posts, loading, onReload, onNewPost, onEditPost }: {
       )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {posts.map((post: any) => (
+          <div key={post.id} className="relative">
+            <input type="checkbox" checked={selected.has(post.id)}
+              onChange={e => { e.stopPropagation(); toggleSelect(post.id) }}
+              className="absolute top-3 left-3 z-10 w-4 h-4 accent-[#7c6aff] cursor-pointer" />
           <div key={post.id} onClick={() => onEditPost(post)}
             className="bg-[#111118] border border-[#2a2a3a] rounded-xl p-6 flex flex-col gap-3 hover:border-[#7c6aff] transition-all cursor-pointer group">
             <div className="flex items-center justify-between">
