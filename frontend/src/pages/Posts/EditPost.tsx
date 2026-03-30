@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { postsApi } from '../../api/posts'
 import RichEditor from '../../components/Editor/RichEditor'
 import CategorySelector from '../../components/CategorySelector/CategorySelector'
+import OGPreview from '../../components/OGPreview/OGPreview'
 
 interface Props {
   post: any
@@ -172,6 +173,7 @@ export default function EditPost({ post, onBack, onSaved }: Props) {
             <input className="w-full px-4 py-3 bg-[#1a1a24] border border-[#2a2a3a] rounded-xl text-white text-sm outline-none focus:border-[#7c6aff] placeholder-[#444455]"
               placeholder="https://..."
               value={ogImage} onChange={e => { setOgImage(e.target.value); markDirty() }} />
+            <OGPreview title={seoTitle || title} description={seoDescription || excerpt} image={ogImage || undefined} />
           </div>
           <div>
             <label className="block text-xs font-semibold text-[#888899] uppercase tracking-widest mb-2 font-mono">Idioma</label>
