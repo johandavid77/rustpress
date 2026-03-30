@@ -18,6 +18,8 @@ export default function EditPost({ post, onBack, onSaved }: Props) {
   const [ogImage, setOgImage]           = useState(post.og_image ?? '')
   const [language, setLanguage]         = useState(post.language ?? 'es')
 
+  const markDirty = () => setIsDirty(true)
+
   // Marcar como modificado al cambiar cualquier campo
   const markDirty = () => setIsDirty(true)
   const [publishAt, setPublishAt]       = useState(post.publish_at ? new Date(post.publish_at).toISOString().slice(0,16) : '')
@@ -30,6 +32,25 @@ export default function EditPost({ post, onBack, onSaved }: Props) {
     const t = setTimeout(async () => {
       try {
         await postsApi.update(post.id, { title, excerpt, content, language,
+          seo_title: seoTitle || undefined,
+          seo_description: seoDescription || undefined,
+          og_image: ogImage || undefined,
+          publish_at: publishAt ? new Date(publishAt).toISOString() : undefined,
+        })
+        setAutoSaved(new Date())
+        setIsDirty(false)
+      } catch(e) { console.error('Autosave failed:', e) }
+    }, 30000)
+    return () => clearTimeout(t)
+  }, [isDirty, title, excerpt, content, language, seoTitle, seoDescription, ogImage, publishAt])
+
+  // Autosave cada 30s si hay cambios
+  useEffect(() => {
+    if (!isDirty) return
+    const t = setTimeout(async () => {
+      try {
+        await postsApi.update(post.id, {
+          title, excerpt, content, language,
           seo_title: seoTitle || undefined,
           seo_description: seoDescription || undefined,
           og_image: ogImage || undefined,
@@ -90,6 +111,14 @@ export default function EditPost({ post, onBack, onSaved }: Props) {
           )}
           {isDirty && !autoSaved && (
             <span className="text-xs font-mono text-[#555566]">● Sin guardar</span>
+          )}
+          {autoSaved && (
+            <span className="text-xs font-mono text-[#555566]">
+              ✓ Guardado {autoSaved.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}
+            </span>
+          )}
+          {isDirty && (
+            <span className="text-xs font-mono text-yellow-500/60">● Sin guardar</span>
           )}
           <button onClick={handleTogglePublish} disabled={saving}
             className={`px-4 py-2 border rounded-lg text-sm font-bold disabled:opacity-50
