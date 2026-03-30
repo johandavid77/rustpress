@@ -355,19 +355,19 @@ docker compose -f docker-compose.prod.yml run --rm certbot certonly \
 
 #### Admin UX
 - [ ] **Drag & drop post ordering** — reorder posts from the list view
-- [ ] **Autosave editor** — auto-save draft every 30s while writing
+- [x] **Autosave editor** — auto-save draft every 30s while writing
 - [ ] **Bulk actions** — publish/delete/unpublish multiple posts at once
 - [ ] **Visits chart** — bar chart of daily visits for last 30 days on home dashboard
 
 #### Public Blog
 - [ ] **Table of contents** — auto-generated TOC for long posts
 - [ ] **Reading mode** — distraction-free reading with optimized typography
-- [ ] **Social share buttons** — native share for Twitter/X, LinkedIn, WhatsApp
-- [ ] **Reading time** — estimated read time shown on each post
+- [x] **Social share buttons** — native share for Twitter/X, LinkedIn, WhatsApp
+- [x] **Reading time** — estimated read time shown on each post
 
 #### SEO & Performance
-- [ ] **Sitemap.xml** — auto-generated sitemap with all published posts
-- [ ] **Lazy loading images** — lazy load in all 4 themes
+- [x] **Sitemap.xml** — auto-generated sitemap with all published posts
+- [x] **Lazy loading images** — lazy load in all 4 themes
 - [ ] **Open Graph preview** — preview OG card before publishing
 
 #### Pre-ecommerce
@@ -508,18 +508,18 @@ cd ../frontend && npm install && npm run dev      # Frontend en :5173
 
 #### UX del admin
 - [ ] **Drag & drop de posts** — reordenar posts desde la lista
-- [ ] **Autosave en editor** — guardar borrador automáticamente cada 30s
+- [x] **Autosave en editor** — guardar borrador automáticamente cada 30s
 - [ ] **Acciones en masa** — publicar/eliminar/despublicar varios posts a la vez
 - [ ] **Gráfica de visitas** — barras de visitas diarias últimos 30 días en el home
 
 #### Blog público
 - [ ] **Tabla de contenidos** — TOC automático en posts largos
 - [ ] **Modo lectura** — tipografía optimizada sin distracciones
-- [ ] **Botones de compartir** — compartir nativo en Twitter/X, LinkedIn, WhatsApp
-- [ ] **Tiempo de lectura** — estimado visible en cada post
+- [x] **Botones de compartir** — compartir nativo en Twitter/X, LinkedIn, WhatsApp
+- [x] **Tiempo de lectura** — estimado visible en cada post
 
 #### SEO y performance
-- [ ] **Sitemap.xml** — sitemap automático con todos los posts publicados
+- [x] **Sitemap.xml** — sitemap automático con todos los posts publicados
 - [ ] **Lazy loading de imágenes** — carga diferida en los 4 themes
 - [ ] **Preview Open Graph** — previsualizar tarjeta OG antes de publicar
 
