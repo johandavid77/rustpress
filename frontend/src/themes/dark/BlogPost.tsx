@@ -2,7 +2,11 @@ import { useState, useEffect } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { apiClient } from '../../api/client'
 import RelatedPosts from '../../components/RelatedPosts/RelatedPosts'
+import ShareButtons from '../../components/ShareButtons/ShareButtons'
+import { readingTime } from '../../utils/readingTime'
 import RelatedPosts from '../../components/RelatedPosts/RelatedPosts'
+import ShareButtons from '../../components/ShareButtons/ShareButtons'
+import { readingTime } from '../../utils/readingTime'
 import Comments from '../../components/Comments/Comments'
 
 export default function BlogPost() {
