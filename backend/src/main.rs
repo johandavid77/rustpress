@@ -47,10 +47,18 @@ async fn main() -> anyhow::Result<()> {
     let redis = crate::cache::create_redis_pool(&cfg.redis_url).await.expect("Failed to connect to Redis");
     let redis_data = web::Data::new(tokio::sync::Mutex::new(redis));
     let cfg_data  = web::Data::new(cfg.clone());
-    // Rate limiting: 60 requests/min por IP
+    // Rate limiting diferenciado por scope
+    // Auth: estricto — 10 req/min (burst 5)
+    let governor_auth = GovernorConfigBuilder::default()
+        .requests_per_second(6)   // 1 req cada 6s = 10/min
+        .burst_size(5)
+        .finish()
+        .unwrap();
+
+    // API general: permisivo — 200 req/min (burst 50)
     let governor_conf = GovernorConfigBuilder::default()
         .requests_per_second(1)
-        .burst_size(60)
+        .burst_size(200)
         .finish()
         .unwrap();
 
@@ -86,7 +94,11 @@ async fn main() -> anyhow::Result<()> {
             )
             .service(
                 web::scope("/api/v1")
+            .service(
+                web::scope("/auth")
+                    .wrap(Governor::new(&governor_auth))
                     .configure(handlers::auth::configure)
+            )
                     .configure(handlers::posts::configure)
                     .configure(handlers::media::configure)
                     .configure(handlers::users::configure)
