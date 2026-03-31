@@ -17,6 +17,12 @@ pub struct User {
     pub is_active:  bool,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
+    pub bio:        Option<String>,
+    pub avatar:     Option<String>,
+    pub website:    Option<String>,
+    pub twitter:    Option<String>,
+    pub github:     Option<String>,
+    pub public:     bool,
 }
 
 /// Safe public view (no password)

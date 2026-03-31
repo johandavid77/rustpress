@@ -11,6 +11,11 @@ use crate::{
 
 pub fn configure(cfg: &mut web::ServiceConfig) {
     cfg.service(
+                web::scope("/authors")
+                    .route("/{username}", web::get().to(get_author_profile))
+            );
+    cfg.route("/users/me/profile", web::put().to(update_profile));
+    cfg.service(
         web::scope("/users")
             .route("",      web::get().to(list_users))
             .route("",      web::post().to(create_user))
@@ -173,4 +178,29 @@ pub async fn get_author_profile(
         "posts":      posts,
         "post_count": posts.len()
     })))
+}
+
+// — GET /authors/:username — perfil público de autor
+
+// — PUT /users/me/profile — actualizar perfil propio
+pub async fn update_profile(
+    pool: web::Data<sqlx::PgPool>,
+    auth: crate::middleware::auth::AuthUserWithRole,
+    body: web::Json<serde_json::Value>,
+) -> crate::errors::AppResult<actix_web::HttpResponse> {
+    sqlx::query!(
+        "UPDATE users SET bio=$1, avatar=$2, website=$3, twitter=$4, github=$5, public=$6
+         WHERE id=$7",
+        body["bio"].as_str(),
+        body["avatar"].as_str(),
+        body["website"].as_str(),
+        body["twitter"].as_str(),
+        body["github"].as_str(),
+        body["public"].as_bool().unwrap_or(true),
+        auth.user_id
+    )
+    .execute(pool.get_ref())
+    .await?;
+
+    Ok(actix_web::HttpResponse::Ok().json(serde_json::json!({"ok": true})))
 }
