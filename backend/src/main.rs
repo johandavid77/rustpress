@@ -119,7 +119,8 @@ async fn main() -> anyhow::Result<()> {
                     .configure(handlers::feed::configure)
                     .configure(handlers::categories::configure)
                     .configure(handlers::webhooks::configure)
-                    .configure(handlers::api_keys::configure)  // 👈 nuevo
+                    .configure(handlers::api_keys::configure)
+                    .configure(handlers::roles::configure)  // 👈 nuevo
             )
             .route("/health", web::get().to(health_check))
             .route("/health/detailed", web::get().to(handlers::settings::health_detailed))
