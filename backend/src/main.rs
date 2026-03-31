@@ -16,11 +16,20 @@ use rustcms_lib::{
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    tracing_subscriber::registry()
-        .with(tracing_subscriber::EnvFilter::try_from_default_env()
-            .unwrap_or_else(|_| "rustcms=debug,actix_web=info".into()))
-        .with(tracing_subscriber::fmt::layer())
-        .init();
+    let log_format = std::env::var("LOG_FORMAT").unwrap_or_else(|_| "pretty".into());
+    let filter = tracing_subscriber::EnvFilter::try_from_default_env()
+        .unwrap_or_else(|_| "rustcms=debug,actix_web=info".into());
+    if log_format == "json" {
+        tracing_subscriber::registry()
+            .with(filter)
+            .with(tracing_subscriber::fmt::layer().json())
+            .init();
+    } else {
+        tracing_subscriber::registry()
+            .with(filter)
+            .with(tracing_subscriber::fmt::layer())
+            .init();
+    }
 
     dotenvy::dotenv().ok();
     let cfg: AppConfig = AppConfig::from_env()?;
