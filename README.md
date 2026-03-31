@@ -372,7 +372,7 @@ docker compose -f docker-compose.prod.yml run --rm certbot certonly \
 
 #### Pre-ecommerce
 - [ ] **Granular permissions** — custom roles with fine-grained permissions
-- [ ] **API keys** — external API access with scoped keys
+- [x] **API keys** — external API access with scoped keys
 - [ ] **Multi-author support** — multiple authors with public profiles
 
 ---
@@ -525,7 +525,7 @@ cd ../frontend && npm install && npm run dev      # Frontend en :5173
 
 #### Pre-ecommerce
 - [ ] **Permisos granulares** — roles custom con permisos detallados
-- [ ] **API keys** — acceso externo con claves de API con alcance definido
+- [x] **API keys** — acceso externo con claves de API con alcance definido
 - [ ] **Soporte multi-autor** — múltiples autores con perfiles públicos
 
 ---
