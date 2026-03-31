@@ -148,7 +148,7 @@ export default function Dashboard() {
         </header>
 
         <main className="flex-1 overflow-auto p-10">
-          {view === 'home' && (<>
+          {view === 'home' && (
             <div className="max-w-5xl">
               <div className="mb-8">
                 <h1 className="text-4xl font-black tracking-tight mb-1">{t('dashboard.summary')}</h1>
