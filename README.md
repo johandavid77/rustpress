@@ -350,8 +350,8 @@ docker compose -f docker-compose.prod.yml run --rm certbot certonly \
 
 #### Quality & Robustness
 - [ ] **Unit & integration tests** — cargo test suite for handlers, models and services
-- [ ] **Differentiated rate limiting** — stricter on auth endpoints, relaxed on reads
-- [ ] **Structured logs** — info/warn/error levels, exportable format
+- [x] **Differentiated rate limiting** — stricter on auth endpoints, relaxed on reads
+- [x] **Structured logs** — info/warn/error levels, exportable format
 
 #### Admin UX
 - [ ] **Drag & drop post ordering** — reorder posts from the list view
@@ -503,8 +503,8 @@ cd ../frontend && npm install && npm run dev      # Frontend en :5173
 
 #### Calidad y robustez
 - [ ] **Tests unitarios e integración** — suite cargo test para handlers, modelos y servicios
-- [ ] **Rate limiting diferenciado** — más estricto en auth, más permisivo en lectura
-- [ ] **Logs estructurados** — niveles info/warn/error, formato exportable
+- [x] **Rate limiting diferenciado** — más estricto en auth, más permisivo en lectura
+- [x] **Logs estructurados** — niveles info/warn/error, formato exportable
 
 #### UX del admin
 - [ ] **Drag & drop de posts** — reordenar posts desde la lista
