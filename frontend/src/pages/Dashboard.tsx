@@ -155,6 +155,7 @@ export default function Dashboard() {
                 <p className="text-[#888899] text-sm">{t('dashboard.welcome')}, {user?.username}</p>
               </div>
               <Stats />
+            <ViewsChart />
             </div>
           )}
           {view === 'posts' && !showNewPost && !editingPost && (
