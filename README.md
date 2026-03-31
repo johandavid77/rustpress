@@ -371,7 +371,7 @@ docker compose -f docker-compose.prod.yml run --rm certbot certonly \
 - [x] **Open Graph preview** — preview OG card before publishing
 
 #### Pre-ecommerce
-- [ ] **Granular permissions** — custom roles with fine-grained permissions
+- [x] **Granular permissions** — custom roles with fine-grained permissions
 - [x] **API keys** — external API access with scoped keys
 - [x] **Multi-author support** — multiple authors with public profiles
 
@@ -524,7 +524,7 @@ cd ../frontend && npm install && npm run dev      # Frontend en :5173
 - [x] **Preview Open Graph** — previsualizar tarjeta OG antes de publicar
 
 #### Pre-ecommerce
-- [ ] **Permisos granulares** — roles custom con permisos detallados
+- [x] **Permisos granulares** — roles custom con permisos detallados
 - [x] **API keys** — acceso externo con claves de API con alcance definido
 - [x] **Soporte multi-autor** — múltiples autores con perfiles públicos
 
