@@ -7,3 +7,4 @@ pub mod menu;
 pub mod comment;
 pub mod category;
 pub mod webhook;
+pub mod api_key;

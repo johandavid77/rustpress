@@ -9,3 +9,4 @@ pub mod settings;pub mod comments;
 pub mod feed;
 pub mod categories;
 pub mod webhooks;
+pub mod api_keys;
