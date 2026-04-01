@@ -13,3 +13,4 @@ pub mod api_keys;
 pub mod roles;
 pub mod products_shop;
 pub mod cart;
+pub mod orders;
