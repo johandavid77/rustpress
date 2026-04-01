@@ -356,8 +356,8 @@ docker compose -f docker-compose.prod.yml run --rm certbot certonly \
 #### Admin UX
 - [ ] **Drag & drop post ordering** — reorder posts from the list view
 - [x] **Autosave editor** — auto-save draft every 30s while writing
-- [ ] **Bulk actions** — publish/delete/unpublish multiple posts at once
-- [ ] **Visits chart** — bar chart of daily visits for last 30 days on home dashboard
+- [x] **Bulk actions** — publish/delete/unpublish multiple posts at once
+- [x] **Visits chart** — bar chart of daily visits for last 30 days on home dashboard
 
 #### Public Blog
 - [x] **Table of contents** — auto-generated TOC for long posts
@@ -378,12 +378,12 @@ docker compose -f docker-compose.prod.yml run --rm certbot certonly \
 ---
 
 ### Ecommerce (WooCommerce-style module)
-- [ ] **Products** — CRUD with images, variants, stock, price
-- [ ] **Categories** — product categories separate from blog categories
-- [ ] **Shopping cart** — persistent cart with localStorage + DB sync
+- [x] **Products** — CRUD with images, variants, stock, price
+- [x] **Categories** — product categories separate from blog categories
+- [x] **Shopping cart** — persistent cart with localStorage + DB sync
 - [ ] **Checkout** — order flow with address and payment
-- [ ] **Orders** — order management in admin (pending, processing, shipped, delivered)
-- [ ] **Payment gateways** — Stripe + PayPal integration
+- [x] **Orders** — order management in admin (pending, processing, shipped, delivered)
+- [ ] **Payment gateways** (arquitectura modular lista) — Stripe + PayPal integration
 - [ ] **Inventory** — stock tracking, low stock alerts
 - [ ] **Discounts & coupons** — percentage and fixed amount coupons
 - [ ] **Product reviews** — authenticated reviews with rating
