@@ -447,3 +447,42 @@ pub async fn views_by_day(
 
     Ok(actix_web::HttpResponse::Ok().json(data))
 }
+
+// GET /posts/stats/views — datos de vistas por día para el ViewsChart
+pub async fn get_views_chart(
+    pool: web::Data<sqlx::PgPool>,
+    _auth: crate::middleware::auth::AuthUserWithRole,
+) -> crate::errors::AppResult<actix_web::HttpResponse> {
+    let rows = sqlx::query!(
+        r#"SELECT
+            DATE(created_at) as "date!: chrono::NaiveDate",
+            COUNT(*) as "count!"
+           FROM posts
+           WHERE created_at >= NOW() - INTERVAL '30 days'
+           GROUP BY DATE(created_at)
+           ORDER BY DATE(created_at) ASC"#
+    ).fetch_all(pool.get_ref()).await?;
+
+    // También incluir vistas totales por día si la tabla lo permite
+    let views = sqlx::query!(
+        r#"SELECT
+            DATE(updated_at) as "date!: chrono::NaiveDate",
+            SUM(views)::bigint as "views!"
+           FROM posts
+           WHERE updated_at >= NOW() - INTERVAL '30 days'
+             AND status = 'published'
+           GROUP BY DATE(updated_at)
+           ORDER BY DATE(updated_at) ASC"#
+    ).fetch_all(pool.get_ref()).await?;
+
+    let total: i64 = views.iter().map(|r| r.views).sum();
+    let data: Vec<_> = views.iter().map(|r| serde_json::json!({
+        "date":  r.date.to_string(),
+        "views": r.views,
+    })).collect();
+
+    Ok(actix_web::HttpResponse::Ok().json(serde_json::json!({
+        "data": data,
+        "total": total,
+    })))
+}
