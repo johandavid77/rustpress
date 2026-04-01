@@ -21,6 +21,7 @@ import ApiKeys from './Settings/ApiKeys'
 import Profile from './Settings/Profile'
 import RolesAdmin from './Settings/RolesAdmin'
 import Products from './Shop/Products'
+import SortablePosts from '../components/SortablePosts/SortablePosts'
 import Orders from './Shop/Orders'
 import ViewsChart from '../components/ViewsChart/ViewsChart'
 
@@ -223,9 +224,13 @@ export default function Dashboard() {
 
 function PostsView({ posts, loading, onReload, onNewPost, onEditPost, selected, toggleSelect }: {
   posts: any[], loading: boolean, onReload: () => void,
-  onNewPost: () => void, onEditPost: (post: any) => void
+  onNewPost: () => void, onEditPost: (post: any) => void,
+  selected: Set<string>, toggleSelect: (id: string, e: React.MouseEvent) => void
 }) {
   const { t } = useTranslation()
+  const [sortView, setSortView] = useState(false)
+  const [localPosts, setLocalPosts] = useState(posts)
+  useEffect(() => { setLocalPosts(posts) }, [posts])
   return (
     <div className="max-w-4xl">
       <div className="flex items-start justify-between mb-8">
@@ -238,6 +243,10 @@ function PostsView({ posts, loading, onReload, onNewPost, onEditPost, selected, 
             onClick={onReload}>{t('posts.reload')}</button>
           <button className="px-5 py-2.5 bg-[#7c6aff] rounded-lg text-sm font-bold hover:bg-[#6b5be6]"
             onClick={onNewPost}>{t('posts.new')}</button>
+          <button onClick={() => setSortView(v => !v)}
+            className={`px-3 py-2 border rounded-lg text-xs font-mono transition-all ${sortView ? 'border-[#7c6aff] text-[#7c6aff]' : 'border-[#2a2a3a] text-[#888899] hover:border-[#7c6aff]'}`}>
+            ↕ Ordenar
+          </button>
         </div>
       </div>
       {loading && <p className="text-[#888899] font-mono text-sm">{t('posts.loading')}</p>}
