@@ -51,6 +51,7 @@ export default function Dashboard() {
       .catch(() => setActiveTheme('dark'))
   }, [])
 
+  const [selected, setSelected] = useState<Set<string>>(new Set())
   const toggleSelect = (id: string, e: React.MouseEvent) => {
     e.stopPropagation()
     setSelected(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n })
