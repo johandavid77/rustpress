@@ -1,6 +1,9 @@
 import Shop from './pages/public/Shop'
 import Cart from './pages/public/Cart'
 import Checkout from './pages/public/Checkout'
+import Shop from './pages/public/Shop'
+import Cart from './pages/public/Cart'
+import Checkout from './pages/public/Checkout'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthStore } from './store/authStore'
 import Login from './pages/Login'
@@ -23,6 +26,9 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/blog" />} />
         <Route path="/blog" element={<ThemedBlogIndex />} />
+        <Route path='/shop' element={<Shop />} />
+        <Route path='/cart' element={<Cart />} />
+        <Route path='/checkout' element={<Checkout />} />
         <Route path="/blog/:slug" element={<ThemedBlogPost />} />
         <Route path="/author/:id" element={<AuthorProfile />} />
         <Route path="/preview/:id" element={<PostPreview />} />
