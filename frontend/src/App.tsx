@@ -1,3 +1,6 @@
+import Shop from './pages/public/Shop'
+import Cart from './pages/public/Cart'
+import Checkout from './pages/public/Checkout'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthStore } from './store/authStore'
 import Login from './pages/Login'
