@@ -1,4 +1,5 @@
 import Shop from './pages/public/Shop'
+import Bookings from './pages/public/Bookings'
 import Cart from './pages/public/Cart'
 import Checkout from './pages/public/Checkout'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
@@ -23,6 +24,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/blog" />} />
         <Route path="/blog" element={<ThemedBlogIndex />} />
+        <Route path='/bookings' element={<Bookings />} />
         <Route path='/shop' element={<Shop />} />
         <Route path='/cart' element={<Cart />} />
         <Route path='/checkout' element={<Checkout />} />
