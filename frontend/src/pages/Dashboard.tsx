@@ -180,7 +180,7 @@ export default function Dashboard() {
           {view === 'users'    && <UsersAdmin />}
           {view === 'comments'    && <CommentsAdmin />}
           {view === 'categories'  && <CategoriesAdmin />}
-          {view === 'webhooks' | 'health'    && <WebhooksAdmin />}
+          {(view === 'webhooks' || view === 'health') && <WebhooksAdmin />}
           {view === 'plugins'  && <PluginsHome onNavigate={(v) => setView(v as any)} />}
           {view === 'themes' && (
             <div className="max-w-3xl">
