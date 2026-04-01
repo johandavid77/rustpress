@@ -78,6 +78,11 @@ image = { version = "0.25", features = ["jpeg", "png", "webp"] }
 # Redis cache
 redis = { version = "0.25", features = ["tokio-comp", "connection-manager"] }
 
+# Slug generation
+
+# Decimal
+bigdecimal = { version = "0.4", features = ["serde"] }
+
 # Hashing para API keys
 sha2 = "0.10"
 

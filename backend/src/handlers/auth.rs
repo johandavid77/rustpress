@@ -83,7 +83,7 @@ async fn login(
 ) -> AppResult<HttpResponse> {
     let user: User = sqlx::query_as!(
         User,
-        "SELECT * FROM users WHERE email = $1 AND is_active = true",
+        "SELECT id, username, email, password, role_id, is_active, created_at, updated_at, bio, avatar, website, twitter, github, public FROM users WHERE email = $1 AND is_active = true",
         body.email
     )
     .fetch_optional(pool.get_ref())
@@ -110,7 +110,7 @@ async fn login(
 async fn me(auth: AuthUser, pool: Data<PgPool>) -> AppResult<HttpResponse> {
     let user: User = sqlx::query_as!(
         User,
-        "SELECT * FROM users WHERE id = $1",
+        "SELECT id, username, email, password, role_id, is_active, created_at, updated_at, bio, avatar, website, twitter, github, public FROM users WHERE id = $1",
         auth.0.sub
     )
     .fetch_optional(pool.get_ref())
@@ -139,7 +139,7 @@ async fn forgot_password(
 ) -> AppResult<HttpResponse> {
     // Busca el usuario (si no existe respondemos igual para no revelar emails)
     let user = sqlx::query!(
-        "SELECT id, email, username FROM users WHERE email = $1 AND is_active = true",
+        "SELECT id, username, email, password, role_id, is_active, created_at, updated_at, bio, avatar, website, twitter, github, public FROM users WHERE email = $1 AND is_active = true",
         body.email
     )
     .fetch_optional(pool.get_ref())

@@ -103,11 +103,7 @@ async fn main() -> anyhow::Result<()> {
             )
             .service(
                 web::scope("/api/v1")
-            .service(
-                web::scope("/auth")
-                    .wrap(Governor::new(&governor_auth))
-                    .configure(handlers::auth::configure)
-            )
+            .configure(handlers::auth::configure)
                     .configure(handlers::posts::configure)
                     .configure(handlers::media::configure)
                     .configure(handlers::users::configure)
@@ -120,7 +116,8 @@ async fn main() -> anyhow::Result<()> {
                     .configure(handlers::categories::configure)
                     .configure(handlers::webhooks::configure)
                     .configure(handlers::api_keys::configure)
-                    .configure(handlers::roles::configure)  // 👈 nuevo
+                    .configure(handlers::roles::configure)
+                    .configure(handlers::products_shop::configure)  // 👈 nuevo
             )
             .route("/health", web::get().to(health_check))
             .route("/health/detailed", web::get().to(handlers::settings::health_detailed))

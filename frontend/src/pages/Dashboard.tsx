@@ -162,7 +162,7 @@ export default function Dashboard() {
             </div>
           )}
           {view === 'posts' && !showNewPost && !editingPost && (
-            <PostsView posts={posts} loading={loading} onReload={loadPosts}
+            <PostsView posts={posts} loading={loading} onReload={loadPosts} selected={selected} toggleSelect={toggleSelect}
               onNewPost={() => setShowNewPost(true)}
               onEditPost={(post) => setEditingPost(post)} />
           )}
@@ -218,7 +218,7 @@ export default function Dashboard() {
   )
 }
 
-function PostsView({ posts, loading, onReload, onNewPost, onEditPost }: {
+function PostsView({ posts, loading, onReload, onNewPost, onEditPost, selected, toggleSelect }: {
   posts: any[], loading: boolean, onReload: () => void,
   onNewPost: () => void, onEditPost: (post: any) => void
 }) {
