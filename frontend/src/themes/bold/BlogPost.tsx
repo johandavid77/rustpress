@@ -120,7 +120,7 @@ export default function BlogPostBold() {
             prose-hr:border-gray-800"
           <TableOfContents content={post.content ?? ''} theme="bold" />
           <div dangerouslySetInnerHTML={{ __html: post.content ?? '' }}
-          />
+          ></div>
           <Comments postId={post.id} theme="bold" 
         />
 

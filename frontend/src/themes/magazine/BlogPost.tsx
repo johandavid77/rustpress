@@ -124,7 +124,7 @@ export default function BlogPostMagazine() {
           style={{ fontFamily: 'Georgia, serif', columns: '2', columnGap: '2.5rem' }}
           <TableOfContents content={post.content ?? ''} theme="magazine" />
           <div dangerouslySetInnerHTML={{ __html: post.content ?? '' }}
-          />
+          ></div>
           <Comments postId={post.id} theme="magazine" 
         />
 
