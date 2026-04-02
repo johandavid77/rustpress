@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { apiClient } from '../../api/client'
-import RelatedPosts from '../../components/RelatedPosts/RelatedPosts'
 import ShareButtons from '../../components/ShareButtons/ShareButtons'
 import TableOfContents from '../../components/TableOfContents/TableOfContents'
-import { readingTime } from '../../utils/readingTime'
 import Comments from '../../components/Comments/Comments'
 
 export default function BlogPost() {
@@ -26,10 +24,11 @@ export default function BlogPost() {
   useEffect(() => {
     if (!post) return
     document.title = `${post.seo_title ?? post.title} — RustCMS`
+    return () => { document.title = 'RustCMS' }
   }, [post])
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center bg-[#fafaf8]">
       <div className="w-6 h-6 border-2 border-[#dc2626] border-t-transparent rounded-full animate-spin" />
     </div>
   )
@@ -38,8 +37,8 @@ export default function BlogPost() {
 
   return (
     <div className="min-h-screen bg-[#fafaf8] text-[#1a1a1a]">
-      <header className="border-b border-gray-200 px-6 py-4 flex items-center justify-between max-w-4xl mx-auto">
-        <Link to="/blog" className="text-sm font-mono text-[#dc2626] hover:underline">← Blog</Link>
+      <header className="border-b border-gray-200 px-6 py-4 max-w-4xl mx-auto flex items-center justify-between">
+        <Link to="/blog" className="text-sm font-mono hover:underline" style={{color: '#dc2626'}}>← Blog</Link>
         <ShareButtons title={post.title} url={window.location.href} />
       </header>
 
@@ -49,15 +48,14 @@ export default function BlogPost() {
           {post.excerpt && (
             <p className="text-lg text-gray-500 mb-6 leading-relaxed">{post.excerpt}</p>
           )}
-          <div className="text-xs text-gray-400 font-mono">
+          <p className="text-xs text-gray-400 font-mono">
             {new Date(post.published_at ?? post.created_at).toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' })}
-            {' · '}{readingTime(post.content ?? '')} min lectura
-          </div>
+          </p>
         </div>
 
         <TableOfContents content={post.content} theme="magazine" />
 
-        <article className="prose  max-w-none prose-headings:font-serif">
+        <article className="prose  max-w-none  mb-16">
           <div dangerouslySetInnerHTML={{ __html: post.content }} />
         </article>
 
@@ -66,8 +64,6 @@ export default function BlogPost() {
         <div className="border-t border-gray-200 mt-16 pt-8">
           <Link to="/blog" className="text-sm font-mono text-gray-400 hover:text-[#dc2626]">← Volver al blog</Link>
         </div>
-
-        <RelatedPosts postId={post.id} theme="magazine" />
       </main>
     </div>
   )
