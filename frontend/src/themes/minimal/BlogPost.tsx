@@ -119,6 +119,7 @@ export default function BlogPostMinimal() {
             <TableOfContents content={post.content} theme="minimal" />
           <div dangerouslySetInnerHTML={{ __html: post.content}}
           ></div>
+            </article>
           <Comments postId={post.id} theme="minimal"  />
 
         <div className="border-t border-gray-100 mt-16 pt-8">

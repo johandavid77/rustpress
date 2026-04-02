@@ -125,6 +125,7 @@ export default function BlogPostMagazine() {
             <TableOfContents content={post.content} theme="magazine" />
           <div dangerouslySetInnerHTML={{ __html: post.content}}
           ></div>
+            </article>
           <Comments postId={post.id} theme="magazine"  />
 
         <div className="border-t-4 border-black mt-12 pt-6 flex items-center justify-between">
