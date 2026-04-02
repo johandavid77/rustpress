@@ -102,7 +102,7 @@ export default function BlogPost() {
             prose-blockquote:border-l-4 prose-blockquote:border-[#7c6aff] prose-blockquote:text-[#888899]
             prose-img:rounded-xl prose-img:my-6
             prose-hr:border-[#2a2a3a]"
-            <TableOfContents content={post.content || ""} theme="dark" />
+            <TableOfContents content={post.content} theme="dark" />
           <div dangerouslySetInnerHTML={{ __html: post.content ?? ''}}</div>
         <Comments postId={post.id} theme="dark" />
         <div className="border-t border-[#2a2a3a] mt-16 pt-8">
