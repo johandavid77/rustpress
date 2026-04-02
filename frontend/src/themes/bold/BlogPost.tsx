@@ -121,8 +121,7 @@ export default function BlogPostBold() {
           <TableOfContents content={post.content ?? ''} theme="bold" />
           <div dangerouslySetInnerHTML={{ __html: post.content ?? '' }}
           ></div>
-          <Comments postId={post.id} theme="bold" 
-        />
+          <Comments postId={post.id} theme="bold"  />
 
         <div className="border-t-2 border-gray-800 mt-16 pt-8 flex items-center justify-between">
           <Link to="/blog" className="text-xs font-mono border-2 border-gray-700 px-4 py-2 hover:border-yellow-400 hover:text-yellow-400 transition-all">

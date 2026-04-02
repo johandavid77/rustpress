@@ -125,8 +125,7 @@ export default function BlogPostMagazine() {
           <TableOfContents content={post.content ?? ''} theme="magazine" />
           <div dangerouslySetInnerHTML={{ __html: post.content ?? '' }}
           ></div>
-          <Comments postId={post.id} theme="magazine" 
-        />
+          <Comments postId={post.id} theme="magazine"  />
 
         <div className="border-t-4 border-black mt-12 pt-6 flex items-center justify-between">
           <Link to="/blog" className="text-xs font-mono text-gray-500 hover:text-black transition-colors">

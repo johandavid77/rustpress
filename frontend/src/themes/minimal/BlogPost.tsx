@@ -119,8 +119,7 @@ export default function BlogPostMinimal() {
           <TableOfContents content={post.content ?? ''} theme="minimal" />
           <div dangerouslySetInnerHTML={{ __html: post.content ?? '' }}
           ></div>
-          <Comments postId={post.id} theme="minimal" 
-        />
+          <Comments postId={post.id} theme="minimal"  />
 
         <div className="border-t border-gray-100 mt-16 pt-8">
           <Link to="/blog" className="text-sm font-mono text-gray-400 hover:text-gray-900 transition-colors">
