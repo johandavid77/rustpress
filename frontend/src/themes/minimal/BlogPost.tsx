@@ -116,7 +116,7 @@ export default function BlogPostMinimal() {
             prose-blockquote:border-l-4 prose-blockquote:border-gray-200 prose-blockquote:text-gray-400
             prose-img:rounded-xl prose-img:my-6
             prose-hr:border-gray-100"
-          <TableOfContents content={post.content ?? ''} theme="minimal" />
+            <TableOfContents content={post.content || ""} theme="minimal" />
           <div dangerouslySetInnerHTML={{ __html: post.content ?? ''}}
           ></div>
           <Comments postId={post.id} theme="minimal"  />

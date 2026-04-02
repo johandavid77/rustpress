@@ -122,7 +122,7 @@ export default function BlogPostMagazine() {
             prose-img:rounded-none prose-img:my-6 prose-img:border-2 prose-img:border-black
             prose-hr:border-black"
           style={{ fontFamily: 'Georgia, serif', columns: '2', columnGap: '2.5rem' }}
-          <TableOfContents content={post.content ?? ''} theme="magazine" />
+            <TableOfContents content={post.content || ""} theme="magazine" />
           <div dangerouslySetInnerHTML={{ __html: post.content ?? ''}}
           ></div>
           <Comments postId={post.id} theme="magazine"  />
