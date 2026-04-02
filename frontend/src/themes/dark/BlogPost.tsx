@@ -103,7 +103,7 @@ export default function BlogPost() {
             prose-img:rounded-xl prose-img:my-6
             prose-hr:border-[#2a2a3a]"
           <TableOfContents content={post.content ?? ''} theme="dark" />
-          <div dangerouslySetInnerHTML={{ __html: post.content ?? '' }}</div>
+          <div dangerouslySetInnerHTML={{ __html: post.content ?? ''}}</div>
         <Comments postId={post.id} theme="dark" />
         <div className="border-t border-[#2a2a3a] mt-16 pt-8">
           <Link to="/blog" className="text-sm font-mono text-[#888899] hover:text-white">← Volver al blog</Link>
