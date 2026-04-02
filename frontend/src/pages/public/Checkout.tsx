@@ -1,19 +1,19 @@
 import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { CheckCircle, CreditCard, Tag } from 'lucide-react'
 import { apiClient } from '../../api/client'
 
 export default function Checkout() {
-  const [cart, setCart]         = useState<any>(null)
-  const [coupon, setCoupon]     = useState('')
-  const [notes, setNotes]       = useState('')
-  const [name, setName]         = useState('')
-  const [address, setAddress]   = useState('')
-  const [city, setCity]         = useState('')
-  const [loading, setLoading]   = useState(true)
-  const [placing, setPlacing]   = useState(false)
-  const [done, setDone]         = useState<any>(null)
-  const navigate = useNavigate()
+  const [cart, setCart]       = useState<any>(null)
+  const [coupon, setCoupon]   = useState('')
+  const [notes, setNotes]     = useState('')
+  const [name, setName]       = useState('')
+  const [address, setAddress] = useState('')
+  const [city, setCity]       = useState('')
+  const [gateway, setGateway] = useState('stripe')
+  const [loading, setLoading] = useState(true)
+  const [placing, setPlacing] = useState(false)
+  const [done, setDone]       = useState<any>(null)
 
   useEffect(() => {
     apiClient.get('/cart').then((res: any) => {
@@ -26,14 +26,23 @@ export default function Checkout() {
     if (!name.trim()) return alert('Ingresa tu nombre')
     setPlacing(true)
     try {
-      const res: any = await apiClient.post('/orders', {
-        coupon_code: coupon || undefined,
-        notes: notes || undefined,
+      const order: any = await apiClient.post('/orders', {
+        coupon_code:   coupon || undefined,
+        notes:         notes || undefined,
         shipping_addr: { name, address, city },
       })
-      setDone(res)
+      // Iniciar pago con pasarela seleccionada
+      const payment: any = await apiClient.post('/payments/init', {
+        order_id: order.order_id,
+        gateway,
+      })
+      if (payment.checkout_url) {
+        window.location.href = payment.checkout_url
+      } else {
+        setDone(order)
+      }
     } catch(e: any) {
-      alert(e?.response?.data?.error || 'Error al crear la orden')
+      alert(e?.response?.data?.error || 'Error al procesar el pago')
     } finally { setPlacing(false) }
   }
 
@@ -44,8 +53,7 @@ export default function Checkout() {
         <h1 className="text-3xl font-black mb-2">¡Orden creada!</h1>
         <p className="text-[#888899] mb-2">Orden #{done.order_id?.slice(0,8).toUpperCase()}</p>
         <p className="text-2xl font-black text-[#7c6aff] mb-8">${done.total?.toFixed(2)}</p>
-        <p className="text-[#888899] text-sm mb-8">Recibirás confirmación cuando tu pago sea procesado.</p>
-        <Link to="/shop" className="px-6 py-3 bg-[#7c6aff] rounded-xl font-bold hover:bg-[#6b5be6] transition-all">
+        <Link to="/shop" className="px-6 py-3 bg-[#7c6aff] rounded-xl font-bold hover:bg-[#6b5be6]">
           Seguir comprando
         </Link>
       </div>
@@ -80,9 +88,21 @@ export default function Checkout() {
               </div>
 
               <div className="bg-[#111118] border border-[#2a2a3a] rounded-xl p-5">
-                <p className="text-xs font-mono text-[#555566] uppercase tracking-widest mb-3 flex items-center gap-2"><Tag size={11} />Cupón de descuento</p>
+                <p className="text-xs font-mono text-[#555566] uppercase tracking-widest mb-3 flex items-center gap-2"><Tag size={11} />Cupón</p>
                 <input className="w-full px-4 py-3 bg-[#1a1a24] border border-[#2a2a3a] rounded-xl text-white text-sm outline-none focus:border-[#7c6aff] placeholder-[#444455] font-mono"
                   placeholder="CODIGO" value={coupon} onChange={e => setCoupon(e.target.value.toUpperCase())} />
+              </div>
+
+              <div className="bg-[#111118] border border-[#2a2a3a] rounded-xl p-5">
+                <p className="text-xs font-mono text-[#555566] uppercase tracking-widest mb-3">Método de pago</p>
+                <div className="flex gap-3">
+                  {[{id:'stripe',label:'💳 Stripe'},{id:'paypal',label:'🅿️ PayPal'}].map(g => (
+                    <button key={g.id} onClick={() => setGateway(g.id)}
+                      className={`flex-1 py-3 rounded-xl text-sm font-bold border transition-all ${gateway === g.id ? 'bg-[#7c6aff] border-[#7c6aff] text-white' : 'border-[#2a2a3a] text-[#888899] hover:border-[#7c6aff]'}`}>
+                      {g.label}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -101,9 +121,9 @@ export default function Checkout() {
               </div>
               <button onClick={place} disabled={placing || !cart?.items?.length}
                 className="w-full py-3 bg-[#7c6aff] rounded-xl font-bold hover:bg-[#6b5be6] disabled:opacity-50 transition-all flex items-center justify-center gap-2">
-                <CreditCard size={16} />{placing ? 'Procesando...' : 'Confirmar orden'}
+                <CreditCard size={16} />{placing ? 'Procesando...' : `Pagar con ${gateway === 'stripe' ? 'Stripe' : 'PayPal'}`}
               </button>
-              <p className="text-xs text-[#555566] text-center mt-3">Pago manual — recibirás instrucciones por email</p>
+              <p className="text-xs text-[#555566] text-center mt-3">Serás redirigido a la pasarela de pago</p>
             </div>
           </div>
         )}
