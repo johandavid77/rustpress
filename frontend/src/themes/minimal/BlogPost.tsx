@@ -5,11 +5,6 @@ import RelatedPosts from '../../components/RelatedPosts/RelatedPosts'
 import ShareButtons from '../../components/ShareButtons/ShareButtons'
 import TableOfContents from '../../components/TableOfContents/TableOfContents'
 import { readingTime } from '../../utils/readingTime'
-import RelatedPosts from '../../components/RelatedPosts/RelatedPosts'
-import ShareButtons from '../../components/ShareButtons/ShareButtons'
-import TableOfContents from '../../components/TableOfContents/TableOfContents'
-import { readingTime } from '../../utils/readingTime'
-import Comments from '../../components/Comments/Comments'
 import { apiClient } from '../../api/client'
 
 export default function BlogPostMinimal() {
