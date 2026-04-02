@@ -12,7 +12,7 @@ export default function BlogPost() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    apiClient.get(`/posts/${slug}`)
+    apiClient.get(`/posts/slug/${slug}`)
       .then((res: any) => {
         setPost(res)
         apiClient.post(`/posts/${slug}/view`, {}).catch(() => {})
