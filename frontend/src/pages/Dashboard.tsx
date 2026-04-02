@@ -5,7 +5,7 @@ import { postsApi } from '../api/posts'
 import NewPost from './Posts/NewPost'
 import EditPost from './Posts/EditPost'
 import Stats from './Stats'
-import { LayoutDashboard, FileText, Image, Users, Puzzle, ExternalLink, Palette, MessageSquare, Tag, Webhook, Activity, Key, UserCircle, Shield, Package, ShoppingBag } from 'lucide-react'
+import { LayoutDashboard, FileText, Image, Users, Puzzle, ExternalLink, Palette, MessageSquare, Tag, Webhook, Activity, Key, UserCircle, Shield, Package, ShoppingBag, Star } from 'lucide-react'
 import SlidersAdmin from './Plugins/SlidersAdmin'
 import MenusAdmin from './Plugins/MenusAdmin'
 import UsersAdmin from './Users/UsersAdmin'
@@ -23,9 +23,10 @@ import RolesAdmin from './Settings/RolesAdmin'
 import Products from './Shop/Products'
 import SortablePosts from '../components/SortablePosts/SortablePosts'
 import Orders from './Shop/Orders'
+import Reviews from './Shop/Reviews'
 import ViewsChart from '../components/ViewsChart/ViewsChart'
 
-type View = 'home' | 'posts' | 'media' | 'users' | 'plugins' | 'themes' | 'comments' | 'categories' | 'webhooks' | 'health' | 'api-keys' | 'profile' | 'roles' | 'shop-products' | 'shop-orders'
+type View = 'home' | 'posts' | 'media' | 'users' | 'plugins' | 'themes' | 'comments' | 'categories' | 'webhooks' | 'health' | 'api-keys' | 'profile' | 'roles' | 'shop-products' | 'shop-orders' | 'shop-reviews'
 
 const THEMES = [
   { id: 'dark',     name: '🌑 Dark',     description: 'Oscuro, moderno, minimalista',              preview: 'bg-[#0a0a0f] border-[#2a2a3a]', accent: 'bg-[#7c6aff]' },

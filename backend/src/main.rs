@@ -121,7 +121,8 @@ async fn main() -> anyhow::Result<()> {
                     .configure(handlers::cart::configure)
                     .configure(handlers::orders::configure)
                     .configure(handlers::bookings::configure)
-                    .configure(handlers::payments::configure)  // 👈 nuevo
+                    .configure(handlers::payments::configure)
+                    .configure(handlers::reviews::configure)  // 👈 nuevo
             )
             .route("/health", web::get().to(health_check))
             .route("/health/detailed", web::get().to(handlers::settings::health_detailed))
