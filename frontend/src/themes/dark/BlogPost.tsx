@@ -101,8 +101,7 @@ export default function BlogPost() {
             prose-pre:bg-[#111118] prose-pre:border prose-pre:border-[#2a2a3a] prose-pre:rounded-xl
             prose-blockquote:border-l-4 prose-blockquote:border-[#7c6aff] prose-blockquote:text-[#888899]
             prose-img:rounded-xl prose-img:my-6
-            prose-hr:border-[#2a2a3a]"
-            </div>
+            prose-hr:border-[#2a2a3a]">
             <TableOfContents content={post.content} theme="dark" />
           <div dangerouslySetInnerHTML={{ __html: post.content ?? ''}}</div>
         <Comments postId={post.id} theme="dark" />
