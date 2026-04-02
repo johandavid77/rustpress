@@ -9,3 +9,4 @@ pub mod middleware;
 pub mod models;
 pub mod plugins;
 pub mod services;
+pub mod payments;

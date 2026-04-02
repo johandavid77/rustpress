@@ -15,3 +15,4 @@ pub mod products_shop;
 pub mod cart;
 pub mod orders;
 pub mod bookings;
+pub mod payments;

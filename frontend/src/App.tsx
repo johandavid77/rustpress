@@ -2,6 +2,8 @@ import Shop from './pages/public/Shop'
 import Bookings from './pages/public/Bookings'
 import Cart from './pages/public/Cart'
 import Checkout from './pages/public/Checkout'
+import PaymentSuccess from './pages/public/PaymentSuccess'
+import PaymentCancel from './pages/public/PaymentCancel'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthStore } from './store/authStore'
 import Login from './pages/Login'
@@ -27,6 +29,8 @@ export default function App() {
         <Route path='/bookings' element={<Bookings />} />
         <Route path='/shop' element={<Shop />} />
         <Route path='/cart' element={<Cart />} />
+        <Route path='/checkout/success' element={<PaymentSuccess />} />
+        <Route path='/checkout/cancel' element={<PaymentCancel />} />
         <Route path='/checkout' element={<Checkout />} />
         <Route path="/blog/:slug" element={<ThemedBlogPost />} />
         <Route path="/author/:id" element={<AuthorProfile />} />
