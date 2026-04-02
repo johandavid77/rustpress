@@ -244,3 +244,31 @@ npm run dev
 ```
 
 Variables de entorno requeridas: `DATABASE_URL`, `REDIS_URL`, `JWT_SECRET`, `SMTP_*`
+
+---
+
+## 🐛 Bugs resueltos (sesión 2/4/26)
+
+- `article` tag multilínea sin cerrar en todos los temas BlogPost
+- Imports inexistentes (`RelatedPosts`, `readingTime`) eliminados
+- Frontend llamaba `/posts/:slug` pero backend espera `/posts/slug/:slug`
+- `dangerouslySetInnerHTML` con `??` causaba parse error en esbuild
+- Phantom `0` por operador bitwise `|` en lugar de `||` en webhooks view
+- `selected` state duplicado/eliminado en Dashboard
+
+## 📋 Estado actual (2 Apr 2026)
+
+### ✅ Funcionando
+- Blog público con 4 temas (dark, bold, magazine, minimal)
+- Admin Dashboard completo
+- Auth (login/register/JWT)
+- Posts CRUD + editor TipTap
+- Ecommerce: productos, carrito, órdenes, cupones
+- Módulo reservas: tours, hospedaje, restaurante
+- Rutas públicas: /shop, /cart, /checkout, /bookings
+
+### 🔜 Pendiente
+- Stripe / Wompi integration
+- Reviews y ratings
+- Unit tests
+- Analytics avanzado
