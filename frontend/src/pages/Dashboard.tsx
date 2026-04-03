@@ -24,9 +24,10 @@ import Products from './Shop/Products'
 import SortablePosts from '../components/SortablePosts/SortablePosts'
 import Orders from './Shop/Orders'
 import Reviews from './Shop/Reviews'
+import Analytics from './Analytics'
 import ViewsChart from '../components/ViewsChart/ViewsChart'
 
-type View = 'home' | 'posts' | 'media' | 'users' | 'plugins' | 'themes' | 'comments' | 'categories' | 'webhooks' | 'health' | 'api-keys' | 'profile' | 'roles' | 'shop-products' | 'shop-orders' | 'shop-reviews'
+type View = 'home' | 'posts' | 'media' | 'users' | 'plugins' | 'themes' | 'comments' | 'categories' | 'webhooks' | 'health' | 'api-keys' | 'profile' | 'roles' | 'shop-products' | 'shop-orders' | 'shop-reviews' | 'analytics'
 
 const THEMES = [
   { id: 'dark',     name: '🌑 Dark',     description: 'Oscuro, moderno, minimalista',              preview: 'bg-[#0a0a0f] border-[#2a2a3a]', accent: 'bg-[#7c6aff]' },
