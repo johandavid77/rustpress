@@ -1,5 +1,6 @@
 import Shop from './pages/public/Shop'
 import Bookings from './pages/public/Bookings'
+import ProductDetail from './pages/public/ProductDetail'
 import Cart from './pages/public/Cart'
 import Checkout from './pages/public/Checkout'
 import PaymentSuccess from './pages/public/PaymentSuccess'
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="/" element={<Navigate to="/blog" />} />
         <Route path="/blog" element={<ThemedBlogIndex />} />
         <Route path='/bookings' element={<Bookings />} />
+        <Route path='/shop/:slug' element={<ProductDetail />} />
         <Route path='/shop' element={<Shop />} />
         <Route path='/cart' element={<Cart />} />
         <Route path='/checkout/success' element={<PaymentSuccess />} />

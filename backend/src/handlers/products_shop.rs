@@ -188,3 +188,31 @@ async fn delete_product(
         .execute(pool.get_ref()).await?;
     Ok(HttpResponse::NoContent().finish())
 }
+
+pub async fn get_product_by_slug(
+    pool: web::Data<sqlx::PgPool>,
+    slug: web::Path<String>,
+) -> crate::errors::AppResult<actix_web::HttpResponse> {
+    let p = sqlx::query!(
+        r#"SELECT id, name, slug, description, price, compare_price,
+                  stock, track_stock, status, sku, images
+           FROM products WHERE slug = $1 AND status = 'active'"#,
+        slug.as_str()
+    ).fetch_optional(pool.get_ref()).await?;
+
+    match p {
+        None => Ok(actix_web::HttpResponse::NotFound().json(serde_json::json!({"error":"Not found"}))),
+        Some(p) => Ok(actix_web::HttpResponse::Ok().json(serde_json::json!({
+            "id":            p.id,
+            "name":          p.name,
+            "slug":          p.slug,
+            "description":   p.description,
+            "price":         p.price,
+            "compare_price": p.compare_price,
+            "stock":         p.stock,
+            "status":        p.status,
+            "sku":           p.sku,
+            "images":        p.images,
+            }))),
+    }
+}
