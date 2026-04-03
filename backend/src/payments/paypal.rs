@@ -24,12 +24,12 @@ impl PayPalGateway {
 
     async fn access_token(&self) -> anyhow::Result<String> {
         let creds = STANDARD.encode(format!("{}:{}", self.client_id, self.client_secret));
-        let res = self.client
+        let res: serde_json::Value = self.client
             .post(format!("{}/v1/oauth2/token", self.base_url()))
             .header("Authorization", format!("Basic {}", creds))
             .form(&[("grant_type", "client_credentials")])
             .send().await?
-            .json::<serde_json::Value>().await?;
+            .json().await?;
         Ok(res["access_token"].as_str().unwrap_or("").to_string())
     }
 }
@@ -59,18 +59,20 @@ impl PaymentGateway for PayPalGateway {
             }
         });
 
-        let res = self.client
+        let res: serde_json::Value = self.client
             .post(format!("{}/v2/checkout/orders", self.base_url()))
             .header("Authorization", format!("Bearer {}", token))
             .json(&body)
             .send().await?
-            .json::<serde_json::Value>().await?;
+            .json().await?;
 
         let order_id = res["id"].as_str().unwrap_or("").to_string();
-        let checkout_url = res["links"].as_array()
-            .and_then(|links| links.iter().find(|l| l["rel"] == "approve"))
+
+        let checkout_url = res["links"]
+            .as_array()
+            .and_then(|arr| arr.iter().find(|l| l["rel"].as_str() == Some("approve")))
             .and_then(|l| l["href"].as_str())
-            .map(String::from);
+            .map(|s| s.to_string());
 
         Ok(PaymentResult {
             gateway:     "paypal".into(),
@@ -85,11 +87,11 @@ impl PaymentGateway for PayPalGateway {
 
     async fn get_payment(&self, external_id: &str) -> anyhow::Result<PaymentResult> {
         let token = self.access_token().await?;
-        let res = self.client
+        let res: serde_json::Value = self.client
             .get(format!("{}/v2/checkout/orders/{}", self.base_url(), external_id))
             .header("Authorization", format!("Bearer {}", token))
             .send().await?
-            .json::<serde_json::Value>().await?;
+            .json().await?;
 
         let status = match res["status"].as_str() {
             Some("COMPLETED") => PaymentStatus::Completed,
@@ -123,12 +125,13 @@ impl PaymentGateway for PayPalGateway {
         };
         let amount = resource["amount"]["value"]
             .as_str().unwrap_or("0").parse::<f64>().unwrap_or(0.0);
+        let currency = resource["amount"]["currency_code"]
+            .as_str().unwrap_or("usd").to_lowercase();
 
         Ok(PaymentResult {
             gateway:     "paypal".into(),
             external_id: resource["id"].as_str().unwrap_or("").to_string(),
-            status, amount,
-            currency:    resource["amount"]["currency_code"].as_str().unwrap_or("usd").to_lowercase(),
+            status, amount, currency,
             checkout_url: None,
             raw:         event,
         })

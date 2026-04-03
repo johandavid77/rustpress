@@ -10,3 +10,4 @@ pub mod models;
 pub mod plugins;
 pub mod services;
 pub mod payments;
+#[cfg(test)] pub mod tests;
