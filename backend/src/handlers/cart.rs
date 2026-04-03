@@ -1,5 +1,5 @@
-use actix_web::{web, HttpRequest, HttpResponse};
-use serde::{Deserialize, Serialize};
+use actix_web::{web, HttpResponse};
+use serde::Deserialize;
 use sqlx::PgPool;
 use uuid::Uuid;
 
@@ -111,7 +111,7 @@ async fn add_item(
 async fn update_item(
     pool: web::Data<PgPool>,
     id:   web::Path<Uuid>,
-    auth: AuthUserWithRole,
+    _auth: AuthUserWithRole,
     body: web::Json<UpdateCartItem>,
 ) -> AppResult<HttpResponse> {
     if body.quantity <= 0 {

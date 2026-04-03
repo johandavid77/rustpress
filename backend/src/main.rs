@@ -58,7 +58,7 @@ async fn main() -> anyhow::Result<()> {
     let cfg_data  = web::Data::new(cfg.clone());
     // Rate limiting diferenciado por scope
     // Auth: estricto — 10 req/min (burst 5)
-    let governor_auth = GovernorConfigBuilder::default()
+    let _governor_auth = GovernorConfigBuilder::default()
         .requests_per_second(6)   // 1 req cada 6s = 10/min
         .burst_size(5)
         .finish()

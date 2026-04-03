@@ -1,6 +1,5 @@
 use async_trait::async_trait;
 use reqwest::Client;
-use serde_json::json;
 
 use super::gateway::{PaymentGateway, PaymentIntent, PaymentResult, PaymentStatus};
 
