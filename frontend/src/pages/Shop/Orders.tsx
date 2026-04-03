@@ -1,11 +1,6 @@
 import { useState, useEffect } from 'react'
 import { apiClient } from '../../api/client'
-import { ShoppingBag, ChevronRight, Clock, CheckCircle, XCircle, Truck } from 'lucide-react'
-
-interface Order {
-  id: string; status: string; total: number
-  currency: string; payment_method: string | null; created_at: string
-}
+import { ShoppingBag, ChevronRight, Clock, CheckCircle, XCircle, Truck, Printer, Search } from 'lucide-react'
 
 const statusConfig: Record<string, { label: string; color: string; icon: any }> = {
   pending:    { label: 'Pendiente',   color: 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20', icon: Clock },
@@ -18,12 +13,22 @@ const statusConfig: Record<string, { label: string; color: string; icon: any }> 
 }
 
 export default function Orders() {
-  const [orders, setOrders]   = useState<Order[]>([])
+  const [orders, setOrders]   = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [status, setStatus]   = useState('')
+  const [search, setSearch]   = useState('')
   const [detail, setDetail]   = useState<any>(null)
+  const [stats, setStats]     = useState<any>(null)
 
   useEffect(() => { load() }, [status])
+  useEffect(() => { loadStats() }, [])
+
+  const loadStats = async () => {
+    try {
+      const res: any = await apiClient.get('/analytics/dashboard?days=30')
+      setStats(res?.summary)
+    } catch(e) {}
+  }
 
   const load = async () => {
     setLoading(true)
@@ -50,26 +55,44 @@ export default function Orders() {
     } catch(e) { console.error(e) }
   }
 
+  const print = () => window.print()
+
+  const filtered = orders.filter(o =>
+    !search || o.id.includes(search) || o.payment_method?.includes(search)
+  )
+
   if (detail) return (
     <div className="max-w-2xl">
       <button onClick={() => setDetail(null)} className="text-[#888899] text-sm font-mono hover:text-white mb-6 flex items-center gap-1">
         ← Volver a órdenes
       </button>
-      <div className="bg-[#111118] border border-[#2a2a3a] rounded-xl p-6 mb-4">
-        <div className="flex items-center justify-between mb-4">
+
+      <div className="bg-[#111118] border border-[#2a2a3a] rounded-xl p-6 mb-4 print:border-0">
+        <div className="flex items-start justify-between mb-6">
           <div>
-            <p className="text-xs font-mono text-[#555566] mb-1">ORDEN #{detail.id.slice(0,8).toUpperCase()}</p>
+            <p className="text-2xl font-black mb-1">Orden #{detail.id?.slice(0,8).toUpperCase()}</p>
             <p className="text-xs text-[#555566]">{new Date(detail.created_at).toLocaleString('es-CO')}</p>
+            {detail.payment_method && <p className="text-xs text-[#555566] mt-1">Pago: {detail.payment_method} {detail.payment_ref && `· ${detail.payment_ref?.slice(0,12)}...`}</p>}
           </div>
-          <select
-            value={detail.status}
-            onChange={e => updateStatus(detail.id, e.target.value)}
-            className="px-3 py-1.5 bg-[#1a1a24] border border-[#2a2a3a] rounded-lg text-sm outline-none focus:border-[#7c6aff] text-white">
-            {Object.entries(statusConfig).map(([k, v]) => (
-              <option key={k} value={k}>{v.label}</option>
-            ))}
-          </select>
+          <div className="flex gap-2">
+            <select value={detail.status} onChange={e => updateStatus(detail.id, e.target.value)}
+              className="px-3 py-1.5 bg-[#1a1a24] border border-[#2a2a3a] rounded-lg text-sm outline-none focus:border-[#7c6aff] text-white print:hidden">
+              {Object.entries(statusConfig).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
+            </select>
+            <button onClick={print} className="p-2 border border-[#2a2a3a] rounded-lg hover:border-[#7c6aff] transition-all print:hidden">
+              <Printer size={14} />
+            </button>
+          </div>
         </div>
+
+        {detail.shipping_addr && (
+          <div className="mb-4 p-3 bg-[#1a1a24] rounded-lg">
+            <p className="text-xs font-mono text-[#555566] uppercase mb-1">Dirección de envío</p>
+            <p className="text-sm">{detail.shipping_addr.name}</p>
+            <p className="text-xs text-[#888899]">{detail.shipping_addr.address}, {detail.shipping_addr.city}</p>
+          </div>
+        )}
+
         <div className="flex flex-col gap-2 mb-4">
           {detail.items?.map((item: any) => (
             <div key={item.id} className="flex items-center justify-between py-2 border-b border-[#1a1a24]">
@@ -84,42 +107,61 @@ export default function Orders() {
             </div>
           ))}
         </div>
+
         <div className="flex flex-col gap-1 text-sm">
           <div className="flex justify-between text-[#888899]"><span>Subtotal</span><span>${detail.subtotal?.toFixed(2)}</span></div>
           {detail.discount > 0 && <div className="flex justify-between text-green-400"><span>Descuento</span><span>-${detail.discount?.toFixed(2)}</span></div>}
-          <div className="flex justify-between font-black text-lg pt-2 border-t border-[#2a2a3a]"><span>Total</span><span className="text-[#7c6aff]">${detail.total?.toFixed(2)}</span></div>
+          <div className="flex justify-between font-black text-lg pt-2 border-t border-[#2a2a3a]">
+            <span>Total</span><span className="text-[#7c6aff]">${detail.total?.toFixed(2)}</span>
+          </div>
         </div>
+
+        {detail.notes && (
+          <div className="mt-4 p-3 bg-[#1a1a24] rounded-lg">
+            <p className="text-xs font-mono text-[#555566] uppercase mb-1">Notas</p>
+            <p className="text-sm text-[#888899]">{detail.notes}</p>
+          </div>
+        )}
       </div>
     </div>
   )
 
   return (
-    <div className="max-w-3xl">
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-4xl font-black tracking-tight mb-1 flex items-center gap-3">
-            <ShoppingBag size={28} className="text-[#7c6aff]" />Órdenes
-          </h1>
-          <p className="text-[#888899] text-sm">Historial de pedidos</p>
+    <div className="max-w-4xl">
+      <div className="mb-6">
+        <h1 className="text-4xl font-black tracking-tight mb-1 flex items-center gap-3">
+          <ShoppingBag size={28} className="text-[#7c6aff]" />Órdenes
+        </h1>
+        {stats && (
+          <div className="flex gap-4 mt-3">
+            <span className="text-xs font-mono text-[#555566]">{stats.purchases} ventas este mes</span>
+            <span className="text-xs font-mono text-green-400">${stats.revenue?.toFixed(2)} revenue</span>
+          </div>
+        )}
+      </div>
+
+      <div className="flex gap-3 mb-5">
+        <div className="relative flex-1">
+          <Search size={14} className="absolute left-3 top-3.5 text-[#555566]" />
+          <input className="w-full pl-9 pr-4 py-3 bg-[#111118] border border-[#2a2a3a] rounded-xl text-white text-sm outline-none focus:border-[#7c6aff] placeholder-[#444455]"
+            placeholder="Buscar por ID..." value={search} onChange={e => setSearch(e.target.value)} />
         </div>
-        <select className="px-4 py-2.5 bg-[#111118] border border-[#2a2a3a] rounded-xl text-white text-sm outline-none focus:border-[#7c6aff]"
+        <select className="px-4 py-3 bg-[#111118] border border-[#2a2a3a] rounded-xl text-white text-sm outline-none focus:border-[#7c6aff]"
           value={status} onChange={e => setStatus(e.target.value)}>
           <option value="">Todos</option>
-          {Object.entries(statusConfig).map(([k, v]) => (
-            <option key={k} value={k}>{v.label}</option>
-          ))}
+          {Object.entries(statusConfig).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
         </select>
       </div>
 
       {loading && <p className="text-[#888899] font-mono text-sm">Cargando...</p>}
-      {!loading && orders.length === 0 && (
+      {!loading && filtered.length === 0 && (
         <div className="flex flex-col items-center gap-3 py-20 opacity-30">
           <ShoppingBag size={40} /><p className="font-bold">No hay órdenes</p>
         </div>
       )}
 
       <div className="flex flex-col gap-2">
-        {orders.map(o => {
+        {filtered.map(o => {
           const cfg = statusConfig[o.status] || statusConfig.pending
           const Icon = cfg.icon
           return (
@@ -129,8 +171,8 @@ export default function Orders() {
                 <Icon size={11} />{cfg.label}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-mono text-[#555566]">#{o.id.slice(0,8).toUpperCase()}</p>
-                <p className="text-xs text-[#555566]">{new Date(o.created_at).toLocaleDateString('es-CO')}</p>
+                <p className="text-xs font-mono text-[#888899]">#{o.id?.slice(0,8).toUpperCase()}</p>
+                <p className="text-xs text-[#555566]">{new Date(o.created_at).toLocaleDateString('es-CO')} · {o.payment_method || 'sin pago'}</p>
               </div>
               <p className="font-black text-[#7c6aff]">${o.total?.toFixed(2)}</p>
               <ChevronRight size={14} className="text-[#555566]" />
