@@ -17,3 +17,4 @@ pub mod orders;
 pub mod bookings;
 pub mod payments;
 pub mod reviews;
+pub mod analytics;
