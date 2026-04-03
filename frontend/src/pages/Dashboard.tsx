@@ -24,10 +24,11 @@ import Products from './Shop/Products'
 import SortablePosts from '../components/SortablePosts/SortablePosts'
 import Orders from './Shop/Orders'
 import Reviews from './Shop/Reviews'
+import EcommerceSettings from './Settings/EcommerceSettings'
 import Analytics from './Analytics'
 import ViewsChart from '../components/ViewsChart/ViewsChart'
 
-type View = 'home' | 'posts' | 'media' | 'users' | 'plugins' | 'themes' | 'comments' | 'categories' | 'webhooks' | 'health' | 'api-keys' | 'profile' | 'roles' | 'shop-products' | 'shop-orders' | 'shop-reviews' | 'analytics'
+type View = 'home' | 'posts' | 'media' | 'users' | 'plugins' | 'themes' | 'comments' | 'categories' | 'webhooks' | 'health' | 'api-keys' | 'profile' | 'roles' | 'ecommerce-settings' | 'shop-products' | 'shop-orders' | 'shop-reviews' | 'analytics'
 
 const THEMES = [
   { id: 'dark',     name: '🌑 Dark',     description: 'Oscuro, moderno, minimalista',              preview: 'bg-[#0a0a0f] border-[#2a2a3a]', accent: 'bg-[#7c6aff]' },
@@ -154,6 +155,10 @@ export default function Dashboard() {
             className="flex items-center gap-2 px-4 py-1.5 border border-[#2a2a3a] rounded-lg text-xs text-[#888899] hover:text-white hover:border-[#7c6aff] font-semibold transition-all">
             <ExternalLink size={13} /> Preview site
           </a>
+            <a href="/shop" target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-1.5 border border-[#2a2a3a] rounded-lg text-xs text-[#888899] hover:text-white hover:border-[#7c6aff] font-semibold transition-all">
+              <ShoppingBag size={13} /> Ver tienda
+            </a>
         </header>
 
         <main className="flex-1 overflow-auto p-10">
