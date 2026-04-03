@@ -272,3 +272,20 @@ Variables de entorno requeridas: `DATABASE_URL`, `REDIS_URL`, `JWT_SECRET`, `SMT
 - Reviews y ratings
 - Unit tests
 - Analytics avanzado
+
+## 🧪 Unit Tests (cargo test)
+
+**32 tests total — 0 failed**
+
+| Módulo | Tests | Qué cubren |
+|--------|-------|------------|
+| `coupon_tests` | 6 | Descuentos %, fixed, protección contra negativos |
+| `payments_tests` | 6 | HMAC-SHA256 Stripe, payload adulterado, rating math |
+| `reviews_tests` | 7 | Gateways Stripe/PayPal, PaymentStatus Display/Eq |
+| `auth_service` | 7 | JWT, bcrypt, tokens |
+| `email_service` | 6 | Plantillas, validación |
+```bash
+cargo test          # correr todos
+cargo test coupon   # filtrar por módulo
+cargo test -- --nocapture  # ver println! en tests
+```
