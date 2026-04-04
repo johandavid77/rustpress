@@ -112,6 +112,12 @@ export default function Dashboard() {
   const viewTitle = nav.find(n => n.id === view)?.label ?? ''
 
   return (
+    <>
+      {showEcommerce && (
+        <div className="fixed inset-0 z-50 bg-[#0a0a0f] overflow-auto">
+          <EcommerceHome onBack={() => setShowEcommerce(false)} />
+        </div>
+      )}
     <div className="flex h-screen bg-[#0a0a0f] text-white overflow-hidden">
       <aside className="w-60 min-w-60 bg-[#111118] border-r border-[#2a2a3a] flex flex-col justify-between p-5">
         <div className="flex flex-col gap-8">
