@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Eye, EyeOff } from 'lucide-react'
 import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
 import { authApi } from '../api/auth'
@@ -9,6 +10,7 @@ export default function Login() {
   const [searchParams] = useSearchParams()
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
+  const [showPass, setShowPass] = useState(false)
   const [error, setError]       = useState('')
   const [loading, setLoading]   = useState(false)
 
@@ -53,12 +55,21 @@ export default function Login() {
 
         <div className="mb-2">
           <label className="block text-xs font-semibold text-[#888899] uppercase tracking-widest mb-2 font-mono">Contraseña</label>
-          <input
-            className="w-full px-4 py-3 bg-[#1a1a24] border border-[#2a2a3a] rounded-xl text-white text-sm outline-none focus:border-[#7c6aff]"
-            type="password" value={password} placeholder="••••••••"
-            onChange={e => setPassword(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleLogin()}
-          />
+          <div className="relative">
+            <input
+              className="w-full px-4 py-3 pr-11 bg-[#1a1a24] border border-[#2a2a3a] rounded-xl text-white text-sm outline-none focus:border-[#7c6aff]"
+              type={showPass ? 'text' : 'password'} value={password} placeholder="••••••••"
+              onChange={e => setPassword(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleLogin()}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPass(v => !v)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#555566] hover:text-[#7c6aff] transition-colors"
+            >
+              {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
         </div>
 
         <div className="flex justify-end mb-6">

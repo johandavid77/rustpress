@@ -1,111 +1,141 @@
-# Changelog — RustPress CMS
+# Changelog — RustCMS
 
-All notable changes to this project will be documented in this file.
-Todos los cambios notables de este proyecto se documentarán en este archivo.
+All notable changes to this project are documented here.
+Todos los cambios notables de este proyecto están documentados aquí.
 
-Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
-
----
-
-## [Unreleased] / [Sin publicar]
-
-### Planned / Planificado
-- Rich text editor / Editor de texto enriquecido (TipTap)
-- Image optimization on upload / Optimización de imágenes al subir
-- Production Docker setup / Setup de Docker para producción
-- CI/CD pipeline
-- SEO meta tags per post
-- RSS feed
+Format: `[Date] - Description / Descripción`
 
 ---
 
-## [0.3.0] — 2026-03-19
+## [2026-04-04] — Session 4 (Today / Hoy)
 
-### Added / Agregado
+### ✨ Added / Agregado
+- **WooCommerce-style Ecommerce Dashboard** — Panel completo accesible desde Plugins
+  - Overview con KPIs, gráfica de revenue diario, pedidos recientes
+  - Gestión de Productos con editor modal (nombre, precio, stock, imágenes, estado)
+  - Gestión de Pedidos con detalle, cambio de estado y exportar CSV
+  - Gestión de Clientes (listado de usuarios registrados)
+  - Gestión de Cupones con generador de código automático
+  - Inventario con edición inline de stock y alertas de stock bajo
+  - Ajustes de tienda (general, pasarelas, email SMTP)
+- **Wompi Gateway** — Pasarela de pago colombiana integrada (sandbox + producción)
+- **GitHub Actions CI/CD** — Pipeline automático con:
+  - Tests de Rust (`cargo test`) con PostgreSQL y Redis de servicio
+  - Build del frontend React
+  - Build de imagen Docker
+  - Deploy via SSH (configurable con secrets)
+- **Product Variants Backend** — Variantes de productos (talla, color, atributos custom)
+  - Endpoint REST completo: list, create, update, delete
+  - Stock editable por variante
+- **Email System** — Sistema SMTP completo con templates HTML
+  - Confirmación de orden al cliente
+  - Notificación de envío
+  - Alerta de reseña pendiente al admin
+  - Reset de contraseña
+- **CSV Export** — Exportar órdenes a CSV (`GET /orders/export`)
+- **Show/Hide Password** — Ojito en el formulario de login para mostrar/ocultar contraseña
+- **Sidebar con secciones** — Admin reorganizado: General / Contenido / Tienda / Analítica
+- **10 productos demo** — Hardware seed (AMD, NVIDIA, Samsung, Corsair, ASUS, etc.)
+- **Docker + docker-compose** — Stack completo: Rust + React + PostgreSQL + Redis + Nginx
+- **README bilingüe** — Documentación completa ES/EN con roadmap, estructura, API reference
 
-#### Frontend
-- **Media section** — full media library with drag & drop upload, image gallery preview, file type filters (All, Images, Video, Audio, Docs), detail panel with copy URL, pagination, and delete
-- **`media.ts` API client** — list, upload (multipart), delete with helpers `formatBytes` and `isImage`
-- **i18n / Internationalization** — full bilingual support (Spanish + English) using `i18next` + `react-i18next` + `i18next-browser-languagedetector`
-  - Auto-detects browser language
-  - Manual selector in admin sidebar with flag buttons (🇪🇸 ES / 🇺🇸 EN)
-  - Persists preference in `localStorage`
-  - Covers: auth, nav, dashboard, posts, users, menus, sliders, blog, media
-  - Architecture ready for adding new languages (FR, PT, etc.)
-- **Translation files** — `src/locales/es/translation.json` and `src/locales/en/translation.json`
-- **`LanguageSelector` component** — compact flag selector shown in admin sidebar
-- **Admin top header** — fixed header bar showing current section name + "Preview site" button
-- **"Preview site" button** — opens public blog in new tab directly from admin panel
-- **Users admin section** (`UsersAdmin`) — manage pending and active users with approve/deactivate/delete actions
-- **`users.ts` API client** — getAll, approve, deactivate, delete
-- Role assignment fix — admin role correctly assigned via DB update to enable `users:write` permission
-
-#### Backend fixes
-- Fixed `handlers::menus::configure` outside `/api/v1` scope (was causing 404)
-- Fixed `AuthUserWithRole` FromRequest using `Pin<Box<dyn Future>>` for async DB queries
-- Fixed duplicate `use validator::Validate` in `users.rs`
-- Fixed `auth.0.user_id` field reference in `posts.rs`
-- Fixed `.fetch_optional + .await` chain in `auth.rs` middleware
-
----
-
-## [0.2.0] — 2026-03-18
-
-### Added / Agregado
-
-#### Backend
-- Navigation menus system (`/api/v1/menus`, `/api/v1/menu-items`) with full CRUD
-- Menu items support `label`, `url`, `target`, `icon`, `order_index`, `is_active`, `parent_id`
-
-#### Frontend
-- `MenusAdmin` component — full menu management UI
-- `menus.ts` API client
-- `Register.tsx` — public registration page with validation
-- `ForgotPassword.tsx` — password recovery request page
-- `ResetPassword.tsx` — password reset with token from URL
-- Updated `Login.tsx` — links to register and forgot password
-- Updated `auth.ts` API — `forgotPassword` and `resetPassword`
-- Updated `App.tsx` router — `/register`, `/forgot-password`, `/reset-password`
-- Plugins section shows both `SlidersAdmin` and `MenusAdmin`
+### 🐛 Fixed / Corregido
+- EcommerceHome no renderizaba al hacer click en plugin → Fixed overlay `fixed inset-0 z-50`
+- `recharts` requería `react-is` no instalado → Instalado con `--legacy-peer-deps`
+- `product_variants` migración no aplicada → Reescrito handler sin `sqlx::query!` macro
+- Sidebar de admin no mostraba sección Tienda → Reorganizado con secciones agrupadas
+- Backend `order_items`/`order_id` fuera de scope en email handler → Variables corregidas
+- Dashboard pantalla en blanco por fragment `<>` roto → Fixed overlay dentro del div raíz
 
 ---
 
-## [0.1.0] — 2026-03-07
+## [2026-04-02] — Session 3
 
-### Added / Agregado
+### ✨ Added / Agregado
+- **Stripe + PayPal** — Pasarelas de pago con trait modular `PaymentGateway`
+  - Checkout Sessions (Stripe) y Orders API (PayPal)
+  - Webhooks con verificación de firma HMAC-SHA256
+  - Páginas `/checkout/success` y `/checkout/cancel`
+- **Reviews & Ratings** — Sistema completo de reseñas
+  - Rating 1-5 estrellas con distribución visual
+  - Compra verificada badge
+  - Panel admin con aprobación/rechazo en un click
+  - Reseñas de invitados sin login requerido
+- **Analytics Dashboard** — Métricas reales
+  - KPIs: vistas, sesiones, compras, revenue
+  - Gráficas diarias (LineChart + BarChart)
+  - Funnel de conversión (shop → cart → checkout)
+  - Realtime: sesiones activas + eventos recientes
+  - Top posts y top productos
+- **Unit Tests** — 60 tests pasando (`cargo test`)
+  - Módulos: auth, payments, reviews, coupons, cart, orders, slugs, bookings
+- **Config. Tienda** — Panel de ajustes: general, pasarelas, SMTP
+- **Panel de Plugins** — Módulos integrados + plugins instalados desde DB
+- **Página pública de producto** — `/shop/:slug` con galería, variantes, reseñas, carrito
+- **Ecommerce Admin** — Productos, Órdenes, Cupones, Inventario en sidebar
 
-#### Backend (Rust + Actix-Web)
-- Initial project setup with Actix-Web 4
-- PostgreSQL integration via SQLx with async queries
-- JWT authentication system (login, register, token validation)
-- Password hashing with bcrypt
-- Role-based access control middleware (`AuthUser`, `AuthUserWithRole`)
-- Posts CRUD with slug, status (draft/published), excerpt, meta
-- Post statistics endpoint (`/posts/stats`)
-- Media upload and management system
-- Users management with role assignment
-- Sliders CRUD for home page carousel
-- Plugin registry system
-- Email service using Lettre + SMTP (MailHog for dev)
-- Password reset flow with token + email
-- Centralized error handling (`AppError`)
-- Environment-based configuration (`AppConfig`)
-- Database migrations with SQLx migrate
-- Health check endpoint (`/health`)
-- CORS configuration
-- Request compression middleware
-- Tracing/logging
+### 🐛 Fixed / Corregido
+- `avg_rating` tipo NUMERIC incompatible con sqlx → Cast a `float8` en query
+- Imports inexistentes `RelatedPosts`, `readingTime` → Eliminados
+- `dangerouslySetInnerHTML` con `??` causaba parse error esbuild → Removido
 
-#### Frontend (React + TypeScript)
-- Vite + TypeScript setup
-- React Router v6
-- Zustand auth state
-- Axios API client with JWT interceptor
-- Login, Dashboard, Stats, PostsView, NewPost, EditPost
-- SlidersAdmin, BlogIndex, BlogPost
-- API clients: auth, posts, sliders, media, client
+---
 
-#### Infrastructure
-- `docker-compose.yml` with PostgreSQL 16 and MailHog
-- `.env.example`
-- `.gitignore`
+## [2026-04-01] — Session 2
+
+### ✨ Added / Agregado
+- **Blog funcional** — 4 temas: dark, bold, magazine, minimal
+- **Módulo de Reservas** — Tours, hospedaje, restaurante con disponibilidad por slots
+- **Ecommerce base** — Productos, carrito, checkout, órdenes, cupones
+- **Webhooks** — Notificaciones a Slack, Discord y URLs custom
+- **Módulos admin** — Sliders, Menús, Comentarios, Categorías, API Keys
+- **i18n** — Soporte ES/EN en el dashboard
+- **Rate limiting** — Protección de endpoints sensibles
+- **Redis cache** — Caché de respuestas frecuentes
+
+### 🐛 Fixed / Corregido
+- BlogPost.tsx parse errors en todos los temas → Reescritura limpia
+- Frontend llamaba `/posts/:slug` → Corregido a `/posts/slug/:slug`
+- `article` tag multilínea sin cerrar → Fixed en los 4 temas
+- `selected` state duplicado en Dashboard → Eliminado
+- Phantom `0` por operador `|` en webhooks → Corregido a `||`
+
+---
+
+## [2026-03-27] — Session 1
+
+### ✨ Added / Agregado
+- **Proyecto inicial** — Backend Rust (Actix-Web) + Frontend React (TypeScript + Vite)
+- **Auth JWT** — Login, registro, roles y permisos
+- **CMS base** — CRUD de posts con editor TipTap
+- **Media library** — Upload y gestión de imágenes
+- **User management** — Usuarios, roles, API Keys
+- **Dashboard admin** — Sidebar, temas, configuración
+- **PostgreSQL + sqlx** — Migraciones automáticas
+- **RSS + Sitemap** — Generación automática
+
+---
+
+## 🗺️ Roadmap Actualizado / Updated Roadmap
+
+### ✅ Completado
+- Blog CMS multi-tema | Auth JWT | Editor TipTap | Media library
+- Ecommerce completo (productos, carrito, órdenes, cupones, variantes, inventario)
+- Pasarelas: Stripe + PayPal + Wompi
+- Reviews & ratings | Analytics dashboard | Módulo reservas
+- Emails SMTP | CSV export | 60+ unit tests
+- Docker + CI/CD | README bilingüe
+
+### 🔜 Próximo
+- [ ] Integration tests (httptest / actix-test)
+- [ ] Admin responsive móvil + PWA
+- [ ] Stripe webhooks en producción (ngrok para dev)
+- [ ] Envío real de emails (conectar SMTP en producción)
+- [ ] Multi-tienda / Multi-store
+- [ ] App móvil React Native
+- [ ] Wompi en producción (keys reales)
+- [ ] GitHub Secrets configurados para deploy automático
+
+---
+
+*Generated with 🦀 Rust + ⚛️ React — RustCMS Project*
