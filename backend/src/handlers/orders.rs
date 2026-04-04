@@ -1,3 +1,4 @@
+use crate::email::{Mailer, templates};
 use actix_web::{web, HttpResponse};
 use serde::Deserialize;
 use sqlx::PgPool;
@@ -107,9 +108,10 @@ async fn get_order(
 }
 
 async fn create_order(
-    pool: web::Data<PgPool>,
-    auth: AuthUserWithRole,
-    body: web::Json<CreateOrderDto>,
+    pool:   web::Data<PgPool>,
+    auth:   AuthUserWithRole,
+    body:   web::Json<CreateOrderDto>,
+    mailer: web::Data<Option<crate::email::Mailer>>,
 ) -> AppResult<HttpResponse> {
     // Obtener carrito del usuario
     let cart = sqlx::query!(
@@ -195,6 +197,19 @@ async fn create_order(
 
     tx.commit().await?;
 
+    // Enviar email de confirmación en background
+    if let Some(mailer) = mailer.as_ref() {
+        if let Ok(user) = sqlx::query!("SELECT email, username FROM users WHERE id = $1", auth.user_id)
+            .fetch_one(pool.get_ref()).await {
+            let items_html = items.iter().map(|i| format!(
+                "<div style='display:flex;justify-content:space-between;padding:4px 0'><span>{} ×{}</span><span>${:.2}</span></div>",
+                i.name, i.quantity, i.price * i.quantity as f64
+            )).collect::<Vec<_>>().join("");
+            let (subject, html) = templates::order_confirmed(&order.id.to_string(), total, &items_html, &user.username);
+            mailer.send_bg(user.email, subject, html);
+        }
+    }
+    
     Ok(HttpResponse::Created().json(serde_json::json!({
         "order_id": order.id,
         "total":    total,

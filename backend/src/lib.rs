@@ -11,3 +11,4 @@ pub mod plugins;
 pub mod services;
 pub mod payments;
 #[cfg(test)] pub mod tests;
+pub mod email;
