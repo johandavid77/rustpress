@@ -28,6 +28,7 @@ import EcommerceSettings from './Settings/EcommerceSettings'
 import Coupons from './Shop/Coupons'
 import Inventory from './Shop/Inventory'
 import Analytics from './Analytics'
+import EcommerceHome from './Ecommerce/EcommerceHome'
 import ViewsChart from '../components/ViewsChart/ViewsChart'
 
 type View = 'home' | 'posts' | 'media' | 'users' | 'plugins' | 'themes' | 'comments' | 'categories' | 'webhooks' | 'health' | 'api-keys' | 'profile' | 'roles' | 'ecommerce-settings' | 'shop-products' | 'shop-coupons' | 'shop-inventory' | 'shop-orders' | 'shop-reviews' | 'analytics'
@@ -43,6 +44,7 @@ export default function Dashboard() {
   const { t } = useTranslation()
   const { user, logout } = useAuthStore()
   const [view, setView] = useState<View>('home')
+  const [showEcommerce, setShowEcommerce] = useState(false)
   const [posts, setPosts] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
   const [showNewPost, setShowNewPost] = useState(false)
@@ -203,7 +205,7 @@ export default function Dashboard() {
           {view === 'comments'    && <CommentsAdmin />}
           {view === 'categories'  && <CategoriesAdmin />}
           {(view === 'webhooks' || view === 'health') && <WebhooksAdmin />}
-          {view === 'plugins'  && <PluginsHome onNavigate={(v) => setView(v as any)} />}
+          {view === 'plugins'  && <PluginsHome onNavigate={(v) => { if (v === 'ecommerce') setShowEcommerce(true); else setView(v as any) }} />}
           {view === 'themes' && (
             <div className="max-w-3xl">
               <div className="mb-8 flex items-start justify-between">
