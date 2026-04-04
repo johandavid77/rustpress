@@ -80,7 +80,7 @@ export default function Dashboard() {
     setLoading(true)
     try {
       const res = await postsApi.list()
-      setPosts(res.data ?? res.posts ?? (Array.isArray(res) ? res : []))
+      setPosts((res as any)?.data ?? (res as any)?.posts ?? [])
     } catch (e) { console.error(e) }
     finally { setLoading(false) }
   }
@@ -105,7 +105,8 @@ export default function Dashboard() {
     { id: 'themes'   as View, icon: Palette,          label: 'Themes'         },
     { id: 'comments'   as View, icon: MessageSquare, label: 'Comentarios' },
     { id: 'categories' as View, icon: Tag,     label: 'Categorías' },
-    { id: 'webhooks' | 'health'   as View, icon: Webhook, label: 'Webhooks'   },
+    { id: 'webhooks' as View, icon: Webhook,  label: 'Webhooks' },
+  { id: 'health'   as View, icon: Activity, label: 'Health'   },
   ]
 
   const resetPosts = () => { setShowNewPost(false); setEditingPost(null); loadPosts() }
@@ -126,7 +127,7 @@ export default function Dashboard() {
           </div>
           <nav className="flex flex-col gap-0.5">
           {[
-            { label: 'General', items: ['home','posts','media','users','themes','plugins'] },
+            { label: 'General' as string, items: ['home','posts','media','users','themes','plugins'] },
             { label: 'Contenido', items: ['comments','categories','webhooks','health','api-keys','profile','roles'] },
             { label: 'Tienda', items: ['ecommerce-settings','shop-products','shop-coupons','shop-inventory','shop-orders','shop-reviews'] },
             { label: 'Analítica', items: ['analytics'] },

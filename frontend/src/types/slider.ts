@@ -18,6 +18,7 @@ export interface CreateSliderDto {
   button_url?: string;
   image_url: string;
   order_index?: number;
+  is_active?: boolean;
 }
 
 export interface UpdateSliderDto extends Partial<CreateSliderDto> {
