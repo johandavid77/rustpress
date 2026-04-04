@@ -117,21 +117,34 @@ export default function Dashboard() {
             <span className="text-[#7c6aff] text-xl">○</span>
             <span className="text-xl font-black tracking-tight">RustCMS</span>
           </div>
-          <nav className="flex flex-col gap-1">
-            {nav.map(item => {
-              const Icon = item.icon
-              return (
-                <button key={item.id}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold text-left w-full transition-all
-                    ${view === item.id ? 'bg-[#1a1a24] text-white' : 'text-[#888899] hover:text-white hover:bg-[#1a1a24]'}`}
-                  onClick={() => { setView(item.id); setShowNewPost(false); setEditingPost(null) }}
-                >
-                  <Icon size={16} className={view === item.id ? 'text-[#7c6aff]' : ''} />
-                  {item.label}
-                </button>
-              )
-            })}
-          </nav>
+          <nav className="flex flex-col gap-0.5">
+          {[
+            { label: 'General', items: ['home','posts','media','users','themes','plugins'] },
+            { label: 'Contenido', items: ['comments','categories','webhooks','health','api-keys','profile','roles'] },
+            { label: 'Tienda', items: ['ecommerce-settings','shop-products','shop-coupons','shop-inventory','shop-orders','shop-reviews'] },
+            { label: 'Analítica', items: ['analytics'] },
+          ].map(section => {
+            const sectionItems = nav.filter(n => section.items.includes(n.id))
+            if (!sectionItems.length) return null
+            return (
+              <div key={section.label} className="mb-3">
+                <p className="text-[10px] font-mono text-[#444455] uppercase tracking-widest px-3 mb-1">{section.label}</p>
+                {sectionItems.map(item => {
+                  const Icon = item.icon
+                  return (
+                    <button key={item.id}
+                      className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-semibold text-left w-full transition-all ${view === item.id ? 'bg-[#1a1a24] text-white' : 'text-[#888899] hover:text-white hover:bg-[#1a1a24]'}`}
+                      onClick={() => { setView(item.id); setShowNewPost(false); setEditingPost(null) }}
+                    >
+                      <Icon size={15} className={view === item.id ? 'text-[#7c6aff]' : ''} />
+                      {item.label}
+                    </button>
+                  )
+                })}
+              </div>
+            )
+          })}
+        </nav>
         </div>
 
         <div className="flex flex-col gap-3">
