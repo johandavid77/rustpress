@@ -58,7 +58,7 @@ export default function Login() {
           <div className="relative">
             <input
               className="w-full px-4 py-3 pr-11 bg-[#1a1a24] border border-[#2a2a3a] rounded-xl text-white text-sm outline-none focus:border-[#7c6aff]"
-              type={showPass ? 'text' : 'password'} value={password} placeholder="••••••••"
+              type={showPass ? 'text' : 'password'} value={password} placeholder="••••••••" autoComplete="new-password"
               onChange={e => setPassword(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleLogin()}
             />
