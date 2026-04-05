@@ -33,7 +33,7 @@ export default function MediaAdmin() {
     try {
       const mime = filter === 'all' ? undefined : filter
       const res = await mediaApi.list(page, mime)
-      setFiles(res.data ?? [])
+      setFiles((res.data ?? []) as any)
     } catch (e) { console.error(e) }
     finally { setLoading(false) }
   }

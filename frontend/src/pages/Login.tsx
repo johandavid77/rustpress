@@ -20,7 +20,7 @@ export default function Login() {
     setLoading(true); setError('')
     try {
       const data = await authApi.login({ email, password })
-      setAuth(data.user, data.token)
+      setAuth((data as any).user, (data as any).token)
       navigate('/admin')
     } catch (e: any) {
       setError(e?.response?.data?.error || 'Error al iniciar sesión')

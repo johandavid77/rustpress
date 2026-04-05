@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { usersApi } from "../../api/users";
-import type { User } from '../types/auth'
+import type { User } from '../../types/auth'
 import { Check, X, Trash2, UserCheck, UserX, Clock } from 'lucide-react'
 
 type Tab = 'pending' | 'active'

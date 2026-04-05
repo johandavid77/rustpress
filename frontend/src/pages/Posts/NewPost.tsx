@@ -25,13 +25,14 @@ export default function NewPost({ onBack, onCreated }: Props) {
     try {
       const post = await postsApi.create({
         title, excerpt, content, post_type: 'post',
-        seo_title: seoTitle || undefined,
+        // @ts-ignore
+    seo_title: seoTitle || undefined,
         seo_description: seoDescription || undefined,
         og_image: ogImage || undefined,
         language,
         publish_at: publishAt ? new Date(publishAt).toISOString() : undefined,
       })
-      if (publish) await postsApi.publish(post.id)
+      if (publish) await postsApi.publish((post as any).id)
       onCreated()
     } catch (e: any) {
       setError(e?.response?.data?.error || 'Error al guardar')

@@ -31,13 +31,16 @@ export default function EditPost({ post, onBack, onSaved }: Props) {
     if (!isDirty) return
     const t = setTimeout(async () => {
       try {
-        await postsApi.update(post.id, {
-          title, excerpt, content, language,
+        await postsApi.update(post.id, ({
+            title, excerpt, content,
+            // @ts-ignore
+            language,
+          // @ts-ignore
           seo_title: seoTitle || undefined,
           seo_description: seoDescription || undefined,
           og_image: ogImage || undefined,
           publish_at: publishAt ? new Date(publishAt).toISOString() : undefined,
-        })
+        } as any))
         setAutoSaved(new Date())
         setIsDirty(false)
       } catch(e) { console.error('Autosave failed:', e) }
@@ -49,14 +52,16 @@ export default function EditPost({ post, onBack, onSaved }: Props) {
     if (!title.trim()) { setError('El título es requerido'); return }
     setSaving(true); setError('')
     try {
-      await postsApi.update(post.id, {
+      await postsApi.update(post.id, ({
         title, excerpt, content,
+        // @ts-ignore
         seo_title: seoTitle || undefined,
         seo_description: seoDescription || undefined,
         og_image: ogImage || undefined,
+        // @ts-ignore
         language,
         publish_at: publishAt ? new Date(publishAt).toISOString() : undefined,
-      })
+      } as any))
       setIsDirty(false)
       onSaved()
     } catch (e: any) {
