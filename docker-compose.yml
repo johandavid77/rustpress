@@ -1,8 +1,9 @@
 version: '3.9'
 
 services:
-  db:
-    image: postgres:16-alpine
+  postgres:
+    image: docker.io/library/postgres:16-alpine
+    container_name: rustcms-postgres
     restart: unless-stopped
     environment:
       POSTGRES_DB:       rustcms
@@ -10,65 +11,35 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
     volumes:
       - pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U rustcms"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
+    ports:
+      - "5432:5432"
 
   redis:
-    image: redis:7-alpine
+    image: docker.io/library/redis:7-alpine
+    container_name: rustcms-redis
     restart: unless-stopped
+    ports:
+      - "6379:6379"
     volumes:
       - redisdata:/data
 
-  backend:
-    build: .
+  mailhog:
+    image: docker.io/mailhog/mailhog
+    container_name: rustcms-mailhog
     restart: unless-stopped
-    depends_on:
-      db:
-        condition: service_healthy
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+  pgadmin:
+    image: docker.io/dpage/pgadmin4
+    container_name: rustcms-pgadmin
+    restart: unless-stopped
     environment:
-      DATABASE_URL:          postgres://rustcms:${DB_PASSWORD:-changeme}@db/rustcms
-      REDIS_URL:             redis://redis:6379
-      JWT_SECRET:            ${JWT_SECRET:-changeme_jwt_secret_min_32_chars}
-      RUST_LOG:              info
-      SMTP_HOST:             ${SMTP_HOST:-}
-      SMTP_PORT:             ${SMTP_PORT:-587}
-      SMTP_USER:             ${SMTP_USER:-}
-      SMTP_PASS:             ${SMTP_PASS:-}
-      SMTP_FROM:             ${SMTP_FROM:-noreply@example.com}
-      SMTP_FROM_NAME:        ${SMTP_FROM_NAME:-RustCMS}
-      STRIPE_SECRET_KEY:     ${STRIPE_SECRET_KEY:-}
-      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
-      PAYPAL_CLIENT_ID:      ${PAYPAL_CLIENT_ID:-}
-      PAYPAL_CLIENT_SECRET:  ${PAYPAL_CLIENT_SECRET:-}
-      PAYPAL_SANDBOX:        ${PAYPAL_SANDBOX:-true}
+      PGADMIN_DEFAULT_EMAIL:    admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
     ports:
-      - "8080:8080"
-
-  frontend:
-    image: node:20-alpine
-    working_dir: /app
-    volumes:
-      - ./frontend:/app
-    command: sh -c "npm ci && npm run build && npx serve -s dist -l 3000"
-    ports:
-      - "3000:3000"
-    restart: unless-stopped
-
-  nginx:
-    image: nginx:alpine
-    restart: unless-stopped
-    depends_on:
-      - backend
-      - frontend
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./ssl:/etc/nginx/ssl:ro
+      - "5050:80"
 
 volumes:
   pgdata:
