@@ -47,8 +47,8 @@ pub struct CreateProductDto {
     pub stock:         Option<i32>,
     pub status:        Option<String>,
     pub category_id:   Option<Uuid>,
-    pub images:        Option<Vec<String>>,
-    pub tags:          Option<Vec<String>>,
+    pub images:        Option<serde_json::Value>,
+    pub tags:          Option<serde_json::Value>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -61,8 +61,8 @@ pub struct UpdateProductDto {
     pub stock:         Option<i32>,
     pub status:        Option<String>,
     pub category_id:   Option<Uuid>,
-    pub images:        Option<Vec<String>>,
-    pub tags:          Option<Vec<String>>,
+    pub images:        Option<serde_json::Value>,
+    pub tags:          Option<serde_json::Value>,
 }
 
 #[derive(Debug, Deserialize)]

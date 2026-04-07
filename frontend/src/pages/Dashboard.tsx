@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, Suspense, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../store/authStore'
 import { postsApi } from '../api/posts'
@@ -16,6 +16,7 @@ import CommentsAdmin from './Plugins/CommentsAdmin'
 import CategoriesAdmin from './Plugins/CategoriesAdmin'
 import WebhooksAdmin from './Plugins/WebhooksAdmin'
 import PluginsHome from './Plugins/PluginsHome'
+import { getPluginComponent, isEcommercePlugin } from '../plugins/pluginRegistry'
 import HealthDashboard from './Dashboard/HealthDashboard'
 import ApiKeys from './Settings/ApiKeys'
 import Profile from './Settings/Profile'
@@ -128,7 +129,7 @@ export default function Dashboard() {
           <nav className="flex flex-col gap-0.5">
           {[
             { label: 'General' as string, items: ['home','posts','media','users','themes','plugins'] },
-            { label: 'Contenido', items: ['comments','categories','webhooks','health','api-keys','profile','roles'] },
+            { label: 'Contenido', items: ['api-keys','profile','roles'] },
             { label: 'Tienda', items: ['ecommerce-settings','shop-products','shop-coupons','shop-inventory','shop-orders','shop-reviews'] },
             { label: 'Analítica', items: ['analytics'] },
           ].map(section => {
@@ -211,7 +212,9 @@ export default function Dashboard() {
           {view === 'comments'    && <CommentsAdmin />}
           {view === 'categories'  && <CategoriesAdmin />}
           {(view === 'webhooks' || view === 'health') && <WebhooksAdmin />}
-          {view === 'plugins'  && <PluginsHome onNavigate={(v) => { if (v === 'ecommerce') setShowEcommerce(true); else setView(v as any) }} />}
+          {view === 'shop-products' && <Products />}
+        {view === 'plugins'  && <PluginsHome onNavigate={(v) => { if (isEcommercePlugin(v)) setShowEcommerce(true); else setView(v as any) }} />}
+        {(() => { const C = getPluginComponent(view); if (!C || view === 'plugins' || isEcommercePlugin(view)) return null; return <Suspense fallback={<div className='flex items-center justify-center py-20 text-[#888899] text-sm gap-2'><span className='animate-spin'>⏳</span> Cargando...</div>}><C /></Suspense> })()}
           {view === 'themes' && (
             <div className="max-w-3xl">
               <div className="mb-8 flex items-start justify-between">

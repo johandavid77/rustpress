@@ -92,6 +92,12 @@ export default function Shop() {
                     <span className="text-xs text-[#555566] line-through">${p.compare_price.toFixed(2)}</span>
                   )}
                 </div>
+                <div className="flex gap-2 mb-2">
+                  <Link to={`/shop/${p.slug}`}
+                    className="flex-1 py-2 border border-[#2a2a3a] hover:border-[#7c6aff]/50 rounded-lg text-xs font-semibold text-[#888899] hover:text-white text-center transition-all">
+                    Ver detalle
+                  </Link>
+                </div>
                 <button onClick={() => addToCart(p.id)}
                   disabled={p.stock === 0}
                   className="w-full py-2 bg-[#7c6aff] rounded-lg text-sm font-bold hover:bg-[#6b5be6] disabled:opacity-40 disabled:cursor-not-allowed transition-all">

@@ -17,7 +17,7 @@ export default function ProductDetail() {
   useEffect(() => {
     apiClient.get(`/shop/products/slug/${slug}`)
       .then((res: any) => setProduct(res))
-      .catch(() => navigate('/shop'))
+      .catch((e) => { console.error('ProductDetail error:', e); setLoading(false) })
       .finally(() => setLoading(false))
   }, [slug])
 

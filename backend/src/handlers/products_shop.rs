@@ -19,22 +19,41 @@ fn slugify(s: &str) -> String {
      .join("-")
 }
 
+
+pub async fn get_product_by_slug(pool: web::Data<PgPool>, slug: web::Path<String>) -> AppResult<HttpResponse> {
+    let slug = slug.into_inner();
+    let row = sqlx::query!(
+        r#"SELECT id, name, slug, description, price, compare_price, cost_price,
+                  stock, status, images, tags, weight, created_at
+           FROM products WHERE slug = $1"#,
+        slug
+    )
+    .fetch_optional(pool.get_ref())
+    .await?;
+
+    match row {
+        Some(p) => Ok(HttpResponse::Ok().json(serde_json::json!({
+            "id": p.id, "name": p.name, "slug": p.slug,
+            "description": p.description, "price": p.price,
+            "compare_price": p.compare_price, "cost_price": p.cost_price,
+            "stock": p.stock, "status": p.status,
+            "images": p.images, "tags": p.tags,
+            "weight": p.weight, "created_at": p.created_at
+        }))),
+        None => Ok(HttpResponse::NotFound().json(serde_json::json!({"error": "Product not found"}))),
+    }
+}
+
 pub fn configure(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::scope("/shop")
-            .route("/categories",      web::get().to(list_categories))
-            .route("/categories",      web::post().to(create_category))
-            .route("/categories/{id}", web::put().to(update_category))
-            .route("/categories/{id}", web::delete().to(delete_category))
-            .route("/products",        web::get().to(list_products))
-            .route("/products",        web::post().to(create_product))
-            .route("/products/{id}",   web::get().to(get_product))
-            .route("/products/{id}",   web::put().to(update_product))
-            .route("/products/{id}",   web::delete().to(delete_product))
+            .route("/categories", web::get().to(list_categories))
+            .route("/products", web::get().to(list_products))
+            .route("/products/{id}", web::get().to(get_product))
     );
 }
 
-async fn list_categories(pool: web::Data<PgPool>) -> AppResult<HttpResponse> {
+pub async fn list_categories(pool: web::Data<PgPool>) -> AppResult<HttpResponse> {
     let cats = sqlx::query_as!(
         ProductCategory,
         "SELECT * FROM product_categories ORDER BY sort_order, name"
@@ -42,7 +61,7 @@ async fn list_categories(pool: web::Data<PgPool>) -> AppResult<HttpResponse> {
     Ok(HttpResponse::Ok().json(cats))
 }
 
-async fn create_category(
+pub async fn create_category(
     pool: web::Data<PgPool>, _auth: AuthUserWithRole,
     body: web::Json<serde_json::Value>,
 ) -> AppResult<HttpResponse> {
@@ -87,7 +106,7 @@ async fn delete_category(
     Ok(HttpResponse::NoContent().finish())
 }
 
-async fn list_products(
+pub async fn list_products(
     pool: web::Data<PgPool>, query: web::Query<ProductQuery>,
 ) -> AppResult<HttpResponse> {
     let page     = query.page.unwrap_or(1).max(1);
@@ -114,7 +133,7 @@ async fn list_products(
     Ok(HttpResponse::Ok().json(serde_json::json!({"data": data, "page": page, "per_page": per_page})))
 }
 
-async fn get_product(pool: web::Data<PgPool>, id: web::Path<Uuid>) -> AppResult<HttpResponse> {
+pub async fn get_product(pool: web::Data<PgPool>, id: web::Path<Uuid>) -> AppResult<HttpResponse> {
     let p = sqlx::query!(
         "SELECT id, name, slug, description, price, compare_price, cost_price,
                 stock, status, category_id, images, tags, sku, track_stock,
@@ -134,7 +153,7 @@ async fn get_product(pool: web::Data<PgPool>, id: web::Path<Uuid>) -> AppResult<
     }
 }
 
-async fn create_product(
+pub async fn create_product(
     pool: web::Data<PgPool>, _auth: AuthUserWithRole,
     body: web::Json<CreateProductDto>,
 ) -> AppResult<HttpResponse> {
@@ -157,7 +176,7 @@ async fn create_product(
     })))
 }
 
-async fn update_product(
+pub async fn update_product(
     pool: web::Data<PgPool>, id: web::Path<Uuid>, _auth: AuthUserWithRole,
     body: web::Json<UpdateProductDto>,
 ) -> AppResult<HttpResponse> {
@@ -181,38 +200,10 @@ async fn update_product(
     Ok(HttpResponse::Ok().json(serde_json::json!({"ok": true})))
 }
 
-async fn delete_product(
+pub async fn delete_product(
     pool: web::Data<PgPool>, id: web::Path<Uuid>, _auth: AuthUserWithRole,
 ) -> AppResult<HttpResponse> {
     sqlx::query!("DELETE FROM products WHERE id=$1", *id)
         .execute(pool.get_ref()).await?;
     Ok(HttpResponse::NoContent().finish())
-}
-
-pub async fn get_product_by_slug(
-    pool: web::Data<sqlx::PgPool>,
-    slug: web::Path<String>,
-) -> crate::errors::AppResult<actix_web::HttpResponse> {
-    let p = sqlx::query!(
-        r#"SELECT id, name, slug, description, price, compare_price,
-                  stock, track_stock, status, sku, images
-           FROM products WHERE slug = $1 AND status = 'active'"#,
-        slug.as_str()
-    ).fetch_optional(pool.get_ref()).await?;
-
-    match p {
-        None => Ok(actix_web::HttpResponse::NotFound().json(serde_json::json!({"error":"Not found"}))),
-        Some(p) => Ok(actix_web::HttpResponse::Ok().json(serde_json::json!({
-            "id":            p.id,
-            "name":          p.name,
-            "slug":          p.slug,
-            "description":   p.description,
-            "price":         p.price,
-            "compare_price": p.compare_price,
-            "stock":         p.stock,
-            "status":        p.status,
-            "sku":           p.sku,
-            "images":        p.images,
-            }))),
-    }
 }

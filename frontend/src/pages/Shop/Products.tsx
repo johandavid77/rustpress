@@ -114,18 +114,33 @@ export default function Products() {
               </div>
             </div>
             <div className="flex gap-1 shrink-0">
-              <button onClick={() => toggleStatus(p)}
-                className={`p-2 rounded-lg transition-all ${p.status === 'active' ? 'text-green-400 hover:bg-green-500/10' : 'text-[#555566] hover:bg-[#1a1a24]'}`}>
-                {p.status === 'active' ? <ToggleRight size={16} /> : <ToggleLeft size={16} />}
-              </button>
-              <button onClick={() => setEditing(p.id)}
-                className="p-2 text-[#888899] hover:text-[#7c6aff] rounded-lg hover:bg-[#1a1a24] transition-all">
-                <Edit2 size={14} />
-              </button>
-              <button onClick={() => remove(p.id)}
-                className="p-2 text-[#888899] hover:text-red-400 rounded-lg hover:bg-[#1a1a24] transition-all">
-                <Trash2 size={14} />
-              </button>
+              <div className="relative group/tog">
+                <button onClick={() => toggleStatus(p)}
+                  className={`p-2 rounded-lg transition-all ${p.status === 'active' ? 'text-green-400 hover:bg-green-500/10' : 'text-[#555566] hover:bg-[#1a1a24]'}`}>
+                  {p.status === 'active' ? <ToggleRight size={16} /> : <ToggleLeft size={16} />}
+                </button>
+                <span className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-[#0a0a14] border border-[#2a2a3a] px-2 py-0.5 text-[10px] text-[#aaaacc] opacity-0 group-hover/tog:opacity-100 transition-opacity z-50">
+                  {p.status === 'active' ? 'Desactivar' : 'Activar'}
+                </span>
+              </div>
+              <div className="relative group/edi">
+                <button onClick={() => setEditing(p.id)}
+                  className="p-2 text-[#888899] hover:text-[#7c6aff] rounded-lg hover:bg-[#1a1a24] transition-all">
+                  <Edit2 size={14} />
+                </button>
+                <span className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-[#0a0a14] border border-[#2a2a3a] px-2 py-0.5 text-[10px] text-[#aaaacc] opacity-0 group-hover/edi:opacity-100 transition-opacity z-50">
+                  Editar
+                </span>
+              </div>
+              <div className="relative group/del">
+                <button onClick={() => remove(p.id)}
+                  className="p-2 text-[#888899] hover:text-red-400 rounded-lg hover:bg-[#1a1a24] transition-all">
+                  <Trash2 size={14} />
+                </button>
+                <span className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-[#0a0a14] border border-[#2a2a3a] px-2 py-0.5 text-[10px] text-[#aaaacc] opacity-0 group-hover/del:opacity-100 transition-opacity z-50">
+                  Eliminar
+                </span>
+              </div>
             </div>
           </div>
         ))}

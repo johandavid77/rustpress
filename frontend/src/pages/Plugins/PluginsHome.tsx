@@ -1,45 +1,185 @@
-import { ShoppingBag, SlidersHorizontal, Navigation, MessageSquare, Tag, Webhook, Activity, Zap } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import {
+  ShoppingBag, SlidersHorizontal, Navigation, MessageSquare,
+  Tag, Webhook, Activity, Zap, HardDrive, RefreshCw,
+  Power, PowerOff, Trash2, Settings, AlertCircle, Loader2
+} from 'lucide-react'
+import { pluginsApi, type Plugin } from '../../api/plugins'
 
 interface Props { onNavigate: (view: string) => void }
 
-const plugins = [
-  { id: 'ecommerce', title: 'Tienda / Ecommerce', description: 'Productos, pedidos, clientes, cupones, inventario y pasarelas de pago.', icon: ShoppingBag, color: 'from-violet-500/20 to-violet-600/5 border-violet-500/30', badge: 'Activo' },
-  { id: 'sliders',   title: 'Sliders',             description: 'Carrusel de imágenes para la página principal.',                          icon: SlidersHorizontal, color: 'from-blue-500/20 to-blue-600/5 border-blue-500/20' },
-  { id: 'menus',     title: 'Menús',               description: 'Constructor de menús de navegación.',                                     icon: Navigation, color: 'from-cyan-500/20 to-cyan-600/5 border-cyan-500/20' },
-  { id: 'comments',  title: 'Comentarios',         description: 'Modera comentarios de lectores.',                                         icon: MessageSquare, color: 'from-emerald-500/20 to-emerald-600/5 border-emerald-500/20' },
-  { id: 'categories',title: 'Categorías',          description: 'Organiza posts con categorías y tags.',                                   icon: Tag, color: 'from-orange-500/20 to-orange-600/5 border-orange-500/20' },
-  { id: 'webhooks',  title: 'Webhooks',            description: 'Notifica a Slack, Discord y otros al publicar.',                          icon: Webhook, color: 'from-pink-500/20 to-pink-600/5 border-pink-500/20' },
-  { id: 'health',    title: 'Healthcheck',         description: 'Monitorea el estado del servidor.',                                       icon: Activity, color: 'from-gray-500/20 to-gray-600/5 border-gray-500/20' },
-]
+const ICON_MAP: Record<string, any> = {
+  ShoppingBag, SlidersHorizontal, Navigation, MessageSquare,
+  Tag, Webhook, Activity, Zap, HardDrive, RefreshCw,
+}
+
+const CATEGORY_LABELS: Record<string, string> = {
+  content:      'Contenido',
+  ecommerce:    'Ecommerce',
+  integrations: 'Integraciones',
+  system:       'Sistema',
+}
 
 export default function PluginsHome({ onNavigate }: Props) {
+  const [plugins, setPlugins]   = useState<Plugin[]>([])
+  const [loading, setLoading]   = useState(true)
+  const [error, setError]       = useState<string | null>(null)
+  const [toggling, setToggling] = useState<string | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
+  const [deleting, setDeleting] = useState<string | null>(null)
+
+  useEffect(() => { loadPlugins() }, [])
+
+  async function loadPlugins() {
+    try {
+      setLoading(true); setError(null)
+      const data = await pluginsApi.list()
+      const list = Array.isArray(data) ? data : (data as any)?.data ?? []
+      setPlugins(list)
+    } catch { setError('No se pudieron cargar los plugins') }
+    finally { setLoading(false) }
+  }
+
+  async function togglePlugin(plugin: Plugin) {
+    setToggling(plugin.id)
+    try {
+      plugin.is_enabled ? await pluginsApi.disable(plugin.id) : await pluginsApi.enable(plugin.id)
+      setPlugins(prev => prev.map(p => p.id === plugin.id ? { ...p, is_enabled: !p.is_enabled } : p))
+    } catch { setError(`No se pudo cambiar el estado de ${plugin.config?.title}`) }
+    finally { setToggling(null) }
+  }
+
+  async function deletePlugin(id: string) {
+    setDeleting(id)
+    try {
+      await pluginsApi.delete(id)
+      setPlugins(prev => prev.filter(p => p.id !== id))
+      setConfirmDelete(null)
+    } catch { setError('No se pudo eliminar el plugin') }
+    finally { setDeleting(null) }
+  }
+
+  const grouped = plugins.reduce((acc, p) => {
+    const cat = p.config?.category ?? 'system'
+    if (!acc[cat]) acc[cat] = []
+    acc[cat].push(p)
+    return acc
+  }, {} as Record<string, Plugin[]>)
+
   return (
-    <div className="max-w-4xl">
+    <div className="max-w-5xl">
       <div className="mb-8">
         <h1 className="text-4xl font-black tracking-tight mb-1 flex items-center gap-3">
           <Zap size={28} className="text-[#7c6aff]" />Plugins
         </h1>
         <p className="text-[#888899] text-sm">Activa y configura funcionalidades de tu sitio</p>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {plugins.map(p => {
-          const Icon = p.icon
-          return (
-            <button key={p.id} onClick={() => onNavigate(p.id)}
-              className={`text-left p-6 rounded-2xl border bg-gradient-to-br ${p.color} transition-all duration-200 group hover:scale-[1.02]`}>
-              <div className="flex items-start justify-between mb-4">
-                <div className="text-[#7c6aff] group-hover:scale-110 transition-transform">
-                  <Icon size={24} />
+
+      {error && (
+        <div className="mb-6 flex items-center gap-2 text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-sm">
+          <AlertCircle size={16} />{error}
+          <button onClick={() => setError(null)} className="ml-auto">✕</button>
+        </div>
+      )}
+
+      {loading && (
+        <div className="flex items-center gap-3 text-[#888899] py-12 justify-center">
+          <Loader2 size={20} className="animate-spin" /><span>Cargando plugins...</span>
+        </div>
+      )}
+
+      {!loading && ['content','ecommerce','integrations','system'].map(cat => {
+        const group = grouped[cat]
+        if (!group?.length) return null
+        return (
+          <div key={cat} className="mb-8">
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-[#555566] mb-3 px-1">
+              {CATEGORY_LABELS[cat]}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+              {group.map(plugin => {
+                const Icon = ICON_MAP[plugin.config?.icon] ?? Zap
+                const isBusy = toggling === plugin.id || deleting === plugin.id
+                return (
+                  <div key={plugin.id} className={`relative p-5 rounded-2xl border bg-gradient-to-br
+                    ${plugin.config?.color ?? 'from-gray-500/20 to-gray-600/5 border-gray-500/20'}
+                    transition-all duration-200 min-h-[160px] flex flex-col ${!plugin.is_enabled ? 'opacity-50 grayscale' : ''}`}>
+
+                    {plugin.config?.badge && (
+                      <span className="absolute top-3 right-3 text-[10px] font-bold uppercase tracking-wider bg-violet-500/20 text-violet-400 border border-violet-500/30 px-2 py-0.5 rounded-full">
+                        {plugin.config.badge}
+                      </span>
+                    )}
+
+                    <button onClick={() => plugin.is_enabled && onNavigate(plugin.name)}
+                      disabled={!plugin.is_enabled} className="w-full text-left group flex-1">
+                      <Icon size={24} className="mb-3 text-white/70 group-hover:text-white transition-colors" />
+                      <div className="font-bold text-white text-sm mb-1">{plugin.config?.title ?? plugin.name}</div>
+                      <div className="text-[#888899] text-xs leading-relaxed line-clamp-2">{plugin.description}</div>
+                    </button>
+
+                    <div className="flex items-center gap-2 mt-4 pt-3 border-t border-white/5">
+                      <button onClick={() => togglePlugin(plugin)} disabled={isBusy}
+                        className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg font-medium transition-all
+                          ${plugin.is_enabled
+                            ? 'bg-green-500/15 text-green-400 hover:bg-red-500/15 hover:text-red-400'
+                            : 'bg-[#2a2a3a] text-[#888899] hover:bg-green-500/15 hover:text-green-400'}`}>
+                        {toggling === plugin.id
+                          ? <Loader2 size={12} className="animate-spin" />
+                          : plugin.is_enabled ? <Power size={12} /> : <PowerOff size={12} />}
+                        {plugin.is_enabled ? 'Activo' : 'Inactivo'}
+                      </button>
+
+                      {plugin.is_enabled && (
+                        <button onClick={() => onNavigate(plugin.name)}
+                          className="p-1.5 rounded-lg text-[#666677] hover:text-white hover:bg-white/5 transition-all">
+                          <Settings size={13} />
+                        </button>
+                      )}
+
+                      <button onClick={() => setConfirmDelete(plugin.id)}
+                        className="p-1.5 rounded-lg text-[#666677] hover:text-red-400 hover:bg-red-500/10 transition-all ml-auto">
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )
+      })}
+
+      {confirmDelete && (() => {
+        const p = plugins.find(x => x.id === confirmDelete)
+        return (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-[#1a1a2e] border border-[#2a2a3a] rounded-2xl p-6 max-w-sm w-full mx-4">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-red-500/15 rounded-xl flex items-center justify-center">
+                  <Trash2 size={18} className="text-red-400" />
                 </div>
-                {p.badge && <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full font-mono">{p.badge}</span>}
+                <div>
+                  <div className="font-bold text-white text-sm">¿Eliminar plugin?</div>
+                  <div className="text-[#888899] text-xs">{p?.config?.title ?? p?.name}</div>
+                </div>
               </div>
-              <h3 className="font-black text-lg mb-1 text-white">{p.title}</h3>
-              <p className="text-sm text-[#888899] leading-relaxed">{p.description}</p>
-              <p className="mt-4 text-xs font-mono text-[#555566] group-hover:text-[#7c6aff] transition-colors">Abrir →</p>
-            </button>
-          )
-        })}
-      </div>
+              <p className="text-[#888899] text-xs mb-5">Esta acción no se puede deshacer.</p>
+              <div className="flex gap-3">
+                <button onClick={() => setConfirmDelete(null)}
+                  className="flex-1 px-4 py-2 rounded-xl bg-[#2a2a3a] text-[#888899] hover:text-white text-sm font-medium">
+                  Cancelar
+                </button>
+                <button onClick={() => deletePlugin(confirmDelete)} disabled={!!deleting}
+                  className="flex-1 px-4 py-2 rounded-xl bg-red-500/15 border border-red-500/30 text-red-400 hover:bg-red-500/25 text-sm font-medium flex items-center justify-center gap-2">
+                  {deleting ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
     </div>
   )
 }

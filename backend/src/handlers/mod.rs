@@ -19,3 +19,5 @@ pub mod payments;
 pub mod reviews;
 pub mod analytics;
 pub mod variants;
+pub mod backup;
+pub mod updates;
