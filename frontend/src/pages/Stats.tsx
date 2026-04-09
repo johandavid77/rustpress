@@ -12,7 +12,11 @@ export default function Stats({ onNavigate }: { onNavigate?: (v: string) => void
 
   useEffect(() => {
     apiClient.get('/posts/stats')
-      .then((res: any) => setStats(res))
+      .then((res: any) => {
+        // interceptor ya hace res.data, llega directo
+        setStats(res)
+        console.log('stats data:', res)
+      })
       .catch(console.error)
       .finally(() => setLoading(false))
   }, [])
@@ -54,9 +58,6 @@ export default function Stats({ onNavigate }: { onNavigate?: (v: string) => void
   return (
     <div className="max-w-5xl">
       <div className="mb-8">
-        <h1 className="text-4xl font-black tracking-tight mb-1 flex items-center gap-3">
-          <TrendingUp size={28} className="text-[#7c6aff]" />Overview
-        </h1>
         <p className="text-[#888899] text-sm">Métricas en tiempo real de tu sitio</p>
       </div>
 

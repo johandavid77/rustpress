@@ -28,7 +28,7 @@ impl AppConfig {
             database_url:     std::env::var("DATABASE_URL").expect("DATABASE_URL must be set"),
             frontend_url:     std::env::var("FRONTEND_URL").unwrap_or_else(|_| "http://localhost:5173".into()),
             jwt_secret:       std::env::var("JWT_SECRET").expect("JWT_SECRET must be set"),
-            jwt_expiry_hours: std::env::var("JWT_EXPIRY_HOURS").unwrap_or_else(|_| "24".into()).parse()?,
+            jwt_expiry_hours: std::env::var("JWT_EXPIRY_HOURS").unwrap_or_else(|_| "720".into()).parse()?,
             upload_dir:       std::env::var("UPLOAD_DIR").unwrap_or_else(|_| "./uploads".into()),
             max_upload_mb:    std::env::var("MAX_UPLOAD_MB").unwrap_or_else(|_| "10".into()).parse()?,
             smtp_host:        std::env::var("SMTP_HOST").unwrap_or_else(|_| "localhost".into()),
