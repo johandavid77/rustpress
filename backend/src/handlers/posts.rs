@@ -377,6 +377,44 @@ pub async fn get_stats(
     .fetch_all(pool.get_ref())
     .await?;
 
+    // Estadisticas de ordenes
+    let orders_total = sqlx::query_scalar!("SELECT COUNT(*) FROM orders")
+        .fetch_one(pool.get_ref()).await?.unwrap_or(0);
+    let orders_pending = sqlx::query_scalar!("SELECT COUNT(*) FROM orders WHERE status = 'pending'")
+        .fetch_one(pool.get_ref()).await?.unwrap_or(0);
+    let orders_today = sqlx::query_scalar!("SELECT COUNT(*) FROM orders WHERE created_at >= NOW() - INTERVAL '24 hours'")
+        .fetch_one(pool.get_ref()).await?.unwrap_or(0);
+    let revenue_total = sqlx::query_scalar!("SELECT COALESCE(SUM(total), 0) FROM orders WHERE status != 'cancelled' AND status != 'refunded'")
+        .fetch_one(pool.get_ref()).await?.unwrap_or(0.0);
+    let revenue_today = sqlx::query_scalar!("SELECT COALESCE(SUM(total), 0) FROM orders WHERE status != 'cancelled' AND status != 'refunded' AND created_at >= NOW() - INTERVAL '24 hours'")
+        .fetch_one(pool.get_ref()).await?.unwrap_or(0.0);
+
+    // Estadisticas de productos
+    let total_products = sqlx::query_scalar!("SELECT COUNT(*) FROM products")
+        .fetch_one(pool.get_ref()).await?.unwrap_or(0);
+    let low_stock = sqlx::query_scalar!("SELECT COUNT(*) FROM products WHERE stock < 5 AND status = 'active'")
+        .fetch_one(pool.get_ref()).await?.unwrap_or(0);
+    let out_of_stock = sqlx::query_scalar!("SELECT COUNT(*) FROM products WHERE stock = 0 AND status = 'active'")
+        .fetch_one(pool.get_ref()).await?.unwrap_or(0);
+
+    // Estadisticas de usuarios
+    let total_users = sqlx::query_scalar!("SELECT COUNT(*) FROM users")
+        .fetch_one(pool.get_ref()).await?.unwrap_or(0);
+
+    // Ordenes recientes
+    let recent_orders = sqlx::query!(
+        "SELECT id, total, status, created_at FROM orders ORDER BY created_at DESC LIMIT 5"
+    )
+    .fetch_all(pool.get_ref())
+    .await?;
+
+    let recent_orders_json: Vec<serde_json::Value> = recent_orders.iter().map(|o| serde_json::json!({
+        "id": o.id,
+        "total": o.total,
+        "status": o.status,
+        "created_at": o.created_at,
+    })).collect();
+
     Ok(HttpResponse::Ok().json(serde_json::json!({
         "total_posts": stats.total_posts.unwrap_or(0),
         "published_posts": stats.published_posts.unwrap_or(0),
@@ -384,6 +422,16 @@ pub async fn get_stats(
         "last_published_at": stats.last_published_at,
         "total_media": media_count.unwrap_or(0),
         "recent_posts": recent_posts,
+        "orders_total": orders_total,
+        "orders_pending": orders_pending,
+        "orders_today": orders_today,
+        "revenue_total": revenue_total,
+        "revenue_today": revenue_today,
+        "total_products": total_products,
+        "low_stock": low_stock,
+        "out_of_stock": out_of_stock,
+        "total_users": total_users,
+        "recent_orders": recent_orders_json,
     })))
 }
 
