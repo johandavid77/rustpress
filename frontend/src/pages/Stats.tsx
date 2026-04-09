@@ -8,6 +8,7 @@ import {
 } from 'lucide-react'
 
 export default function Stats({ onNavigate }: { onNavigate?: (v: string) => void }) {
+  const { t } = useTranslation()
   const [stats, setStats] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 

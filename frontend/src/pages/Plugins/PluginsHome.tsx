@@ -15,10 +15,10 @@ const ICON_MAP: Record<string, any> = {
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
-  content:      t('plugins.categories.content'),
-  ecommerce:    t('plugins.categories.ecommerce'),
-  integrations: t('plugins.categories.integrations'),
-  system:       t('plugins.categories.system'),
+  content:      'content',
+  ecommerce:    'ecommerce',
+  integrations: 'integrations',
+  system:       'system',
 }
 
 export default function PluginsHome({ onNavigate }: Props) {
