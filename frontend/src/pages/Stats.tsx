@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { apiClient } from '../api/client'
 import {
   FileText, Globe, FileEdit, Image, ShoppingBag, Clock,
@@ -41,12 +42,12 @@ export default function Stats({ onNavigate }: { onNavigate?: (v: string) => void
   }
 
   const topCards = [
-    { label: 'Ingresos totales',  value: fmtMoney(stats?.revenue_total ?? 0),  sub: `Hoy: ${fmtMoney(stats?.revenue_today ?? 0)}`,  icon: DollarSign, color: 'from-violet-500/20 to-violet-600/5 border-violet-500/20', iconColor: 'text-violet-400' },
-    { label: 'Pedidos totales',   value: fmt(stats?.orders_total ?? 0),         sub: `Hoy: ${fmt(stats?.orders_today ?? 0)} · Pendientes: ${fmt(stats?.orders_pending ?? 0)}`, icon: ShoppingBag, color: 'from-blue-500/20 to-blue-600/5 border-blue-500/20', iconColor: 'text-blue-400' },
+    { label: 'Ingresos totales',  value: fmtMoney(stats?.revenue_total ?? 0),  sub: `${t("overview.revenueToday")}: ${fmtMoney(stats?.revenue_today ?? 0)}`,  icon: DollarSign, color: 'from-violet-500/20 to-violet-600/5 border-violet-500/20', iconColor: 'text-violet-400' },
+    { label: 'Pedidos totales',   value: fmt(stats?.orders_total ?? 0),         sub: `${t("overview.ordersToday")}: ${fmt(stats?.orders_today ?? 0)} · ${t("overview.ordersPending")}: ${fmt(stats?.orders_pending ?? 0)}`, icon: ShoppingBag, color: 'from-blue-500/20 to-blue-600/5 border-blue-500/20', iconColor: 'text-blue-400' },
     { label: 'Posts publicados',  value: fmt(stats?.published_posts ?? 0),      sub: `Borradores: ${fmt(stats?.draft_posts ?? 0)} · Total: ${fmt(stats?.total_posts ?? 0)}`, icon: Globe, color: 'from-green-500/20 to-green-600/5 border-green-500/20', iconColor: 'text-green-400' },
-    { label: 'Productos',         value: fmt(stats?.total_products ?? 0),       sub: `Stock bajo: ${fmt(stats?.low_stock ?? 0)} · Sin stock: ${fmt(stats?.out_of_stock ?? 0)}`, icon: Package, color: 'from-orange-500/20 to-orange-600/5 border-orange-500/20', iconColor: 'text-orange-400' },
-    { label: 'Archivos media',    value: fmt(stats?.total_media ?? 0),          sub: 'Imágenes y archivos subidos', icon: Image, color: 'from-pink-500/20 to-pink-600/5 border-pink-500/20', iconColor: 'text-pink-400' },
-    { label: 'Usuarios',          value: fmt(stats?.total_users ?? 0),          sub: 'Cuentas registradas', icon: Users, color: 'from-cyan-500/20 to-cyan-600/5 border-cyan-500/20', iconColor: 'text-cyan-400' },
+    { label: 'Productos',         value: fmt(stats?.total_products ?? 0),       sub: `${t("overview.lowStock")}: ${fmt(stats?.low_stock ?? 0)} · ${t("overview.outOfStock")}: ${fmt(stats?.out_of_stock ?? 0)}`, icon: Package, color: 'from-orange-500/20 to-orange-600/5 border-orange-500/20', iconColor: 'text-orange-400' },
+    { label: 'Archivos media',    value: fmt(stats?.total_media ?? 0),          sub: 't("overview.media")', icon: Image, color: 'from-pink-500/20 to-pink-600/5 border-pink-500/20', iconColor: 'text-pink-400' },
+    { label: 'Usuarios',          value: fmt(stats?.total_users ?? 0),          sub: '{t("overview.users")}', icon: Users, color: 'from-cyan-500/20 to-cyan-600/5 border-cyan-500/20', iconColor: 'text-cyan-400' },
   ]
 
   const alerts = [
@@ -58,7 +59,7 @@ export default function Stats({ onNavigate }: { onNavigate?: (v: string) => void
   return (
     <div className="max-w-5xl">
       <div className="mb-8">
-        <p className="text-[#888899] text-sm">Métricas en tiempo real de tu sitio</p>
+        <p className="text-[#888899] text-sm">{t("overview.subtitle")}</p>
       </div>
 
       {/* Alertas */}
@@ -115,7 +116,7 @@ export default function Stats({ onNavigate }: { onNavigate?: (v: string) => void
           </div>
           {!stats?.recent_orders?.length ? (
             <div className="py-8 text-center text-[#555566] text-sm">
-              <ShoppingBag size={24} className="mx-auto mb-2 opacity-30" />Sin pedidos aún
+              <ShoppingBag size={24} className="mx-auto mb-2 opacity-30" />{t("overview.noOrders")}
             </div>
           ) : (
             <div className="divide-y divide-[#1e1e2e]">
@@ -147,7 +148,7 @@ export default function Stats({ onNavigate }: { onNavigate?: (v: string) => void
           </div>
           {!stats?.recent_posts?.length ? (
             <div className="py-8 text-center text-[#555566] text-sm">
-              <FileText size={24} className="mx-auto mb-2 opacity-30" />Sin posts aún
+              <FileText size={24} className="mx-auto mb-2 opacity-30" />{t("overview.noPosts")}
             </div>
           ) : (
             <div className="divide-y divide-[#1e1e2e]">

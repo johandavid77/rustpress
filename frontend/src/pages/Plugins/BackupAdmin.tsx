@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { HardDrive, Plus, Download, Trash2, Loader2, AlertCircle, CheckCircle2, RefreshCw, UploadCloud } from 'lucide-react'
 import { apiClient } from '../../api/client'
 
@@ -15,6 +16,7 @@ function formatSize(bytes: number) {
 }
 
 export default function BackupAdmin() {
+  const { t } = useTranslation()
   const [backups, setBackups]       = useState<BackupEntry[]>([])
   const [loading, setLoading]       = useState(true)
   const [creating, setCreating]     = useState(false)

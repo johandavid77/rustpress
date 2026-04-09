@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { RefreshCw, GitCommit, CheckCircle2, AlertCircle, Loader2, Download, Clock, User } from 'lucide-react'
 import { apiClient } from '../../api/client'
 
@@ -19,6 +20,7 @@ interface Commit {
 }
 
 export default function UpdatesAdmin() {
+  const { t } = useTranslation()
   const [status, setStatus]       = useState<UpdateStatus | null>(null)
   const [commits, setCommits]     = useState<Commit[]>([])
   const [loading, setLoading]     = useState(true)

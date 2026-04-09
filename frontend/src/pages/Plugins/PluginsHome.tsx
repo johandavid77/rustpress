@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   ShoppingBag, SlidersHorizontal, Navigation, MessageSquare,
   Tag, Webhook, Activity, Zap, HardDrive, RefreshCw,
@@ -14,13 +15,14 @@ const ICON_MAP: Record<string, any> = {
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
-  content:      'Contenido',
-  ecommerce:    'Ecommerce',
-  integrations: 'Integraciones',
-  system:       'Sistema',
+  content:      t('plugins.categories.content'),
+  ecommerce:    t('plugins.categories.ecommerce'),
+  integrations: t('plugins.categories.integrations'),
+  system:       t('plugins.categories.system'),
 }
 
 export default function PluginsHome({ onNavigate }: Props) {
+  const { t } = useTranslation()
   const [plugins, setPlugins]   = useState<Plugin[]>([])
   const [loading, setLoading]   = useState(true)
   const [error, setError]       = useState<string | null>(null)
@@ -72,7 +74,7 @@ export default function PluginsHome({ onNavigate }: Props) {
         <h1 className="text-4xl font-black tracking-tight mb-1 flex items-center gap-3">
           <Zap size={28} className="text-[#7c6aff]" />Plugins
         </h1>
-        <p className="text-[#888899] text-sm">Activa y configura funcionalidades de tu sitio</p>
+        <p className="text-[#888899] text-sm">{t("plugins.subtitle")}</p>
       </div>
 
       {error && (
@@ -127,7 +129,7 @@ export default function PluginsHome({ onNavigate }: Props) {
                         {toggling === plugin.id
                           ? <Loader2 size={12} className="animate-spin" />
                           : plugin.is_enabled ? <Power size={12} /> : <PowerOff size={12} />}
-                        {plugin.is_enabled ? 'Activo' : 'Inactivo'}
+                        {plugin.is_enabled ? t('plugins.active') : t('plugins.inactive')}
                       </button>
 
                       {plugin.is_enabled && (
@@ -160,11 +162,11 @@ export default function PluginsHome({ onNavigate }: Props) {
                   <Trash2 size={18} className="text-red-400" />
                 </div>
                 <div>
-                  <div className="font-bold text-white text-sm">¿Eliminar plugin?</div>
+                  <div className="font-bold text-white text-sm">{t('plugins.deleteConfirm')}</div>
                   <div className="text-[#888899] text-xs">{p?.config?.title ?? p?.name}</div>
                 </div>
               </div>
-              <p className="text-[#888899] text-xs mb-5">Esta acción no se puede deshacer.</p>
+              <p className="text-[#888899] text-xs mb-5">{t('plugins.deleteWarning')}</p>
               <div className="flex gap-3">
                 <button onClick={() => setConfirmDelete(null)}
                   className="flex-1 px-4 py-2 rounded-xl bg-[#2a2a3a] text-[#888899] hover:text-white text-sm font-medium">
