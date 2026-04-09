@@ -151,4 +151,4 @@ async fn health_check() -> actix_web::HttpResponse {
         "status": "ok",
         "version": env!("CARGO_PKG_VERSION")
     }))
-}
+}// NOTA: agregar estas rutas al web::scope de arriba

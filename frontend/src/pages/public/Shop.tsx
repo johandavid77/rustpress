@@ -1,3 +1,4 @@
+import SEO from '../../components/SEO/SEO'
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ShoppingCart, Search, Filter } from 'lucide-react'
@@ -37,6 +38,8 @@ export default function Shop() {
   const totalInCart = Object.values(cart).reduce((a, b) => a + b, 0)
 
   return (
+    <>
+    <SEO title="Tienda" description="Explora nuestros productos. Envio rapido y seguro." type="website" url="/shop" />
     <div className="min-h-screen bg-[#0a0a0f] text-white">
       {/* Header */}
       <header className="border-b border-[#1a1a24] sticky top-0 bg-[#0a0a0f]/95 backdrop-blur z-10">
@@ -109,5 +112,6 @@ export default function Shop() {
         </div>
       </main>
     </div>
+    </>
   )
 }

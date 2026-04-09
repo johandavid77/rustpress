@@ -30,7 +30,7 @@ export default function BackupAdmin() {
   async function loadBackups() {
     try {
       setLoading(true)
-      const data = await apiClient.get<any>('/backup/list')
+      const data: any = await apiClient.get('/backup/list')
       setBackups(data?.backups ?? [])
     } catch { setError('No se pudieron cargar los backups') }
     finally { setLoading(false) }
@@ -39,7 +39,7 @@ export default function BackupAdmin() {
   async function createBackup() {
     setCreating(true); setError(null); setSuccess(null)
     try {
-      const data = await apiClient.post<any>('/backup/create', {})
+      const data: any = await apiClient.post('/backup/create', {})
       setSuccess(`Backup creado: ${data.filename} (${formatSize(data.size_bytes)})`)
       await loadBackups()
     } catch (e: any) {
