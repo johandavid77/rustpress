@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { apiClient } from '../../api/client'
-import { Save, X, Plus, Trash2, Package } from 'lucide-react'
+import { Save, X, Plus, Trash2, Package, UploadCloud, Loader2, Link } from 'lucide-react'
 
 interface Props {
   productId?: string
@@ -18,6 +18,8 @@ export default function ProductEditor({ productId, onClose, onSaved }: Props) {
   const [saving, setSaving]     = useState(false)
   const [tab, setTab]           = useState<'general'|'variants'|'images'>('general')
   const [newImg, setNewImg]     = useState('')
+  const [uploading, setUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (productId) loadProduct()
@@ -40,6 +42,23 @@ export default function ProductEditor({ productId, onClose, onSaved }: Props) {
   }
 
   const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+
+  const uploadImage = async (file: File) => {
+    setUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      const res: any = await apiClient.post('/media/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      } as any)
+      const url = res?.url ?? res?.data?.url ?? ''
+      if (url) setForm(f => ({ ...f, images: [...f.images, url] }))
+    } catch (e) {
+      console.error('Upload error:', e)
+    } finally {
+      setUploading(false)
+    }
+  }
 
   const save = async () => {
     if (!form.name.trim()) return alert('El nombre es requerido')
