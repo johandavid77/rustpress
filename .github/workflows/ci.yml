@@ -1,0 +1,113 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend:
+    name: Backend (Rust)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: rustcms
+          POSTGRES_PASSWORD: rustcms_secret
+          POSTGRES_DB: rustcms
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Rust
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            backend/target
+          key: rust-${{ hashFiles('backend/Cargo.lock') }}
+          restore-keys: rust-
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build
+        working-directory: backend
+        env:
+          DATABASE_URL: postgres://rustcms:rustcms_secret@localhost:5432/rustcms
+          REDIS_URL: redis://localhost:6379
+          JWT_SECRET: ci_secret_key
+          JWT_EXPIRY_HOURS: "720"
+          PORT: "8080"
+          SITE_URL: http://localhost:5173
+          BACKUP_DIR: ./backups
+          STRIPE_SECRET_KEY: sk_test_placeholder
+          STRIPE_WEBHOOK_SECRET: whsec_placeholder
+          PAYPAL_CLIENT_ID: placeholder
+          PAYPAL_CLIENT_SECRET: placeholder
+          PAYPAL_SANDBOX: "true"
+        run: cargo build 2>&1
+
+      - name: Test
+        working-directory: backend
+        env:
+          DATABASE_URL: postgres://rustcms:rustcms_secret@localhost:5432/rustcms
+          REDIS_URL: redis://localhost:6379
+          JWT_SECRET: ci_secret_key
+          JWT_EXPIRY_HOURS: "720"
+          PORT: "8080"
+          SITE_URL: http://localhost:5173
+          BACKUP_DIR: ./backups
+          STRIPE_SECRET_KEY: sk_test_placeholder
+          STRIPE_WEBHOOK_SECRET: whsec_placeholder
+          PAYPAL_CLIENT_ID: placeholder
+          PAYPAL_CLIENT_SECRET: placeholder
+          PAYPAL_SANDBOX: "true"
+        run: cargo test 2>&1
+
+  frontend:
+    name: Frontend (React)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: frontend/node_modules
+          key: node-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: node-
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install
+        working-directory: frontend
+        run: npm ci --legacy-peer-deps
+
+      - name: Build
+        working-directory: frontend
+        env:
+          VITE_API_URL: /api/v1
+        run: npm run build
