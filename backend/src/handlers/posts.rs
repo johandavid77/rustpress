@@ -370,6 +370,17 @@ pub async fn get_stats(
         .fetch_one(pool.get_ref())
         .await?;
 
+    // Contar imagenes de productos y sliders
+    let product_images = sqlx::query_scalar!(
+        "SELECT COALESCE(SUM(jsonb_array_length(images)), 0) FROM products WHERE images IS NOT NULL AND jsonb_array_length(images) > 0"
+    ).fetch_one(pool.get_ref()).await.unwrap_or(Some(0));
+
+    let slider_images = sqlx::query_scalar!(
+        "SELECT COUNT(*) FROM sliders WHERE image_url IS NOT NULL AND image_url != ''"
+    ).fetch_one(pool.get_ref()).await.unwrap_or(Some(0));
+
+    let total_media_count = media_count.unwrap_or(0) + product_images.unwrap_or(0) + slider_images.unwrap_or(0);
+
     let recent_posts = sqlx::query_as!(
         crate::models::post::Post,
         "SELECT * FROM posts ORDER BY created_at DESC LIMIT 5"
@@ -420,7 +431,7 @@ pub async fn get_stats(
         "published_posts": stats.published_posts.unwrap_or(0),
         "draft_posts": stats.draft_posts.unwrap_or(0),
         "last_published_at": stats.last_published_at,
-        "total_media": media_count.unwrap_or(0),
+        "total_media": total_media_count,
         "recent_posts": recent_posts,
         "orders_total": orders_total,
         "orders_pending": orders_pending,
