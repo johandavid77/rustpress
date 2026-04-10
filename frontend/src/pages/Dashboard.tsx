@@ -1,4 +1,5 @@
 import { useState, Suspense, useEffect } from 'react'
+import GlobalSearch from '../components/GlobalSearch/GlobalSearch'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../store/authStore'
 import { postsApi } from '../api/posts'

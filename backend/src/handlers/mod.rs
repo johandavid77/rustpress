@@ -21,3 +21,5 @@ pub mod analytics;
 pub mod variants;
 pub mod backup;
 pub mod updates;
+
+pub mod search;
