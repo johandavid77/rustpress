@@ -12,6 +12,8 @@ name = "rustcms_lib"
 path = "src/lib.rs"
 
 [dependencies]
+tokio-stream = "0.1"
+async-stream = "0.3"
 # Web framework
 actix-web       = "4"
 actix-multipart = "0.6"

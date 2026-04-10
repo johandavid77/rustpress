@@ -23,3 +23,4 @@ pub mod backup;
 pub mod updates;
 
 pub mod search;
+pub mod notifications;

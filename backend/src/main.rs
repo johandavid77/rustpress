@@ -108,6 +108,7 @@ async fn main() -> anyhow::Result<()> {
                         .configure(handlers::backup::configure)
                         .configure(handlers::updates::configure)
                         .configure(handlers::search::configure)
+                        .configure(handlers::notifications::configure)
                         .route("/shop/products", web::get().to(handlers::products_shop::list_products))
                         .route("/shop/categories", web::post().to(handlers::products_shop::create_category))
                         .route("/shop/products", web::post().to(handlers::products_shop::create_product))

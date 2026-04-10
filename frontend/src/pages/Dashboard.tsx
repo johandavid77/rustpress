@@ -1,5 +1,6 @@
 import { useState, Suspense, useEffect } from 'react'
 import GlobalSearch from '../components/GlobalSearch/GlobalSearch'
+import NotificationBell from '../components/NotificationBell/NotificationBell'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../store/authStore'
 import { postsApi } from '../api/posts'
@@ -184,6 +185,7 @@ export default function Dashboard() {
               className="flex items-center gap-2 px-4 py-1.5 border border-[#2a2a3a] rounded-lg text-xs text-[#888899] hover:text-white hover:border-[#7c6aff] font-semibold transition-all">
               <ShoppingBag size={13} /> Ver tienda
             </a>
+        <NotificationBell onNavigate={(v) => setView(v as any)} />
         </header>
 
         <main className="flex-1 overflow-auto p-10">
