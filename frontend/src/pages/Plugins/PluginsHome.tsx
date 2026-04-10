@@ -96,7 +96,7 @@ export default function PluginsHome({ onNavigate }: Props) {
         return (
           <div key={cat} className="mb-8">
             <h2 className="text-xs font-semibold uppercase tracking-widest text-[#555566] mb-3 px-1">
-              {CATEGORY_LABELS[cat]}
+              {t(`plugins.categories.${cat}`) || CATEGORY_LABELS[cat]}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
               {group.map(plugin => {

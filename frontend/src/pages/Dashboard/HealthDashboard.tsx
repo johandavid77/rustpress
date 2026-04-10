@@ -33,7 +33,7 @@ export default function HealthDashboard() {
   const load = async () => {
     setLoading(true)
     try {
-      const res: any = await apiClient.get('/health/detailed')
+      const res: any = await fetch('/health/detailed').then(r => r.json())
       setData(res)
       setLastCheck(new Date())
     } catch(e) { console.error(e) }
