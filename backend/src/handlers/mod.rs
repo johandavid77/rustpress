@@ -26,3 +26,4 @@ pub mod search;
 pub mod notifications;
 pub mod redirects;
 pub mod newsletter;
+pub mod contact;

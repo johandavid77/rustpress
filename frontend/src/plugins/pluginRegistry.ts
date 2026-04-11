@@ -13,6 +13,7 @@ const CategoriesAdmin  = lazy(() => import('../pages/Plugins/CategoriesAdmin'))
 const WebhooksAdmin    = lazy(() => import('../pages/Plugins/WebhooksAdmin'))
 const BackupAdmin      = lazy(() => import('../pages/Plugins/BackupAdmin'))
 const UpdatesAdmin     = lazy(() => import('../pages/Plugins/UpdatesAdmin'))
+const ContactFormsAdmin = lazy(() => import('../pages/Plugins/ContactFormsAdmin'))
 const NewsletterAdmin  = lazy(() => import('../pages/Plugins/NewsletterAdmin'))
 const RedirectsAdmin   = lazy(() => import('../pages/Plugins/RedirectsAdmin'))
 const HealthDashboard  = lazy(() => import('../pages/Dashboard/HealthDashboard'))
@@ -29,6 +30,7 @@ export const PLUGIN_REGISTRY: Record<string, PluginDefinition> = {
   updates:    { id: 'updates',    component: UpdatesAdmin },
   redirects:  { id: 'redirects',  component: RedirectsAdmin },
   newsletter: { id: 'newsletter', component: NewsletterAdmin },
+  contact:    { id: 'contact',    component: ContactFormsAdmin },
 }
 
 export function isEcommercePlugin(id: string): boolean {
