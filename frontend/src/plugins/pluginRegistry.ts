@@ -13,6 +13,7 @@ const CategoriesAdmin  = lazy(() => import('../pages/Plugins/CategoriesAdmin'))
 const WebhooksAdmin    = lazy(() => import('../pages/Plugins/WebhooksAdmin'))
 const BackupAdmin      = lazy(() => import('../pages/Plugins/BackupAdmin'))
 const UpdatesAdmin     = lazy(() => import('../pages/Plugins/UpdatesAdmin'))
+const RedirectsAdmin   = lazy(() => import('../pages/Plugins/RedirectsAdmin'))
 const HealthDashboard  = lazy(() => import('../pages/Dashboard/HealthDashboard'))
 
 export const PLUGIN_REGISTRY: Record<string, PluginDefinition> = {
@@ -25,6 +26,7 @@ export const PLUGIN_REGISTRY: Record<string, PluginDefinition> = {
   ecommerce:  { id: 'ecommerce',  component: lazy(() => Promise.resolve({ default: () => null })), isEcommerce: true },
   backup:     { id: 'backup',     component: BackupAdmin },
   updates:    { id: 'updates',    component: UpdatesAdmin },
+  redirects:  { id: 'redirects',  component: RedirectsAdmin },
 }
 
 export function isEcommercePlugin(id: string): boolean {

@@ -24,3 +24,4 @@ pub mod updates;
 
 pub mod search;
 pub mod notifications;
+pub mod redirects;
