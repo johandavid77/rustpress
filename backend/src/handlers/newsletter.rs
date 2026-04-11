@@ -3,6 +3,8 @@ use sqlx::PgPool;
 use serde::{Deserialize, Serialize};
 use crate::errors::AppResult;
 use crate::middleware::auth::AuthUserWithRole;
+use crate::services::email_service::EmailService;
+use crate::config::AppConfig;
 
 #[derive(Serialize, sqlx::FromRow)]
 pub struct Subscriber {
@@ -37,7 +39,6 @@ pub struct CreateCampaign {
     pub body: String,
 }
 
-// Publico: suscribirse
 pub async fn subscribe(pool: web::Data<PgPool>, body: web::Json<Subscribe>) -> AppResult<HttpResponse> {
     sqlx::query!(
         "INSERT INTO newsletter_subscribers (email, name) VALUES ($1, $2) ON CONFLICT (email) DO UPDATE SET active = true",
@@ -46,32 +47,30 @@ pub async fn subscribe(pool: web::Data<PgPool>, body: web::Json<Subscribe>) -> A
     Ok(HttpResponse::Ok().json(serde_json::json!({"ok": true, "message": "Suscrito correctamente"})))
 }
 
-// Publico: desuscribirse
 pub async fn unsubscribe(pool: web::Data<PgPool>, path: web::Path<String>) -> AppResult<HttpResponse> {
     sqlx::query!("UPDATE newsletter_subscribers SET active = false WHERE email = $1", *path)
         .execute(pool.get_ref()).await?;
     Ok(HttpResponse::Ok().json(serde_json::json!({"ok": true})))
 }
 
-// Admin: listar suscriptores
 pub async fn list_subscribers(pool: web::Data<PgPool>, _auth: AuthUserWithRole) -> AppResult<HttpResponse> {
     let rows = sqlx::query_as!(Subscriber,
         "SELECT id, email, name, active, confirmed, created_at FROM newsletter_subscribers ORDER BY created_at DESC"
     ).fetch_all(pool.get_ref()).await?;
+    let total = rows.len();
+    let active = rows.iter().filter(|s| s.active).count();
     Ok(HttpResponse::Ok().json(serde_json::json!({
         "subscribers": rows,
-        "total": rows.len(),
-        "active": rows.iter().filter(|s| s.active).count(),
+        "total": total,
+        "active": active,
     })))
 }
 
-// Admin: eliminar suscriptor
 pub async fn delete_subscriber(pool: web::Data<PgPool>, _auth: AuthUserWithRole, path: web::Path<uuid::Uuid>) -> AppResult<HttpResponse> {
     sqlx::query!("DELETE FROM newsletter_subscribers WHERE id = $1", *path).execute(pool.get_ref()).await?;
     Ok(HttpResponse::Ok().json(serde_json::json!({"ok": true})))
 }
 
-// Admin: listar campanas
 pub async fn list_campaigns(pool: web::Data<PgPool>, _auth: AuthUserWithRole) -> AppResult<HttpResponse> {
     let rows = sqlx::query_as!(Campaign,
         "SELECT id, subject, body, sent_at, sent_count, status, created_at FROM newsletter_campaigns ORDER BY created_at DESC"
@@ -79,7 +78,6 @@ pub async fn list_campaigns(pool: web::Data<PgPool>, _auth: AuthUserWithRole) ->
     Ok(HttpResponse::Ok().json(rows))
 }
 
-// Admin: crear campana
 pub async fn create_campaign(pool: web::Data<PgPool>, _auth: AuthUserWithRole, body: web::Json<CreateCampaign>) -> AppResult<HttpResponse> {
     let row = sqlx::query_as!(Campaign,
         "INSERT INTO newsletter_campaigns (subject, body) VALUES ($1, $2) RETURNING id, subject, body, sent_at, sent_count, status, created_at",
@@ -88,24 +86,61 @@ pub async fn create_campaign(pool: web::Data<PgPool>, _auth: AuthUserWithRole, b
     Ok(HttpResponse::Created().json(row))
 }
 
-// Admin: eliminar campana
 pub async fn delete_campaign(pool: web::Data<PgPool>, _auth: AuthUserWithRole, path: web::Path<uuid::Uuid>) -> AppResult<HttpResponse> {
     sqlx::query!("DELETE FROM newsletter_campaigns WHERE id = $1", *path).execute(pool.get_ref()).await?;
     Ok(HttpResponse::Ok().json(serde_json::json!({"ok": true})))
 }
 
-// Admin: enviar campana (simulado - log)
-pub async fn send_campaign(pool: web::Data<PgPool>, _auth: AuthUserWithRole, path: web::Path<uuid::Uuid>) -> AppResult<HttpResponse> {
-    let count = sqlx::query_scalar!("SELECT COUNT(*) FROM newsletter_subscribers WHERE active = true")
-        .fetch_one(pool.get_ref()).await?.unwrap_or(0);
+pub async fn send_campaign(
+    pool: web::Data<PgPool>,
+    cfg: web::Data<AppConfig>,
+    _auth: AuthUserWithRole,
+    path: web::Path<uuid::Uuid>,
+) -> AppResult<HttpResponse> {
+    let campaign = sqlx::query!(
+        "SELECT subject, body FROM newsletter_campaigns WHERE id = $1", *path
+    ).fetch_one(pool.get_ref()).await?;
 
-    sqlx::query!(
-        "UPDATE newsletter_campaigns SET status = 'sent', sent_at = NOW(), sent_count = $1 WHERE id = $2",
-        count as i32, *path
-    ).execute(pool.get_ref()).await?;
+    let subscribers = sqlx::query!(
+        "SELECT email, name FROM newsletter_subscribers WHERE active = true"
+    ).fetch_all(pool.get_ref()).await?;
 
-    tracing::info!("Newsletter campaign {} sent to {} subscribers", path, count);
-    Ok(HttpResponse::Ok().json(serde_json::json!({"ok": true, "sent_to": count})))
+    let count = subscribers.len() as i32;
+
+    if !cfg.smtp_host.is_empty() && !cfg.smtp_username.is_empty() {
+        let mailer = EmailService::new(
+            &cfg.smtp_host,
+            cfg.smtp_port,
+            &cfg.smtp_username,
+            &cfg.smtp_password,
+            &cfg.smtp_from,
+        );
+
+        let mut sent = 0i32;
+        for sub in &subscribers {
+            let unsub = format!("/newsletter/unsubscribe/{}", sub.email);
+            let footer = "<br><hr><p>Recibes este email porque te suscribiste a RustCMS. <a href='".to_string() + &unsub + "'>Desuscribirse</a></p>";
+            let body = campaign.body.clone() + &footer;
+            match mailer.send(&sub.email, &campaign.subject, body).await {
+                Ok(_) => sent += 1,
+                Err(e) => tracing::warn!("Failed to send to {}: {}", sub.email, e),
+            }
+        }
+
+        sqlx::query!(
+            "UPDATE newsletter_campaigns SET status = $1, sent_at = NOW(), sent_count = $2 WHERE id = $3",
+            "sent", sent, *path
+        ).execute(pool.get_ref()).await?;
+
+        Ok(HttpResponse::Ok().json(serde_json::json!({"ok": true, "sent_to": sent, "total": count})))
+    } else {
+        sqlx::query!(
+            "UPDATE newsletter_campaigns SET status = $1, sent_at = NOW(), sent_count = $2 WHERE id = $3",
+            "sent", count, *path
+        ).execute(pool.get_ref()).await?;
+        tracing::info!("Newsletter simulated to {} subscribers (no SMTP configured)", count);
+        Ok(HttpResponse::Ok().json(serde_json::json!({"ok": true, "sent_to": count, "simulated": true})))
+    }
 }
 
 pub fn configure(cfg: &mut web::ServiceConfig) {

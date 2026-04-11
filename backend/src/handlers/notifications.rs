@@ -1,13 +1,10 @@
 use actix_web::{web, HttpResponse, HttpRequest};
 use actix_web::rt::time::interval;
-use futures_util::stream::StreamExt;
 use sqlx::PgPool;
 use std::time::Duration;
-use crate::errors::AppResult;
 use crate::middleware::auth::AuthUserWithRole;
 
 pub async fn notifications_stream(
-    req: HttpRequest,
     pool: web::Data<PgPool>,
     _auth: AuthUserWithRole,
 ) -> HttpResponse {
