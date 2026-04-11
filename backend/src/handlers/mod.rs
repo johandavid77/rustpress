@@ -27,3 +27,4 @@ pub mod notifications;
 pub mod redirects;
 pub mod newsletter;
 pub mod contact;
+pub mod coupons;
