@@ -113,6 +113,7 @@ async fn main() -> anyhow::Result<()> {
                         .configure(handlers::newsletter::configure)
                         .configure(handlers::contact::configure)
                         .configure(handlers::coupons::configure)
+                        .configure(handlers::cache_admin::configure)
                         .route("/shop/products", web::get().to(handlers::products_shop::list_products))
                         .route("/shop/categories", web::post().to(handlers::products_shop::create_category))
                         .route("/shop/products", web::post().to(handlers::products_shop::create_product))
