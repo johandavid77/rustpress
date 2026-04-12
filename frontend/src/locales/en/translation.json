@@ -19,7 +19,8 @@
     "inactive": "Inactive",
     "noResults": "No results",
     "error": "Error",
-    "success": "Success"
+    "success": "Success",
+    "logout": "Log out"
   },
   "nav": {
     "overview": "Overview",
@@ -31,7 +32,8 @@
     "settings": "Settings",
     "logout": "Log out",
     "previewSite": "Preview site",
-    "viewStore": "View store"
+    "viewStore": "View store",
+    "home": "Home"
   },
   "auth": {
     "login": "Log in",
@@ -72,7 +74,7 @@
     "publishedPosts": "Published posts",
     "products": "Products",
     "mediaFiles": "Media files",
-    "users": "Users",
+    "users": "users",
     "recentOrders": "Recent orders",
     "recentPosts": "Recent posts",
     "noOrders": "No orders yet",
@@ -81,7 +83,12 @@
     "drafts": "Drafts",
     "total": "Total",
     "lowStock": "Low stock",
-    "activeUsers": "Active users"
+    "activeUsers": "Active users",
+    "revenueToday": "Today",
+    "ordersToday": "Today",
+    "ordersPending": "Pending",
+    "ofStock": "in stock",
+    "media": "media files"
   },
   "posts": {
     "title": "Posts",
@@ -103,7 +110,13 @@
     "createdAt": "Created at",
     "updatedAt": "Updated at",
     "deleteConfirm": "Delete this post?",
-    "noPost": "No posts yet"
+    "noPost": "No posts yet",
+    "subtitle": "Manage your site content",
+    "reload": "Reload",
+    "new": "New post",
+    "loading": "Loading posts...",
+    "empty": "No posts yet. Create the first one.",
+    "clickToEdit": "Click to edit"
   },
   "plugins": {
     "title": "Plugins",
@@ -164,5 +177,10 @@
     "message": "We are working on improvements. Back soon.",
     "countdown": "Estimated time to return",
     "contact": "If you have questions, contact the administrator."
+  },
+  "dashboard": {
+    "summary": "Overview",
+    "welcome": "Welcome back",
+    "subtitle": "Real-time metrics for your site"
   }
 }
