@@ -1,383 +1,479 @@
 # RustPress CMS
 
-> CMS moderno construido con Rust (Actix-Web) + React (TypeScript) + PostgreSQL.
-> Inspirado en WordPress pero mas rapido, mas seguro y extensible por diseno.
+> 🇪🇸 [Español](#español) | 🇺🇸 [English](#english)
 
 ---
+
+# Español
+
+> CMS moderno construido con Rust (Actix-Web) + React (TypeScript) + PostgreSQL.
+> Inspirado en WordPress pero más rápido, más seguro y extensible por diseño.
 
 ## Stack
 
-| Capa | Tecnologia |
-|------|-----------|
-| Backend | Rust 1.75+ - Actix-Web 4 - SQLx - JWT - bcrypt |
-| Frontend | React 18 - TypeScript - Vite - Tailwind CSS - recharts |
+| Capa | Tecnología |
+|------|------------|
+| Backend | Rust 1.75+ · Actix-Web 4 · SQLx · JWT · bcrypt |
+| Frontend | React 18 · TypeScript · Vite · Tailwind CSS · recharts |
 | Base de datos | PostgreSQL 16 |
-| Cache | Redis |
-| Infra | Docker - Nginx - pgAdmin |
+| Cache | Redis 7 |
+| Infra | Docker · Nginx · certbot (SSL) |
 | i18n | react-i18next (ES / EN) |
-| SEO | react-helmet-async - Open Graph - Twitter Cards |
-| Pagos | Stripe - PayPal |
-| Analytics | Propio sin Google (pageviews, top posts, top productos, funnel, realtime) |
+| SEO | react-helmet-async · Open Graph · Twitter Cards |
+| Pagos | Stripe · PayPal |
+| Analytics | Propio sin Google (pageviews, top posts, funnel, realtime) |
 
 ---
 
-## Inicio rapido
+## Inicio rápido
 
-    git clone https://github.com/johandavid77/rustpress.git
-    cd rustpress
-    docker compose up -d db redis
-    cd backend && cargo run
-    cd frontend && npm install && npm run dev
+\`\`\`bash
+git clone https://github.com/johandavid77/rustpress.git
+cd rustpress
+docker compose up -d
+cd backend && cp .env.example .env && cargo run
+cd frontend && npm install --legacy-peer-deps && npm run dev
+\`\`\`
 
 Acceder en: http://localhost:5173
-
-Con Docker completo:
-
-    docker compose up -d
 
 ---
 
 ## Credenciales por defecto
 
-| Rol | Email | Password |
-|-----|-------|----------|
+| Rol | Email | Contraseña |
+|-----|-------|------------|
 | Admin | johan@rustcms.dev | admin123 |
 | Editor | editor@rustcms.dev | editor123 |
 
-Cambiar antes de ir a produccion.
+> ⚠️ Cambiar antes de ir a producción.
+
+---
+
+## Producción con Docker + Nginx + SSL
+
+\`\`\`bash
+cp .env.prod.example .env.prod
+nano .env.prod
+./ssl-init.sh
+./deploy.sh
+\`\`\`
 
 ---
 
 ## Estructura
 
-    rustpress/
-    +-- backend/src/
-    |   +-- main.rs                   Punto de entrada y rutas
-    |   +-- config.rs                 Variables de entorno
-    |   +-- errors.rs                 Manejo centralizado de errores
-    |   +-- handlers/
-    |   |   +-- auth.rs               Login, registro, perfil
-    |   |   +-- posts.rs              CRUD posts, stats, views
-    |   |   +-- media.rs              Subida y gestion de archivos
-    |   |   +-- users.rs              CRUD usuarios y roles
-    |   |   +-- plugins.rs            Sistema de plugins dinamico
-    |   |   +-- products_shop.rs      Tienda publica y CRUD admin
-    |   |   +-- orders.rs             Pedidos y estado
-    |   |   +-- payments.rs           Stripe y PayPal
-    |   |   +-- analytics.rs          Tracking y dashboard analitico
-    |   |   +-- backup.rs             Backup y restore con pg_dump
-    |   |   +-- updates.rs            Actualizaciones via git pull
-    |   |   +-- sliders.rs            Sliders de la home
-    |   |   +-- webhooks.rs           Notificaciones externas
-    |   +-- payments/
-    |   |   +-- stripe.rs             Gateway Stripe
-    |   |   +-- paypal.rs             Gateway PayPal
-    |   |   +-- gateway.rs            Trait PaymentGateway
-    |   +-- services/
-    |       +-- auth_service.rs       JWT y bcrypt
-    |       +-- email_service.rs      Plantillas de email
-    +-- frontend/src/
-    |   +-- pages/
-    |   |   +-- public/               Blog, Shop, ProductDetail, Checkout
-    |   |   +-- Admin/                Dashboard, Users, CategoriesAdmin
-    |   |   +-- Shop/                 Products CRUD, ProductEditor, Orders
-    |   |   +-- Plugins/              SlidersAdmin, BackupAdmin, UpdatesAdmin
-    |   |   +-- Ecommerce/            EcommerceHome, OrdersAdmin
-    |   |   +-- Analytics.tsx         Dashboard analitico con recharts
-    |   |   +-- Stats.tsx             Overview con metricas en tiempo real
-    |   +-- plugins/
-    |   |   +-- pluginRegistry.ts     Registro central de plugins
-    |   +-- components/
-    |   |   +-- SEO/SEO.tsx           Meta tags, Open Graph, Twitter Cards
-    |   |   +-- Editor/               RichEditor con TipTap
-    |   +-- locales/
-    |   |   +-- es/translation.json
-    |   |   +-- en/translation.json
-    |   +-- api/                      Clientes API tipados
-    +-- docker-compose.yml
-    +-- docker-compose.prod.yml
-    +-- nginx.conf
+\`\`\`
+rustpress/
+├── backend/src/
+│   ├── main.rs                  Punto de entrada y rutas
+│   ├── config.rs                Variables de entorno
+│   ├── errors.rs                Manejo centralizado de errores
+│   ├── handlers/
+│   │   ├── auth.rs              Login, registro, perfil
+│   │   ├── posts.rs             CRUD posts, stats, views
+│   │   ├── media.rs             Subida y gestión de archivos
+│   │   ├── users.rs             CRUD usuarios y roles
+│   │   ├── plugins.rs           Sistema de plugins dinámico
+│   │   ├── products_shop.rs     Tienda pública y CRUD admin
+│   │   ├── orders.rs            Pedidos y estado
+│   │   ├── payments.rs          Stripe y PayPal
+│   │   ├── analytics.rs         Tracking y dashboard analítico
+│   │   ├── backup.rs            Backup y restore con pg_dump
+│   │   ├── updates.rs           Actualizaciones vía git pull
+│   │   ├── search.rs            Búsqueda global Ctrl+K
+│   │   ├── notifications.rs     SSE en tiempo real
+│   │   ├── newsletter.rs        Suscriptores y campañas SMTP
+│   │   ├── contact.rs           Formularios de contacto
+│   │   ├── redirects.rs         Redirecciones 301/302
+│   │   ├── coupons.rs           Cupones de descuento
+│   │   ├── cache_admin.rs       Panel de cache Redis
+│   │   ├── csv_io.rs            Import/Export CSV
+│   │   ├── maintenance.rs       Modo mantenimiento
+│   │   ├── roles.rs             Roles y permisos
+│   │   ├── activity.rs          Log de actividad
+│   │   └── webhooks.rs          Notificaciones externas
+│   ├── payments/
+│   │   ├── stripe.rs            Gateway Stripe
+│   │   ├── paypal.rs            Gateway PayPal
+│   │   └── gateway.rs           Trait PaymentGateway
+│   └── services/
+│       ├── auth_service.rs      JWT y bcrypt
+│       └── email_service.rs     Plantillas de email
+├── frontend/src/
+│   ├── pages/
+│   │   ├── public/              Blog, Shop, ProductDetail, Checkout, MaintenancePage
+│   │   ├── Dashboard/           Overview, Users, HealthDashboard
+│   │   ├── Shop/                Products, ProductEditor, Orders
+│   │   ├── Gallery/             Galería de medios
+│   │   └── Plugins/             Todos los plugins admin
+│   ├── plugins/
+│   │   └── pluginRegistry.ts    Registro central de plugins
+│   ├── components/
+│   │   ├── SEO/                 Meta tags, Open Graph, Twitter Cards
+│   │   ├── GlobalSearch/        Búsqueda global Ctrl+K
+│   │   ├── NotificationBell/    Notificaciones SSE
+│   │   └── Newsletter/          Widget público de suscripción
+│   ├── locales/
+│   │   ├── es/translation.json  Traducciones español
+│   │   └── en/translation.json  Traducciones inglés
+│   └── api/                     Clientes API tipados
+├── nginx/nginx.conf             Reverse proxy, SSL, rate limiting
+├── docker-compose.yml           Desarrollo local
+├── docker-compose.prod.yml      Producción completa
+├── deploy.sh                    Script de deploy con un comando
+├── ssl-init.sh                  Obtener SSL con Let's Encrypt
+└── .env.prod.example            Variables de producción
+\`\`\`
 
 ---
 
 ## Sistema de Plugins
 
-Los plugins se registran en la DB y en un registry central. El Dashboard y PluginsHome los cargan automaticamente con lazy loading.
+Los plugins se registran en la DB y en un registry central. El Dashboard los carga automáticamente con lazy loading.
 
-Para agregar un plugin nuevo:
+### Para agregar un plugin nuevo
 
-1. Crear el componente en frontend/src/pages/Plugins/MiPlugin.tsx
-2. Registrar en frontend/src/plugins/pluginRegistry.ts con lazy import
+1. Crear el componente en `frontend/src/pages/Plugins/MiPlugin.tsx`
+2. Registrar en `frontend/src/plugins/pluginRegistry.ts` con lazy import
 3. Insertar en la DB:
 
-    INSERT INTO plugins (id, name, version, description, is_enabled, config)
-    VALUES (gen_random_uuid(), 'mi-plugin', '1.0.0', 'Descripcion', true,
-      '{"title":"Mi Plugin","icon":"Zap","color":"from-blue-500/20 to-blue-600/5 border-blue-500/20","category":"content"}');
+\`\`\`sql
+INSERT INTO plugins (id, name, version, description, is_enabled, config)
+VALUES (gen_random_uuid(), 'mi-plugin', '1.0.0', 'Descripcion', true,
+  '{"title":"Mi Plugin","icon":"Zap","color":"from-blue-500/20 to-blue-600/5 border-blue-500/20","category":"content"}');
+\`\`\`
 
-4. Listo, aparece automaticamente con toggle activo/inactivo.
+4. Listo — aparece automáticamente con toggle activo/inactivo.
 
 ### Plugins disponibles
 
-| Plugin | Categoria | Estado |
-|--------|-----------|--------|
-| Sliders | Contenido | Activo |
-| Menus | Contenido | Activo |
-| Comentarios | Contenido | Activo |
-| Categorias | Contenido | Activo |
-| Webhooks | Integraciones | Activo |
-| Healthcheck | Sistema | Activo |
-| Ecommerce | Ecommerce | Activo |
-| Backup y Restore | Sistema | Funcional |
-| Actualizaciones | Sistema | Funcional |
+| Plugin | Categoría | Descripción |
+|--------|-----------|-------------|
+| Sliders | Contenido | Carrusel de imágenes para la home |
+| Menús | Contenido | Navegación personalizable |
+| Comentarios | Contenido | Moderación de comentarios |
+| Categorías | Contenido | Taxonomías para posts y productos |
+| Galería | Contenido | Grid de medios con lightbox y drag & drop |
+| Formularios | Contenido | Constructor de formularios con bandeja de mensajes |
+| Webhooks | Integraciones | Notificaciones HTTP externas |
+| Newsletter | Integraciones | Suscriptores y envío masivo con SMTP real |
+| Ecommerce | Ecommerce | Tienda completa con Stripe y PayPal |
+| Cupones | Ecommerce | Descuentos por porcentaje o monto fijo |
+| Healthcheck | Sistema | Estado del servidor, DB y Redis |
+| Backup | Sistema | Copias de seguridad con pg_dump |
+| Actualizaciones | Sistema | git pull + cargo build desde el admin |
+| Redirecciones | Sistema | 301/302 con contador de hits |
+| Cache Redis | Sistema | Panel con limpieza por prefijo |
+| CSV Import/Export | Sistema | Exportar datos e importar productos en bulk |
+| Modo Mantenimiento | Sistema | Página pública con countdown y whitelist IPs |
+| Roles y Permisos | Sistema | Gestión de roles y permisos por recurso |
+| Log de Actividad | Sistema | Auditoría de acciones con filtros y paginación |
 
 ---
 
 ## API Endpoints
 
-Base URL: http://localhost:8080/api/v1
+Base URL: `http://localhost:8080/api/v1`
 
 ### Auth
-| Metodo | Ruta | Auth | Descripcion |
+| Método | Ruta | Auth | Descripción |
 |--------|------|------|-------------|
-| POST | /auth/login | No | Login, retorna JWT (30 dias) |
+| POST | /auth/login | No | Login, retorna JWT |
 | POST | /auth/register | No | Registro de usuario |
-| GET | /auth/me | Si | Perfil del usuario actual |
+| GET | /auth/me | Sí | Perfil del usuario actual |
 
 ### Posts
-| Metodo | Ruta | Auth | Descripcion |
+| Método | Ruta | Auth | Descripción |
 |--------|------|------|-------------|
 | GET | /posts | No | Listar posts publicados |
-| POST | /posts | Si | Crear post |
+| POST | /posts | Sí | Crear post |
 | GET | /posts/:id | No | Obtener post |
-| PUT | /posts/:id | Si | Editar post |
-| DELETE | /posts/:id | Si | Eliminar post |
-| GET | /posts/stats | Si | Estadisticas con ordenes, productos, usuarios |
-| GET | /posts/stats/views | Si | Vistas por dia para grafica |
+| PUT | /posts/:id | Sí | Editar post |
+| DELETE | /posts/:id | Sí | Eliminar post |
+| GET | /posts/stats | Sí | Estadísticas generales |
+| GET | /posts/stats/views | Sí | Vistas por día para gráfica |
 | POST | /posts/:slug/view | No | Incrementar contador de vistas |
 
-### Shop publico
-| Metodo | Ruta | Auth | Descripcion |
+### Shop público
+| Método | Ruta | Auth | Descripción |
 |--------|------|------|-------------|
-| GET | /shop/categories | No | Categorias de productos |
-| GET | /shop/products | No | Productos con filtros y paginacion |
+| GET | /shop/products | No | Productos con filtros y paginación |
 | GET | /shop/products/slug/:slug | No | Detalle por slug |
-| GET | /shop/products/:id | No | Detalle por ID |
+| GET | /shop/categories | No | Categorías de productos |
 
 ### Productos admin
-| Metodo | Ruta | Auth | Descripcion |
+| Método | Ruta | Auth | Descripción |
 |--------|------|------|-------------|
-| GET | /products | Si | Listar todos |
-| POST | /products | Si | Crear producto |
-| PUT | /products/:id | Si | Editar producto |
-| DELETE | /products/:id | Si | Eliminar producto |
+| GET | /products | Sí | Listar todos |
+| POST | /products | Sí | Crear producto |
+| PUT | /products/:id | Sí | Editar producto |
+| DELETE | /products/:id | Sí | Eliminar producto |
 
-### Pedidos
-| Metodo | Ruta | Auth | Descripcion |
+### Pedidos y Pagos
+| Método | Ruta | Auth | Descripción |
 |--------|------|------|-------------|
-| GET | /orders | Si | Listar pedidos |
-| POST | /orders | Si | Crear pedido |
-| GET | /orders/:id | Si | Detalle de pedido |
-| PUT | /orders/:id/status | Si | Actualizar estado |
-
-### Pagos
-| Metodo | Ruta | Auth | Descripcion |
-|--------|------|------|-------------|
-| POST | /payments/init | Si | Iniciar pago Stripe o PayPal |
+| GET | /orders | Sí | Listar pedidos |
+| POST | /orders | Sí | Crear pedido |
+| GET | /orders/:id | Sí | Detalle de pedido |
+| PUT | /orders/:id/status | Sí | Actualizar estado |
+| POST | /payments/init | Sí | Iniciar pago Stripe o PayPal |
 | POST | /payments/stripe/webhook | No | Webhook Stripe |
 | POST | /payments/paypal/webhook | No | Webhook PayPal |
-| GET | /payments/status/:order_id | Si | Estado del pago |
+| GET | /payments/status/:order_id | Sí | Estado del pago |
 
 ### Analytics
-| Metodo | Ruta | Auth | Descripcion |
+| Método | Ruta | Auth | Descripción |
 |--------|------|------|-------------|
 | POST | /analytics/track | No | Registrar evento |
-| GET | /analytics/dashboard | Si | Metricas generales |
-| GET | /analytics/top-posts | Si | Posts mas vistos |
-| GET | /analytics/top-products | Si | Productos mas vistos |
-| GET | /analytics/funnel | Si | Funnel de conversion |
-| GET | /analytics/realtime | Si | Visitantes en tiempo real |
+| GET | /analytics/dashboard | Sí | Métricas generales |
+| GET | /analytics/top-posts | Sí | Posts más vistos |
+| GET | /analytics/top-products | Sí | Productos más vistos |
+| GET | /analytics/funnel | Sí | Funnel de conversión |
+| GET | /analytics/realtime | Sí | Visitantes en tiempo real |
 
-### Plugins
-| Metodo | Ruta | Auth | Descripcion |
+### Búsqueda y Notificaciones
+| Método | Ruta | Auth | Descripción |
 |--------|------|------|-------------|
-| GET | /plugins | No | Listar plugins |
-| POST | /plugins/:id/enable | Si | Activar plugin |
-| POST | /plugins/:id/disable | Si | Desactivar plugin |
-| DELETE | /plugins/:id | Si | Eliminar plugin |
+| GET | /search?q=... | Sí | Búsqueda global |
+| GET | /notifications/stream | Sí | SSE — pedidos y stock bajo |
 
-### Backup
-| Metodo | Ruta | Auth | Descripcion |
+### Nuevos endpoints de plugins
+| Método | Ruta | Auth | Descripción |
 |--------|------|------|-------------|
-| GET | /backup/list | Si | Listar backups |
-| POST | /backup/create | Si | Crear backup pg_dump |
-| GET | /backup/download/:filename | Si | Descargar .sql |
-| POST | /backup/restore | Si | Restaurar DB multipart |
-| DELETE | /backup/:filename | Si | Eliminar backup |
-
-### Actualizaciones
-| Metodo | Ruta | Auth | Descripcion |
-|--------|------|------|-------------|
-| GET | /updates/status | Si | Estado vs GitHub main |
-| GET | /updates/changelog | Si | Ultimos 10 commits |
-| POST | /updates/apply | Si | git pull y cargo build |
-
-### Media
-| Metodo | Ruta | Auth | Descripcion |
-|--------|------|------|-------------|
-| POST | /media/upload | Si | Subir archivo multipart |
-| GET | /media | Si | Listar archivos |
-| DELETE | /media/:id | Si | Eliminar archivo |
-
-### Sliders
-| Metodo | Ruta | Auth | Descripcion |
-|--------|------|------|-------------|
-| GET | /sliders | No | Listar sliders activos |
-| POST | /sliders | Si | Crear slider |
-| PUT | /sliders/:id | Si | Editar slider |
-| DELETE | /sliders/:id | Si | Eliminar slider |
+| GET | /newsletter/subscribers | Sí | Listar suscriptores |
+| POST | /newsletter/subscribe | No | Suscribirse al newsletter |
+| GET | /newsletter/campaigns | Sí | Listar campañas |
+| POST | /newsletter/campaigns/:id/send | Sí | Enviar campaña |
+| GET | /contact/admin/forms | Sí | Listar formularios |
+| POST | /contact/forms/:id/submit | No | Enviar mensaje de contacto |
+| GET | /coupons | Sí | Listar cupones |
+| GET | /coupons/validate/:code | No | Validar cupón |
+| GET | /redirects | Sí | Listar redirecciones |
+| GET | /cache/stats | Sí | Estadísticas de cache Redis |
+| POST | /cache/flush | Sí | Limpiar toda la cache |
+| GET | /csv/export/products | Sí | Exportar productos a CSV |
+| POST | /csv/import/products | Sí | Importar productos desde CSV |
+| GET | /maintenance/status | No | Estado del modo mantenimiento |
+| GET | /roles | Sí | Listar roles |
+| GET | /activity/logs | Sí | Log de actividad |
 
 ### Utilidades
-| Metodo | Ruta | Auth | Descripcion |
+| Método | Ruta | Auth | Descripción |
 |--------|------|------|-------------|
-| GET | /sitemap.xml | No | Sitemap dinamico con posts y productos |
+| GET | /sitemap.xml | No | Sitemap dinámico |
 | GET | /robots.txt | No | Robots.txt con reglas SEO |
-
----
-
-## SEO
-
-Implementado con react-helmet-async en todas las paginas publicas.
-
-Incluye: title dinamico, meta description, Open Graph completo, Twitter Cards, canonical URLs, sitemap.xml dinamico desde la DB, robots.txt con Disallow en /admin y /api.
-
-Uso:
-
-    import SEO from '../../components/SEO/SEO'
-
-    <SEO
-      title="Titulo de la pagina"
-      description="Descripcion para buscadores y redes sociales"
-      image="/og-image.jpg"
-      url="/mi-ruta"
-      type="article"
-      publishedAt="2026-04-09"
-    />
+| GET | /health | No | Health check básico |
+| GET | /health/detailed | No | Estado detallado de DB, Redis y stats |
 
 ---
 
 ## i18n (ES / EN)
 
-Bilingue con react-i18next. El selector de idioma esta en el sidebar del admin y en el footer del sitio publico.
+Bilingüe con react-i18next. El selector de idioma está en el sidebar del admin y en el footer del sitio público.
 
-Namespaces: overview, shop, payment, backup, updates, plugins, blog, sliders, menus, language.
-
-Agregar traducciones en:
-- frontend/src/locales/es/translation.json
-- frontend/src/locales/en/translation.json
+Archivos de traducción:
+- `frontend/src/locales/es/translation.json`
+- `frontend/src/locales/en/translation.json`
 
 ---
 
-## Pagos
+## SEO
 
-### Flujo
-1. Usuario va a /checkout
-2. Selecciona Stripe o PayPal
-3. Frontend llama POST /payments/init
-4. Backend retorna checkout_url
-5. Usuario paga en la pasarela
-6. Webhook actualiza estado del pedido en la DB
-7. Usuario llega a /checkout/success
-
-### Variables de entorno necesarias
-
-    STRIPE_SECRET_KEY=sk_live_...
-    STRIPE_WEBHOOK_SECRET=whsec_...
-    PAYPAL_CLIENT_ID=...
-    PAYPAL_CLIENT_SECRET=...
-    PAYPAL_SANDBOX=true
+Implementado con react-helmet-async en todas las páginas públicas. Incluye title dinámico, meta description, Open Graph completo, Twitter Cards, canonical URLs, sitemap.xml dinámico desde la DB y robots.txt con Disallow en /admin y /api.
 
 ---
 
 ## Tests
 
-    cd backend
-    cargo test
-    cargo test coupon
-    cargo test -- --nocapture
+\`\`\`bash
+cd backend
+cargo test
+\`\`\`
 
-32 tests --- 0 failed
+32 tests — 0 failed
 
-| Modulo | Tests | Que cubren |
+| Módulo | Tests | Qué cubren |
 |--------|-------|------------|
-| coupon_tests | 6 | Descuentos, proteccion negativos |
+| coupon_tests | 6 | Descuentos, protección negativos |
 | payments_tests | 6 | HMAC-SHA256, payload adulterado |
 | reviews_tests | 7 | Gateways, PaymentStatus |
 | auth_service | 7 | JWT, bcrypt, tokens |
-| email_service | 6 | Plantillas, validacion |
+| email_service | 6 | Plantillas, validación |
 
 ---
 
-## Roadmap
+## CI/CD
 
-### Completado
-- Sistema de plugins dinamico conectado a DB con enable/disable/delete
-- Dashboard Overview con metricas en tiempo real de ordenes, productos, posts y usuarios
-- SEO completo con react-helmet-async, Open Graph, Twitter Cards, sitemap.xml y robots.txt
-- i18n ES/EN completo para todos los modulos
-- Backup y Restore con pg_dump desde la UI
-- Actualizaciones estilo WordPress via git pull
-- CRUD completo de productos con subida real de imagenes via /media/upload
-- Pagina de detalle de producto por slug
-- Stripe y PayPal implementados y listos (necesitan keys reales)
-- Analytics propio con recharts: overview, top posts, top productos, funnel, realtime
-- JWT con duracion de 30 dias configurable via JWT_EXPIRY_HOURS
-
-### Pendiente
-- Reviews y ratings de productos (tabla y endpoint existen, falta UI)
-- Editor de posts Markdown con preview en tiempo real
-- Busqueda global en el admin
-- Notificaciones tiempo real SSE o WebSocket para pedidos nuevos
-- Plugin de formularios de contacto con constructor y envio por email
-- Plugin de newsletter con suscriptores y envio masivo
-- Cache de respuestas con Redis middleware
-- Redirecciones 301/302 desde el admin
-- CI/CD con GitHub Actions
-- .env.example completo
-- SSL para produccion
-
----
-
-## Bugs conocidos
-
-- Actix-Web: muchas rutas en cadena pueden causar recursion en compilacion. Solucion: usar .configure() por modulo.
-- Tooltips en Brave: el atributo title tiene delay. Pendiente implementar CSS group-hover.
-- JWT no se refresca automaticamente. Hacer logout y login al expirar.
+GitHub Actions en `.github/workflows/ci.yml`. Se ejecuta en cada push y PR a `main`:
+- **Backend**: `cargo build` + `cargo test` con PostgreSQL y Redis como servicios
+- **Frontend**: `npm ci --legacy-peer-deps` + `npm run build`
 
 ---
 
 ## Variables de entorno
 
-Backend (backend/.env):
+### Backend (`backend/.env`)
+\`\`\`env
+DATABASE_URL=postgres://rustcms:rustcms_secret@localhost:5432/rustcms
+REDIS_URL=redis://localhost:6379
+JWT_SECRET=cambiar_en_produccion
+JWT_EXPIRY_HOURS=720
+PORT=8080
+SITE_URL=http://localhost:5173
+BACKUP_DIR=./backups
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USERNAME=tu@email.com
+SMTP_PASSWORD=tu_app_password
+SMTP_FROM=noreply@tudominio.com
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+PAYPAL_CLIENT_ID=...
+PAYPAL_CLIENT_SECRET=...
+PAYPAL_SANDBOX=true
+\`\`\`
 
-    DATABASE_URL=postgres://rustcms:rustcms_secret@localhost:5432/rustcms
-    REDIS_URL=redis://localhost:6379
-    JWT_SECRET=cambiar_en_produccion
-    JWT_EXPIRY_HOURS=720
-    BACKUP_DIR=./backups
-    PORT=8080
-    SITE_URL=http://localhost:5173
-    STRIPE_SECRET_KEY=sk_test_...
-    STRIPE_WEBHOOK_SECRET=whsec_...
-    PAYPAL_CLIENT_ID=...
-    PAYPAL_CLIENT_SECRET=...
-    PAYPAL_SANDBOX=true
-
-Frontend (frontend/.env):
-
-    VITE_API_URL=/api/v1
+### Frontend (`frontend/.env`)
+\`\`\`env
+VITE_API_URL=/api/v1
+\`\`\`
 
 ---
 
 ## Licencia
 
-MIT
+GPL-3.0 © 2026 Johan David — [github.com/johandavid77/rustpress](https://github.com/johandavid77/rustpress)
+
+---
+---
+
+# English
+
+> Modern CMS built with Rust (Actix-Web) + React (TypeScript) + PostgreSQL.
+> Inspired by WordPress but faster, more secure, and extensible by design.
+
+## Stack
+
+| Layer | Technology |
+|-------|------------|
+| Backend | Rust 1.75+ · Actix-Web 4 · SQLx · JWT · bcrypt |
+| Frontend | React 18 · TypeScript · Vite · Tailwind CSS · recharts |
+| Database | PostgreSQL 16 |
+| Cache | Redis 7 |
+| Infra | Docker · Nginx · certbot (SSL) |
+| i18n | react-i18next (ES / EN) |
+| SEO | react-helmet-async · Open Graph · Twitter Cards |
+| Payments | Stripe · PayPal |
+| Analytics | Own system — no Google (pageviews, top posts, funnel, realtime) |
+
+---
+
+## Quick Start
+
+\`\`\`bash
+git clone https://github.com/johandavid77/rustpress.git
+cd rustpress
+docker compose up -d
+cd backend && cp .env.example .env && cargo run
+cd frontend && npm install --legacy-peer-deps && npm run dev
+\`\`\`
+
+Open: http://localhost:5173
+
+---
+
+## Default Credentials
+
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | johan@rustcms.dev | admin123 |
+| Editor | editor@rustcms.dev | editor123 |
+
+> ⚠️ Change before going to production.
+
+---
+
+## Production Deploy (Docker + Nginx + SSL)
+
+\`\`\`bash
+cp .env.prod.example .env.prod
+nano .env.prod
+./ssl-init.sh   # get SSL certificate (first time only)
+./deploy.sh     # build and start all services
+\`\`\`
+
+---
+
+## Available Plugins
+
+| Plugin | Category | Description |
+|--------|----------|-------------|
+| Sliders | Content | Image carousel for homepage |
+| Menus | Content | Customizable navigation |
+| Comments | Content | Comment moderation |
+| Categories | Content | Taxonomies for posts and products |
+| Gallery | Content | Media grid with lightbox and drag & drop |
+| Contact Forms | Content | Form builder with message inbox and email notification |
+| Webhooks | Integrations | External HTTP notifications |
+| Newsletter | Integrations | Subscribers and bulk email via real SMTP |
+| Ecommerce | Ecommerce | Full store with Stripe and PayPal |
+| Coupons | Ecommerce | Percentage or fixed amount discounts |
+| Healthcheck | System | Server, DB and Redis status |
+| Backup | System | Database backups with pg_dump |
+| Updates | System | git pull + cargo build from the admin panel |
+| Redirects | System | 301/302 with hit counter and toggle |
+| Redis Cache | System | Cache panel with prefix-based clearing |
+| CSV Import/Export | System | Export data and bulk import products |
+| Maintenance Mode | System | Public page with countdown and IP whitelist |
+| Roles & Permissions | System | Role management and resource-level permissions |
+| Activity Log | System | Action audit log with filters and pagination |
+
+---
+
+## Tests
+
+\`\`\`bash
+cd backend && cargo test
+\`\`\`
+
+32 tests — 0 failed
+
+---
+
+## CI/CD
+
+GitHub Actions at `.github/workflows/ci.yml`. Runs on every push and PR to `main`:
+- **Backend**: `cargo build` + `cargo test` with PostgreSQL and Redis services
+- **Frontend**: `npm ci --legacy-peer-deps` + `npm run build`
+
+---
+
+## Environment Variables
+
+### Backend (`backend/.env`)
+\`\`\`env
+DATABASE_URL=postgres://rustcms:rustcms_secret@localhost:5432/rustcms
+REDIS_URL=redis://localhost:6379
+JWT_SECRET=change_in_production
+JWT_EXPIRY_HOURS=720
+PORT=8080
+SITE_URL=http://localhost:5173
+BACKUP_DIR=./backups
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USERNAME=you@email.com
+SMTP_PASSWORD=your_app_password
+SMTP_FROM=noreply@yourdomain.com
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+PAYPAL_CLIENT_ID=...
+PAYPAL_CLIENT_SECRET=...
+PAYPAL_SANDBOX=true
+\`\`\`
+
+---
+
+## License
+
+GPL-3.0 © 2026 Johan David — [github.com/johandavid77/rustpress](https://github.com/johandavid77/rustpress)
