@@ -30,3 +30,4 @@ pub mod contact;
 pub mod coupons;
 pub mod cache_admin;
 pub mod maintenance;
+pub mod activity;
