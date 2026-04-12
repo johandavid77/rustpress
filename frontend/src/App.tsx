@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import Shop from './pages/public/Shop'
 import Bookings from './pages/public/Bookings'
 import ProductDetail from './pages/public/ProductDetail'
