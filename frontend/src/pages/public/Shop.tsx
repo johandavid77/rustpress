@@ -1,4 +1,5 @@
 import SEO from '../../components/SEO/SEO'
+import NewsletterWidget from '../../components/Newsletter/NewsletterWidget'
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ShoppingCart, Search, Filter } from 'lucide-react'
