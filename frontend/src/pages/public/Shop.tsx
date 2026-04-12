@@ -29,11 +29,9 @@ export default function Shop() {
     finally { setLoading(false) }
   }
 
-  const addToCart = (productId: string) => {
+const addToCart = (productId: string) => {
   const newCart = { ...cart, [productId]: (cart[productId] || 0) + 1 }
   setCart(newCart)
   try { localStorage.setItem('rustcms_cart', JSON.stringify(newCart)) } catch(_) {}
 }
-  setCart(newCart)
-  try { localStorage.setItem('rustcms_cart', JSON.stringify(newCart)) } catch(_) {}
 }
