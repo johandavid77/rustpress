@@ -13,6 +13,7 @@ const CategoriesAdmin  = lazy(() => import('../pages/Plugins/CategoriesAdmin'))
 const WebhooksAdmin    = lazy(() => import('../pages/Plugins/WebhooksAdmin'))
 const BackupAdmin      = lazy(() => import('../pages/Plugins/BackupAdmin'))
 const UpdatesAdmin     = lazy(() => import('../pages/Plugins/UpdatesAdmin'))
+const GalleryAdmin     = lazy(() => import('../pages/Gallery/GalleryAdmin'))
 const MaintenanceAdmin = lazy(() => import('../pages/Plugins/MaintenanceAdmin'))
 const CsvAdmin         = lazy(() => import('../pages/Plugins/CsvAdmin'))
 const CacheAdmin       = lazy(() => import('../pages/Plugins/CacheAdmin'))
@@ -39,6 +40,7 @@ export const PLUGIN_REGISTRY: Record<string, PluginDefinition> = {
   cache:      { id: 'cache',      component: CacheAdmin },
   csv:        { id: 'csv',        component: CsvAdmin },
   maintenance: { id: 'maintenance', component: MaintenanceAdmin },
+  gallery:    { id: 'gallery',    component: GalleryAdmin },
 }
 
 export function isEcommercePlugin(id: string): boolean {
