@@ -10,7 +10,7 @@
     "actions": "Acciones",
     "search": "Buscar",
     "filter": "Filtrar",
-    "yes": "Sí",
+    "yes": "Si",
     "no": "No",
     "confirm": "Confirmar",
     "close": "Cerrar",
@@ -19,7 +19,7 @@
     "inactive": "Inactivo",
     "noResults": "Sin resultados",
     "error": "Error",
-    "success": "Éxito",
+    "success": "Exito",
     "logout": "Cerrar sesion"
   },
   "nav": {
@@ -29,8 +29,8 @@
     "users": "Usuarios",
     "plugins": "Plugins",
     "themes": "Temas",
-    "settings": "Configuración",
-    "logout": "Cerrar sesión",
+    "settings": "Configuracion",
+    "logout": "Cerrar sesion",
     "previewSite": "Vista previa",
     "viewStore": "Ver tienda",
     "home": "Inicio"
@@ -74,10 +74,10 @@
     "publishedPosts": "Posts publicados",
     "products": "Productos",
     "mediaFiles": "Archivos media",
-    "users": "usuarios",
+    "users": "Usuarios",
     "recentOrders": "Pedidos recientes",
     "recentPosts": "Posts recientes",
-    "noOrders": "Sin pedidos aún",
+    "noOrders": "Sin pedidos aun",
     "today": "Hoy",
     "pending": "Pendientes",
     "drafts": "Borradores",
@@ -88,7 +88,8 @@
     "ordersToday": "Hoy",
     "ordersPending": "Pendientes",
     "ofStock": "en stock",
-    "media": "archivos media"
+    "media": "archivos media",
+    "subtitle": "Metricas en tiempo real de tu sitio"
   },
   "posts": {
     "title": "Posts",
