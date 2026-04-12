@@ -8,6 +8,7 @@ import PaymentCancel from './pages/public/PaymentCancel'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthStore } from './store/authStore'
 import Login from './pages/Login'
+import MaintenancePage from './pages/public/MaintenancePage'
 import Register from './pages/Register'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
@@ -22,6 +23,17 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  const [maintenance, setMaintenance] = useState(false)
+
+  useEffect(() => {
+    fetch('/api/v1/maintenance/status')
+      .then(r => r.json())
+      .then(d => setMaintenance(d?.enabled === true))
+      .catch(() => {})
+  }, [])
+
+  if (maintenance) return <MaintenancePage />
+
   return (
     <BrowserRouter>
       <Routes>
