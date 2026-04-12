@@ -1,30 +1,14 @@
-# ── Stage 1: Build ──────────────────────────────────────────────
-FROM rust:1.94-slim AS builder
-
-RUN apt-get update && apt-get install -y \
-    pkg-config libssl-dev libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
-
+FROM docker.io/library/rust:1.77-alpine AS builder
+RUN apk add --no-cache musl-dev openssl-dev pkgconfig
 WORKDIR /app
 COPY Cargo.toml Cargo.lock ./
 COPY src ./src
-COPY migrations ./migrations
-
-ENV SQLX_OFFLINE=true
 RUN cargo build --release
 
-# ── Stage 2: Runtime ────────────────────────────────────────────
-FROM debian:bookworm-slim
-
-RUN apt-get update && apt-get install -y \
-    libssl3 libpq5 ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
-
+FROM docker.io/library/alpine:3.19
+RUN apk add --no-cache openssl ca-certificates curl
 WORKDIR /app
 COPY --from=builder /app/target/release/rustcms .
-COPY --from=builder /app/migrations ./migrations
-
-RUN mkdir -p uploads
-
+RUN mkdir -p uploads backups
 EXPOSE 8080
 CMD ["./rustcms"]
