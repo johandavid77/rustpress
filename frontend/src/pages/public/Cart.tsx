@@ -21,23 +21,68 @@ export default function Cart() {
   const load = async () => {
     setLoading(true)
     try {
-      const res: any = await apiClient.get('/cart')
-      setItems(Array.isArray(res?.items) ? res.items : [])
-      setTotal(res?.total || 0)
+      // Cargar desde localStorage primero
+      const saved = localStorage.getItem('rustcms_cart')
+      const cartMap: Record<string, number> = saved ? JSON.parse(saved) : {}
+
+      if (Object.keys(cartMap).length === 0) {
+        setItems([])
+        setTotal(0)
+        setLoading(false)
+        return
+      }
+
+      // Obtener detalles de productos
+      const productIds = Object.keys(cartMap)
+      const productDetails: CartItem[] = []
+      let totalPrice = 0
+
+      for (const pid of productIds) {
+        try {
+          const res: any = await apiClient.get('/shop/products/' + pid)
+          const p = res?.data ?? res
+          if (p?.id) {
+            const qty = cartMap[pid]
+            productDetails.push({
+              id: pid,
+              product_id: p.id,
+              name: p.name,
+              slug: p.slug,
+              price: p.price,
+              quantity: qty,
+              images: p.images ?? [],
+            })
+            totalPrice += p.price * qty
+          }
+        } catch(_) {}
+      }
+
+      setItems(productDetails)
+      setTotal(totalPrice)
     } catch(e) { console.error(e) }
     finally { setLoading(false) }
   }
 
-  const update = async (id: string, quantity: number) => {
+  const update = (id: string, quantity: number) => {
     try {
-      await apiClient.put(`/cart/items/${id}`, { quantity })
+      const saved = localStorage.getItem('rustcms_cart')
+      const cartMap: Record<string, number> = saved ? JSON.parse(saved) : {}
+      if (quantity <= 0) {
+        delete cartMap[id]
+      } else {
+        cartMap[id] = quantity
+      }
+      localStorage.setItem('rustcms_cart', JSON.stringify(cartMap))
       load()
     } catch(e) { console.error(e) }
   }
 
-  const remove = async (id: string) => {
+  const remove = (id: string) => {
     try {
-      await apiClient.delete(`/cart/items/${id}`)
+      const saved = localStorage.getItem('rustcms_cart')
+      const cartMap: Record<string, number> = saved ? JSON.parse(saved) : {}
+      delete cartMap[id]
+      localStorage.setItem('rustcms_cart', JSON.stringify(cartMap))
       load()
     } catch(e) { console.error(e) }
   }
