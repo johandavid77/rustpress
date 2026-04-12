@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useState, useEffect } from 'react'
 import { apiClient } from '../../api/client'
 import { Plus, Trash2, ToggleLeft, ToggleRight, ExternalLink, Loader2, ArrowRight } from 'lucide-react'
@@ -12,6 +13,7 @@ interface Redirect {
 }
 
 export default function RedirectsAdmin() {
+  const { t } = useTranslation()
   const [redirects, setRedirects] = useState<Redirect[]>([])
   const [loading, setLoading] = useState(true)
   const [from, setFrom] = useState('')

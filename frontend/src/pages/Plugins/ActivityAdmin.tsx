@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useState, useEffect } from 'react'
 import { apiClient } from '../../api/client'
 import { Activity, RefreshCw, Trash2, Loader2, User, Filter } from 'lucide-react'
@@ -27,6 +28,7 @@ const ACTION_COLORS: Record<string, string> = {
 const RESOURCES = ['all', 'auth', 'posts', 'products', 'orders', 'media', 'users', 'settings']
 
 export default function ActivityAdmin() {
+  const { t } = useTranslation()
   const [logs, setLogs] = useState<Log[]>([])
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)

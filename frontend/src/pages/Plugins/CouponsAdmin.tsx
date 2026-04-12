@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useState, useEffect } from 'react'
 import { apiClient } from '../../api/client'
 import { Tag, Plus, Trash2, ToggleLeft, ToggleRight, Loader2, Percent, DollarSign } from 'lucide-react'
@@ -9,6 +10,7 @@ interface Coupon {
 }
 
 export default function CouponsAdmin() {
+  const { t } = useTranslation()
   const [coupons, setCoupons] = useState<Coupon[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)

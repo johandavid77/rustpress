@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useState, useEffect } from 'react'
 import { apiClient } from '../../api/client'
 import { MessageSquare, Plus, Trash2, Eye, EyeOff, Mail, Loader2, ChevronDown, ChevronUp, Check } from 'lucide-react'
@@ -11,6 +12,7 @@ type Tab = 'forms' | 'new-form'
 const FIELD_TYPES = ['text', 'email', 'textarea', 'tel', 'select'] as const
 
 export default function ContactFormsAdmin() {
+  const { t } = useTranslation()
   const [tab, setTab] = useState<Tab>('forms')
   const [forms, setForms] = useState<ContactForm[]>([])
   const [submissions, setSubmissions] = useState<Record<string, Submission[]>>({})

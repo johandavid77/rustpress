@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useState, useEffect } from 'react'
 import { apiClient } from '../../api/client'
 import { Shield, Users, Check, Loader2, ChevronDown, ChevronUp, Save } from 'lucide-react'
@@ -18,6 +19,7 @@ const RESOURCE_ICONS: Record<string, string> = {
 }
 
 export default function RolesAdmin() {
+  const { t } = useTranslation()
   const [roles, setRoles] = useState<Role[]>([])
   const [permissions, setPermissions] = useState<Permission[]>([])
   const [users, setUsers] = useState<User[]>([])

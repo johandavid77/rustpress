@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useState, useEffect } from 'react'
 import { apiClient } from '../../api/client'
 import { Activity, Database, Zap, RefreshCw, FileText, Users, Image } from 'lucide-react'
@@ -26,6 +27,7 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 export default function HealthDashboard() {
+  const { t } = useTranslation()
   const [data, setData]           = useState<HealthData | null>(null)
   const [loading, setLoading]     = useState(true)
   const [lastCheck, setLastCheck] = useState<Date | null>(null)

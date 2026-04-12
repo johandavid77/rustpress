@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useState, useEffect } from 'react'
 import { apiClient } from '../../api/client'
 import { Mail, Users, Send, Trash2, Plus, Loader2, CheckCircle, FileText } from 'lucide-react'
@@ -8,6 +9,7 @@ interface Campaign { id: string; subject: string; body: string; status: string; 
 type Tab = 'subscribers' | 'campaigns' | 'new-campaign'
 
 export default function NewsletterAdmin() {
+  const { t } = useTranslation()
   const [tab, setTab] = useState<Tab>('subscribers')
   const [subscribers, setSubscribers] = useState<Subscriber[]>([])
   const [campaigns, setCampaigns] = useState<Campaign[]>([])

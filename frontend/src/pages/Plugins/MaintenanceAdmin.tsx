@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useState, useEffect } from 'react'
 import { apiClient } from '../../api/client'
 import { AlertTriangle, Shield, Clock, Wifi, Save, Loader2, ToggleLeft, ToggleRight } from 'lucide-react'
@@ -11,6 +12,7 @@ interface MaintenanceConfig {
 }
 
 export default function MaintenanceAdmin() {
+  const { t } = useTranslation()
   const [config, setConfig] = useState<MaintenanceConfig | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)

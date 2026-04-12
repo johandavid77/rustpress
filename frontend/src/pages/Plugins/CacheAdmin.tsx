@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useState, useEffect } from 'react'
 import { apiClient } from '../../api/client'
 import { Zap, Trash2, RefreshCw, Loader2, Database, BarChart2 } from 'lucide-react'
@@ -17,6 +18,7 @@ const PREFIX_COLORS: Record<string, string> = {
 }
 
 export default function CacheAdmin() {
+  const { t } = useTranslation()
   const [stats, setStats] = useState<CacheStats | null>(null)
   const [loading, setLoading] = useState(true)
   const [flushing, setFlushing] = useState<string | null>(null)

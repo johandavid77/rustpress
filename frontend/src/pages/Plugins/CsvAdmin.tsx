@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useState, useRef } from 'react'
 import { apiClient } from '../../api/client'
 import { Download, Upload, FileText, Users, Package, Loader2, CheckCircle, AlertTriangle } from 'lucide-react'
@@ -5,6 +6,7 @@ import { Download, Upload, FileText, Users, Package, Loader2, CheckCircle, Alert
 interface ImportResult { imported: number; errors: string[]; ok: boolean }
 
 export default function CsvAdmin() {
+  const { t } = useTranslation()
   const [importing, setImporting] = useState(false)
   const [result, setResult] = useState<ImportResult | null>(null)
   const [preview, setPreview] = useState<string[][]>([])
