@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ShoppingCart, Trash2, Plus, Minus, ArrowRight } from 'lucide-react'
+import { useAuthStore } from '../../store/authStore'
 import { apiClient } from '../../api/client'
 
 interface CartItem {

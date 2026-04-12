@@ -46,7 +46,7 @@ export default function App() {
         <Route path='/cart' element={<Cart />} />
         <Route path='/checkout/success' element={<PaymentSuccess />} />
         <Route path='/checkout/cancel' element={<PaymentCancel />} />
-        <Route path='/checkout' element={<Checkout />} />
+        <Route path='/checkout' element={<PrivateRoute><Checkout /></PrivateRoute>} />
         <Route path="/blog/:slug" element={<ThemedBlogPost />} />
         <Route path="/author/:id" element={<AuthorProfile />} />
         <Route path="/preview/:id" element={<PostPreview />} />
