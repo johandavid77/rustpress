@@ -27,8 +27,7 @@ export default function MaintenanceAdmin() {
       setConfig(data)
       setMessage(data.message ?? '')
       setEndsAt(data.ends_at ? new Date(data.ends_at).toISOString().slice(0, 16) : '')
-      setIpsText((data.allowed_ips ?? []).join('
-'))
+      setIpsText((data.allowed_ips ?? []).join('\n'))
     } catch {} finally { setLoading(false) }
   }
 
@@ -37,7 +36,7 @@ export default function MaintenanceAdmin() {
   const toggle = async () => {
     if (!config) return
     const newEnabled = !config.enabled
-    if (newEnabled && !confirm('Activar modo mantenimiento? El sitio publico no estara disponible para los visitantes.')) return
+    if (newEnabled && !confirm('Activar modo mantenimiento?')) return
     setSaving(true)
     try {
       const res: any = await apiClient.put('/maintenance/status', { enabled: newEnabled })
@@ -49,8 +48,7 @@ export default function MaintenanceAdmin() {
     setSaving(true)
     setSaved(false)
     try {
-      const ips = ipsText.split('
-').map(s => s.trim()).filter(Boolean)
+      const ips = ipsText.split('\n').map((s: string) => s.trim()).filter(Boolean)
       const res: any = await apiClient.put('/maintenance/status', {
         message,
         ends_at: endsAt ? new Date(endsAt).toISOString() : null,
@@ -73,7 +71,6 @@ export default function MaintenanceAdmin() {
         <p className="text-[#888899] text-sm">Muestra una pagina de mantenimiento a los visitantes del sitio</p>
       </div>
 
-      {/* Toggle principal */}
       <div className={"p-5 rounded-2xl border mb-6 " + (config?.enabled ? 'border-red-500/30 bg-red-500/5' : 'border-[#2a2a3a] bg-[#0e0e1a]')}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -101,7 +98,6 @@ export default function MaintenanceAdmin() {
         )}
       </div>
 
-      {/* Configuracion */}
       <div className="flex flex-col gap-5">
         <div className="p-5 rounded-2xl border border-[#2a2a3a] bg-[#0e0e1a]">
           <h2 className="text-sm font-semibold text-[#888899] uppercase tracking-widest mb-4 flex items-center gap-2">
@@ -127,7 +123,7 @@ export default function MaintenanceAdmin() {
           </h2>
           <textarea value={ipsText} onChange={e => setIpsText(e.target.value)} rows={4}
             className="w-full bg-[#1a1a2e] border border-[#2a2a3a] rounded-xl px-4 py-3 text-sm text-white placeholder-[#555566] outline-none focus:border-[#7c6aff] resize-none font-mono"
-            placeholder="192.168.1.1 / 10.0.0.1" />
+            placeholder="192.168.1.1" />
           <div className="text-xs text-[#555566] mt-2">Una IP por linea. Estas IPs veran el sitio normal aunque el mantenimiento este activo.</div>
         </div>
 
