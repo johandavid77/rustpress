@@ -27,13 +27,13 @@
 
 ## Inicio rápido
 
-\`\`\`bash
+```bash
 git clone https://github.com/johandavid77/rustpress.git
 cd rustpress
 docker compose up -d
 cd backend && cp .env.example .env && cargo run
 cd frontend && npm install --legacy-peer-deps && npm run dev
-\`\`\`
+```
 
 Acceder en: http://localhost:5173
 
@@ -52,18 +52,18 @@ Acceder en: http://localhost:5173
 
 ## Producción con Docker + Nginx + SSL
 
-\`\`\`bash
+```bash
 cp .env.prod.example .env.prod
 nano .env.prod
 ./ssl-init.sh
 ./deploy.sh
-\`\`\`
+```
 
 ---
 
 ## Estructura
 
-\`\`\`
+```
 rustpress/
 ├── backend/src/
 │   ├── main.rs                  Punto de entrada y rutas
@@ -124,7 +124,7 @@ rustpress/
 ├── deploy.sh                    Script de deploy con un comando
 ├── ssl-init.sh                  Obtener SSL con Let's Encrypt
 └── .env.prod.example            Variables de producción
-\`\`\`
+```
 
 ---
 
@@ -138,11 +138,11 @@ Los plugins se registran en la DB y en un registry central. El Dashboard los car
 2. Registrar en `frontend/src/plugins/pluginRegistry.ts` con lazy import
 3. Insertar en la DB:
 
-\`\`\`sql
+```sql
 INSERT INTO plugins (id, name, version, description, is_enabled, config)
 VALUES (gen_random_uuid(), 'mi-plugin', '1.0.0', 'Descripcion', true,
   '{"title":"Mi Plugin","icon":"Zap","color":"from-blue-500/20 to-blue-600/5 border-blue-500/20","category":"content"}');
-\`\`\`
+```
 
 4. Listo — aparece automáticamente con toggle activo/inactivo.
 
@@ -286,10 +286,10 @@ Implementado con react-helmet-async en todas las páginas públicas. Incluye tit
 
 ## Tests
 
-\`\`\`bash
+```bash
 cd backend
 cargo test
-\`\`\`
+```
 
 32 tests — 0 failed
 
@@ -314,7 +314,7 @@ GitHub Actions en `.github/workflows/ci.yml`. Se ejecuta en cada push y PR a `ma
 ## Variables de entorno
 
 ### Backend (`backend/.env`)
-\`\`\`env
+```env
 DATABASE_URL=postgres://rustcms:rustcms_secret@localhost:5432/rustcms
 REDIS_URL=redis://localhost:6379
 JWT_SECRET=cambiar_en_produccion
@@ -332,12 +332,12 @@ STRIPE_WEBHOOK_SECRET=whsec_...
 PAYPAL_CLIENT_ID=...
 PAYPAL_CLIENT_SECRET=...
 PAYPAL_SANDBOX=true
-\`\`\`
+```
 
 ### Frontend (`frontend/.env`)
-\`\`\`env
+```env
 VITE_API_URL=/api/v1
-\`\`\`
+```
 
 ---
 
@@ -371,13 +371,13 @@ GPL-3.0 © 2026 Johan David — [github.com/johandavid77/rustpress](https://gith
 
 ## Quick Start
 
-\`\`\`bash
+```bash
 git clone https://github.com/johandavid77/rustpress.git
 cd rustpress
 docker compose up -d
 cd backend && cp .env.example .env && cargo run
 cd frontend && npm install --legacy-peer-deps && npm run dev
-\`\`\`
+```
 
 Open: http://localhost:5173
 
@@ -396,12 +396,12 @@ Open: http://localhost:5173
 
 ## Production Deploy (Docker + Nginx + SSL)
 
-\`\`\`bash
+```bash
 cp .env.prod.example .env.prod
 nano .env.prod
 ./ssl-init.sh   # get SSL certificate (first time only)
 ./deploy.sh     # build and start all services
-\`\`\`
+```
 
 ---
 
@@ -433,9 +433,9 @@ nano .env.prod
 
 ## Tests
 
-\`\`\`bash
+```bash
 cd backend && cargo test
-\`\`\`
+```
 
 32 tests — 0 failed
 
@@ -452,7 +452,7 @@ GitHub Actions at `.github/workflows/ci.yml`. Runs on every push and PR to `main
 ## Environment Variables
 
 ### Backend (`backend/.env`)
-\`\`\`env
+```env
 DATABASE_URL=postgres://rustcms:rustcms_secret@localhost:5432/rustcms
 REDIS_URL=redis://localhost:6379
 JWT_SECRET=change_in_production
@@ -470,7 +470,7 @@ STRIPE_WEBHOOK_SECRET=whsec_...
 PAYPAL_CLIENT_ID=...
 PAYPAL_CLIENT_SECRET=...
 PAYPAL_SANDBOX=true
-\`\`\`
+```
 
 ---
 
