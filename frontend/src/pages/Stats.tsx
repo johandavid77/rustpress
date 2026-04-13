@@ -43,12 +43,12 @@ export default function Stats({ onNavigate }: { onNavigate?: (v: string) => void
   }
 
   const topCards = [
-    { label: 'Ingresos totales',  value: fmtMoney(stats?.revenue_total ?? 0),  sub: `${t("overview.revenueToday")}: ${fmtMoney(stats?.revenue_today ?? 0)}`,  icon: DollarSign, color: 'from-violet-500/20 to-violet-600/5 border-violet-500/20', iconColor: 'text-violet-400' },
-    { label: 'Pedidos totales',   value: fmt(stats?.orders_total ?? 0),         sub: `${t("overview.ordersToday")}: ${fmt(stats?.orders_today ?? 0)} · ${t("overview.ordersPending")}: ${fmt(stats?.orders_pending ?? 0)}`, icon: ShoppingBag, color: 'from-blue-500/20 to-blue-600/5 border-blue-500/20', iconColor: 'text-blue-400' },
-    { label: 'Posts publicados',  value: fmt(stats?.published_posts ?? 0),      sub: `Borradores: ${fmt(stats?.draft_posts ?? 0)} · Total: ${fmt(stats?.total_posts ?? 0)}`, icon: Globe, color: 'from-green-500/20 to-green-600/5 border-green-500/20', iconColor: 'text-green-400' },
-    { label: 'Productos',         value: fmt(stats?.total_products ?? 0),       sub: `${t("overview.lowStock")}: ${fmt(stats?.low_stock ?? 0)} · ${t("overview.outOfStock")}: ${fmt(stats?.out_of_stock ?? 0)}`, icon: Package, color: 'from-orange-500/20 to-orange-600/5 border-orange-500/20', iconColor: 'text-orange-400' },
-    { label: 'Archivos media',    value: fmt(stats?.total_media ?? 0),          sub: 't("overview.media")', icon: Image, color: 'from-pink-500/20 to-pink-600/5 border-pink-500/20', iconColor: 'text-pink-400' },
-    { label: 'Usuarios',          value: fmt(stats?.total_users ?? 0),          sub: '{t("overview.users")}', icon: Users, color: 'from-cyan-500/20 to-cyan-600/5 border-cyan-500/20', iconColor: 'text-cyan-400' },
+    { label: t('overview.totalRevenue'),  value: fmtMoney(stats?.revenue_total ?? 0),  sub: `${t("overview.revenueToday")}: ${fmtMoney(stats?.revenue_today ?? 0)}`,  icon: DollarSign, color: 'from-violet-500/20 to-violet-600/5 border-violet-500/20', iconColor: 'text-violet-400' },
+    { label: t('overview.totalOrders'),   value: fmt(stats?.orders_total ?? 0),         sub: `${t("overview.ordersToday")}: ${fmt(stats?.orders_today ?? 0)} · ${t("overview.ordersPending")}: ${fmt(stats?.orders_pending ?? 0)}`, icon: ShoppingBag, color: 'from-blue-500/20 to-blue-600/5 border-blue-500/20', iconColor: 'text-blue-400' },
+    { label: t('overview.publishedPosts'),  value: fmt(stats?.published_posts ?? 0),      sub: `${t('posts.draft')}: ${fmt(stats?.draft_posts ?? 0)} · ${t('overview.total')}: ${fmt(stats?.total_posts ?? 0)}`, icon: Globe, color: 'from-green-500/20 to-green-600/5 border-green-500/20', iconColor: 'text-green-400' },
+    { label: t('overview.products'),         value: fmt(stats?.total_products ?? 0),       sub: `${t("overview.lowStock")}: ${fmt(stats?.low_stock ?? 0)} · ${t("overview.outOfStock")}: ${fmt(stats?.out_of_stock ?? 0)}`, icon: Package, color: 'from-orange-500/20 to-orange-600/5 border-orange-500/20', iconColor: 'text-orange-400' },
+    { label: t('overview.mediaFiles'),    value: fmt(stats?.total_media ?? 0),          sub: 't("overview.media")', icon: Image, color: 'from-pink-500/20 to-pink-600/5 border-pink-500/20', iconColor: 'text-pink-400' },
+    { label: t('overview.users'),          value: fmt(stats?.total_users ?? 0),          sub: '{t("overview.users")}', icon: Users, color: 'from-cyan-500/20 to-cyan-600/5 border-cyan-500/20', iconColor: 'text-cyan-400' },
   ]
 
   const alerts = [
