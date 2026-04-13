@@ -299,8 +299,8 @@ function PostsView({ posts, loading, onReload, onNewPost, onEditPost, selected, 
             <input type="checkbox" checked={selected.has(post.id)} onClick={e => toggleSelect(post.id, e)} onChange={() => {}} className="absolute w-4 h-4 accent-[#7c6aff] cursor-pointer" />
             <div className="flex items-center justify-between">
               <span className={`text-xs font-mono px-3 py-1 rounded-full font-semibold
-                ${post.status === t('posts.published') ? 'bg-green-500/10 text-green-400' : 'bg-yellow-500/10 text-yellow-400'}`}>
-                {post.status === t('posts.published') ? t('posts.published') : t('posts.draft')}
+                ${post.status === 'published' ? 'bg-green-500/10 text-green-400' : 'bg-yellow-500/10 text-yellow-400'}`}>
+                {post.status === 'published' ? t('posts.published') : t('posts.draft')}
               </span>
               <span className="text-xs text-[#888899] font-mono">
                 {new Date(post.created_at).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })}
