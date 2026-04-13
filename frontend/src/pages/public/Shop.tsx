@@ -15,7 +15,7 @@ export default function Shop() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading]   = useState(true)
   const [search, setSearch]     = useState('')
-  const [cart, setCart]    = useState<Record<string, number>>({})
+  const [cart, setCart]         = useState<Record<string, number>>({})
 
   useEffect(() => { load() }, [search])
 
@@ -29,11 +29,8 @@ export default function Shop() {
     finally { setLoading(false) }
   }
 
-const addToCart = (productId: string) => {
-  setCart(prev => {
-    const next = { ...prev, [productId]: (prev[productId] || 0) + 1 }
-    try { localStorage.setItem('rustcms_cart', JSON.stringify(next)) } catch(_) {}
-    return next
-  })
+  const addToCart = (productId: string) => {
+  const newCart = { ...cart, [productId]: (cart[productId] || 0) + 1 }
+  setCart(newCart)
+  try { localStorage.setItem('rustcms_cart', JSON.stringify(newCart)) } catch(_) {}
 }
-
