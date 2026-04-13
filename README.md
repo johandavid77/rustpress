@@ -65,65 +65,66 @@ nano .env.prod
 
 ```
 rustpress/
-├── backend/src/
-│   ├── main.rs                  Punto de entrada y rutas
-│   ├── config.rs                Variables de entorno
-│   ├── errors.rs                Manejo centralizado de errores
-│   ├── handlers/
-│   │   ├── auth.rs              Login, registro, perfil
-│   │   ├── posts.rs             CRUD posts, stats, views
-│   │   ├── media.rs             Subida y gestión de archivos
-│   │   ├── users.rs             CRUD usuarios y roles
-│   │   ├── plugins.rs           Sistema de plugins dinámico
-│   │   ├── products_shop.rs     Tienda pública y CRUD admin
-│   │   ├── orders.rs            Pedidos y estado
-│   │   ├── payments.rs          Stripe y PayPal
-│   │   ├── analytics.rs         Tracking y dashboard analítico
-│   │   ├── backup.rs            Backup y restore con pg_dump
-│   │   ├── updates.rs           Actualizaciones vía git pull
-│   │   ├── search.rs            Búsqueda global Ctrl+K
-│   │   ├── notifications.rs     SSE en tiempo real
-│   │   ├── newsletter.rs        Suscriptores y campañas SMTP
-│   │   ├── contact.rs           Formularios de contacto
-│   │   ├── redirects.rs         Redirecciones 301/302
-│   │   ├── coupons.rs           Cupones de descuento
-│   │   ├── cache_admin.rs       Panel de cache Redis
-│   │   ├── csv_io.rs            Import/Export CSV
-│   │   ├── maintenance.rs       Modo mantenimiento
-│   │   ├── roles.rs             Roles y permisos
-│   │   ├── activity.rs          Log de actividad
-│   │   └── webhooks.rs          Notificaciones externas
-│   ├── payments/
-│   │   ├── stripe.rs            Gateway Stripe
-│   │   ├── paypal.rs            Gateway PayPal
-│   │   └── gateway.rs           Trait PaymentGateway
-│   └── services/
-│       ├── auth_service.rs      JWT y bcrypt
-│       └── email_service.rs     Plantillas de email
-├── frontend/src/
-│   ├── pages/
-│   │   ├── public/              Blog, Shop, ProductDetail, Checkout, MaintenancePage
-│   │   ├── Dashboard/           Overview, Users, HealthDashboard
-│   │   ├── Shop/                Products, ProductEditor, Orders
-│   │   ├── Gallery/             Galería de medios
-│   │   └── Plugins/             Todos los plugins admin
-│   ├── plugins/
-│   │   └── pluginRegistry.ts    Registro central de plugins
-│   ├── components/
-│   │   ├── SEO/                 Meta tags, Open Graph, Twitter Cards
-│   │   ├── GlobalSearch/        Búsqueda global Ctrl+K
-│   │   ├── NotificationBell/    Notificaciones SSE
-│   │   └── Newsletter/          Widget público de suscripción
-│   ├── locales/
-│   │   ├── es/translation.json  Traducciones español
-│   │   └── en/translation.json  Traducciones inglés
-│   └── api/                     Clientes API tipados
-├── nginx/nginx.conf             Reverse proxy, SSL, rate limiting
-├── docker-compose.yml           Desarrollo local
-├── docker-compose.prod.yml      Producción completa
-├── deploy.sh                    Script de deploy con un comando
-├── ssl-init.sh                  Obtener SSL con Let's Encrypt
-└── .env.prod.example            Variables de producción
+├── backend/src/handlers/
+│   ├── activity.rs            Log de actividad
+│   ├── analytics.rs           Dashboard analítico
+│   ├── api_keys.rs            API Keys
+│   ├── auth.rs                Login, registro, recuperación de contraseña
+│   ├── backup.rs              Backup con pg_dump y restore
+│   ├── bookings.rs            Sistema de reservas
+│   ├── cache_admin.rs         Panel cache Redis
+│   ├── cart.rs                Carrito de compras
+│   ├── categories.rs          Taxonomías para posts y productos
+│   ├── comments.rs            Moderación de comentarios
+│   ├── contact.rs             Formularios de contacto
+│   ├── coupons.rs             Cupones de descuento
+│   ├── csv_io.rs              Import/Export CSV
+│   ├── feed.rs                RSS feed automático
+│   ├── maintenance.rs         Modo mantenimiento con whitelist IPs
+│   ├── media.rs               Subida y gestión de archivos multimedia
+│   ├── menus.rs               Navegación personalizable
+│   ├── newsletter.rs          Suscriptores y campañas SMTP
+│   ├── notifications.rs       SSE en tiempo real
+│   ├── orders.rs              Pedidos y estado
+│   ├── payments.rs            Stripe y PayPal
+│   ├── plugins.rs             Sistema de plugins dinámico
+│   ├── posts.rs               CRUD posts, stats, views
+│   ├── products_shop.rs       Tienda pública y CRUD admin
+│   ├── redirects.rs           Redirecciones 301/302 con hits
+│   ├── reviews.rs             Reseñas de productos
+│   ├── roles.rs               Roles y permisos por recurso
+│   ├── search.rs              Búsqueda global Ctrl+K
+│   ├── settings.rs            Configuración del sitio
+│   ├── sliders.rs             Carrusel de imágenes
+│   ├── updates.rs             Actualizaciones vía git pull
+│   ├── users.rs               CRUD usuarios
+│   ├── variants.rs            Variantes de productos
+│   └── webhooks.rs            Notificaciones HTTP externas
+└── frontend/src/
+    ├── pages/
+    │   ├── Analytics.tsx          Dashboard analítico
+    │   ├── Dashboard.tsx          Panel principal con métricas
+    │   ├── Stats.tsx              Estadísticas detalladas
+    │   ├── Login.tsx / Register.tsx / ForgotPassword.tsx / ResetPassword.tsx
+    │   ├── Blog/                  Gestión de posts
+    │   ├── Gallery/               Galería con lightbox y drag & drop
+    │   ├── Media/                 Archivos multimedia
+    │   ├── Posts/                 Editor con preview
+    │   ├── Shop/                  Productos, pedidos, variantes
+    │   ├── Ecommerce/             Tienda pública con carrito
+    │   ├── Users/                 Gestión de usuarios
+    │   ├── Settings/              Configuración
+    │   ├── Plugins/               Todos los plugins admin
+    │   └── public/                Blog público, tienda, checkout, mantenimiento
+    ├── plugins/pluginRegistry.ts  Registro central con lazy loading
+    ├── components/
+    │   ├── SEO/                   Meta tags, Open Graph, Twitter Cards
+    │   ├── GlobalSearch/          Búsqueda global Ctrl+K
+    │   ├── NotificationBell/      Notificaciones SSE
+    │   └── Newsletter/            Widget público de suscripción
+    └── locales/
+        ├── es/translation.json
+        └── en/translation.json
 ```
 
 ---
@@ -132,9 +133,9 @@ rustpress/
 
 Los plugins se registran en la DB y en un registry central. El Dashboard los carga automáticamente con lazy loading.
 
-### Para agregar un plugin nuevo
+### Agregar un plugin nuevo
 
-1. Crear el componente en `frontend/src/pages/Plugins/MiPlugin.tsx`
+1. Crear `frontend/src/pages/Plugins/MiPlugin.tsx`
 2. Registrar en `frontend/src/plugins/pluginRegistry.ts` con lazy import
 3. Insertar en la DB:
 
@@ -144,7 +145,7 @@ VALUES (gen_random_uuid(), 'mi-plugin', '1.0.0', 'Descripcion', true,
   '{"title":"Mi Plugin","icon":"Zap","color":"from-blue-500/20 to-blue-600/5 border-blue-500/20","category":"content"}');
 ```
 
-4. Listo — aparece automáticamente con toggle activo/inactivo.
+4. Aparece automáticamente con toggle activo/inactivo.
 
 ### Plugins disponibles
 
@@ -154,21 +155,26 @@ VALUES (gen_random_uuid(), 'mi-plugin', '1.0.0', 'Descripcion', true,
 | Menús | Contenido | Navegación personalizable |
 | Comentarios | Contenido | Moderación de comentarios |
 | Categorías | Contenido | Taxonomías para posts y productos |
-| Galería | Contenido | Grid de medios con lightbox y drag & drop |
-| Formularios | Contenido | Constructor de formularios con bandeja de mensajes |
+| Galería | Contenido | Grid con lightbox y drag & drop |
+| Formularios de contacto | Contenido | Constructor con bandeja y notificación email |
 | Webhooks | Integraciones | Notificaciones HTTP externas |
-| Newsletter | Integraciones | Suscriptores y envío masivo con SMTP real |
+| Newsletter | Integraciones | Suscriptores y envío masivo SMTP real |
+| Reservas | Integraciones | Sistema de bookings |
 | Ecommerce | Ecommerce | Tienda completa con Stripe y PayPal |
 | Cupones | Ecommerce | Descuentos por porcentaje o monto fijo |
-| Healthcheck | Sistema | Estado del servidor, DB y Redis |
-| Backup | Sistema | Copias de seguridad con pg_dump |
+| Variantes | Ecommerce | Talla, color, etc. |
+| Reseñas | Ecommerce | Sistema de reseñas de productos |
+| Healthcheck | Sistema | Estado servidor, DB y Redis en tiempo real |
+| Backup | Sistema | pg_dump con restore desde el admin |
 | Actualizaciones | Sistema | git pull + cargo build desde el admin |
-| Redirecciones | Sistema | 301/302 con contador de hits |
-| Cache Redis | Sistema | Panel con limpieza por prefijo |
+| Redirecciones | Sistema | 301/302 con contador de hits y toggle |
+| Cache Redis | Sistema | Estadísticas y limpieza por prefijo |
 | CSV Import/Export | Sistema | Exportar datos e importar productos en bulk |
 | Modo Mantenimiento | Sistema | Página pública con countdown y whitelist IPs |
 | Roles y Permisos | Sistema | Gestión de roles y permisos por recurso |
-| Log de Actividad | Sistema | Auditoría de acciones con filtros y paginación |
+| Log de Actividad | Sistema | Auditoría completa con filtros y paginación |
+| API Keys | Sistema | Gestión de claves de API |
+| Feed RSS | Sistema | Feed RSS automático de posts |
 
 ---
 
@@ -181,7 +187,9 @@ Base URL: `http://localhost:8080/api/v1`
 |--------|------|------|-------------|
 | POST | /auth/login | No | Login, retorna JWT |
 | POST | /auth/register | No | Registro de usuario |
-| GET | /auth/me | Sí | Perfil del usuario actual |
+| GET | /auth/me | Sí | Perfil actual |
+| POST | /auth/forgot-password | No | Solicitar recuperación |
+| POST | /auth/reset-password | No | Restablecer contraseña |
 
 ### Posts
 | Método | Ruta | Auth | Descripción |
@@ -191,9 +199,9 @@ Base URL: `http://localhost:8080/api/v1`
 | GET | /posts/:id | No | Obtener post |
 | PUT | /posts/:id | Sí | Editar post |
 | DELETE | /posts/:id | Sí | Eliminar post |
+| POST | /posts/:slug/view | No | Incrementar vistas |
 | GET | /posts/stats | Sí | Estadísticas generales |
 | GET | /posts/stats/views | Sí | Vistas por día para gráfica |
-| POST | /posts/:slug/view | No | Incrementar contador de vistas |
 
 ### Shop público
 | Método | Ruta | Auth | Descripción |
@@ -209,6 +217,14 @@ Base URL: `http://localhost:8080/api/v1`
 | POST | /products | Sí | Crear producto |
 | PUT | /products/:id | Sí | Editar producto |
 | DELETE | /products/:id | Sí | Eliminar producto |
+
+### Carrito
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| GET | /cart | Sí | Ver carrito |
+| POST | /cart/items | Sí | Agregar ítem |
+| PUT | /cart/items/:id | Sí | Actualizar cantidad |
+| DELETE | /cart/items/:id | Sí | Eliminar ítem |
 
 ### Pedidos y Pagos
 | Método | Ruta | Auth | Descripción |
@@ -232,47 +248,37 @@ Base URL: `http://localhost:8080/api/v1`
 | GET | /analytics/funnel | Sí | Funnel de conversión |
 | GET | /analytics/realtime | Sí | Visitantes en tiempo real |
 
-### Búsqueda y Notificaciones
+### Plugins y utilidades
 | Método | Ruta | Auth | Descripción |
 |--------|------|------|-------------|
-| GET | /search?q=... | Sí | Búsqueda global |
-| GET | /notifications/stream | Sí | SSE — pedidos y stock bajo |
-
-### Nuevos endpoints de plugins
-| Método | Ruta | Auth | Descripción |
-|--------|------|------|-------------|
-| GET | /newsletter/subscribers | Sí | Listar suscriptores |
 | POST | /newsletter/subscribe | No | Suscribirse al newsletter |
-| GET | /newsletter/campaigns | Sí | Listar campañas |
+| GET | /newsletter/subscribers | Sí | Listar suscriptores |
 | POST | /newsletter/campaigns/:id/send | Sí | Enviar campaña |
-| GET | /contact/admin/forms | Sí | Listar formularios |
 | POST | /contact/forms/:id/submit | No | Enviar mensaje de contacto |
-| GET | /coupons | Sí | Listar cupones |
+| GET | /contact/admin/forms | Sí | Bandeja de mensajes |
 | GET | /coupons/validate/:code | No | Validar cupón |
 | GET | /redirects | Sí | Listar redirecciones |
-| GET | /cache/stats | Sí | Estadísticas de cache Redis |
-| POST | /cache/flush | Sí | Limpiar toda la cache |
-| GET | /csv/export/products | Sí | Exportar productos a CSV |
-| POST | /csv/import/products | Sí | Importar productos desde CSV |
-| GET | /maintenance/status | No | Estado del modo mantenimiento |
+| GET | /cache/stats | Sí | Estadísticas Redis |
+| POST | /cache/flush | Sí | Limpiar cache |
+| GET | /csv/export/products | Sí | Exportar productos CSV |
+| POST | /csv/import/products | Sí | Importar productos CSV |
+| GET | /maintenance/status | No | Estado modo mantenimiento |
 | GET | /roles | Sí | Listar roles |
+| GET | /permissions | Sí | Listar permisos |
 | GET | /activity/logs | Sí | Log de actividad |
-
-### Utilidades
-| Método | Ruta | Auth | Descripción |
-|--------|------|------|-------------|
+| GET | /search?q=... | Sí | Búsqueda global |
+| GET | /notifications/stream | Sí | SSE tiempo real |
 | GET | /sitemap.xml | No | Sitemap dinámico |
-| GET | /robots.txt | No | Robots.txt con reglas SEO |
+| GET | /robots.txt | No | Robots.txt |
 | GET | /health | No | Health check básico |
-| GET | /health/detailed | No | Estado detallado de DB, Redis y stats |
+| GET | /health/detailed | No | Estado detallado DB y Redis |
 
 ---
 
 ## i18n (ES / EN)
 
-Bilingüe con react-i18next. El selector de idioma está en el sidebar del admin y en el footer del sitio público.
+Bilingüe con react-i18next. Selector de idioma en el sidebar del admin y footer del sitio público.
 
-Archivos de traducción:
 - `frontend/src/locales/es/translation.json`
 - `frontend/src/locales/en/translation.json`
 
@@ -280,15 +286,20 @@ Archivos de traducción:
 
 ## SEO
 
-Implementado con react-helmet-async en todas las páginas públicas. Incluye title dinámico, meta description, Open Graph completo, Twitter Cards, canonical URLs, sitemap.xml dinámico desde la DB y robots.txt con Disallow en /admin y /api.
+Implementado con react-helmet-async en todas las páginas públicas: title dinámico, meta description, Open Graph completo, Twitter Cards, canonical URLs, sitemap.xml desde la DB, robots.txt con Disallow en /admin y /api.
+
+---
+
+## Carrito y Checkout
+
+El carrito usa **localStorage** para visitantes no autenticados — pueden agregar productos libremente. Al ir al checkout sin sesión, se redirige a `/login?redirect=/checkout` y se regresa automáticamente después del login.
 
 ---
 
 ## Tests
 
 ```bash
-cd backend
-cargo test
+cd backend && cargo test
 ```
 
 32 tests — 0 failed
@@ -399,8 +410,8 @@ Open: http://localhost:5173
 ```bash
 cp .env.prod.example .env.prod
 nano .env.prod
-./ssl-init.sh   # get SSL certificate (first time only)
-./deploy.sh     # build and start all services
+./ssl-init.sh
+./deploy.sh
 ```
 
 ---
@@ -414,20 +425,31 @@ nano .env.prod
 | Comments | Content | Comment moderation |
 | Categories | Content | Taxonomies for posts and products |
 | Gallery | Content | Media grid with lightbox and drag & drop |
-| Contact Forms | Content | Form builder with message inbox and email notification |
+| Contact Forms | Content | Form builder with inbox and email notification |
 | Webhooks | Integrations | External HTTP notifications |
 | Newsletter | Integrations | Subscribers and bulk email via real SMTP |
+| Bookings | Integrations | Booking system |
 | Ecommerce | Ecommerce | Full store with Stripe and PayPal |
 | Coupons | Ecommerce | Percentage or fixed amount discounts |
+| Variants | Ecommerce | Size, color, etc. |
+| Reviews | Ecommerce | Product review system |
 | Healthcheck | System | Server, DB and Redis status |
-| Backup | System | Database backups with pg_dump |
-| Updates | System | git pull + cargo build from the admin panel |
+| Backup | System | pg_dump with restore from admin |
+| Updates | System | git pull + cargo build from admin |
 | Redirects | System | 301/302 with hit counter and toggle |
-| Redis Cache | System | Cache panel with prefix-based clearing |
+| Redis Cache | System | Stats and prefix-based clearing |
 | CSV Import/Export | System | Export data and bulk import products |
 | Maintenance Mode | System | Public page with countdown and IP whitelist |
-| Roles & Permissions | System | Role management and resource-level permissions |
-| Activity Log | System | Action audit log with filters and pagination |
+| Roles & Permissions | System | Role and resource-level permission management |
+| Activity Log | System | Full audit log with filters and pagination |
+| API Keys | System | API key management |
+| RSS Feed | System | Automatic RSS feed for posts |
+
+---
+
+## Cart & Checkout
+
+The cart uses **localStorage** for unauthenticated visitors — they can freely add products. When going to checkout without a session, the user is redirected to `/login?redirect=/checkout` and returned automatically after login.
 
 ---
 
