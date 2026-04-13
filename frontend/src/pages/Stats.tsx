@@ -129,7 +129,7 @@ export default function Stats({ onNavigate }: { onNavigate?: (v: string) => void
                   </div>
                   <div className="text-sm font-bold text-white">{fmtMoney(o.total)}</div>
                   <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${statusColor[o.status] ?? 'bg-gray-500/20 text-gray-400'}`}>
-                    {o.status}
+                    {o.status === 'published' ? t('posts.published') : o.status === 'draft' ? t('posts.draft') : o.status}
                   </span>
                 </div>
               ))}
@@ -161,7 +161,7 @@ export default function Stats({ onNavigate }: { onNavigate?: (v: string) => void
                   </div>
                   <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
                     p.status === 'published' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
-                  }`}>{p.status}</span>
+                  }`}>{p.status === 'published' ? t('posts.published') : p.status === 'draft' ? t('posts.draft') : p.status}</span>
                 </div>
               ))}
             </div>
