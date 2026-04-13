@@ -1,9 +1,11 @@
+import { useTranslation } from 'react-i18next'
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { apiClient } from '../../api/client'
 import { X } from 'lucide-react'
 
 export default function PostPreview() {
+  const { t } = useTranslation()
   const { id } = useParams()
   const [post, setPost] = useState<any>(null)
   const [loading, setLoading] = useState(true)
@@ -29,7 +31,7 @@ export default function PostPreview() {
         <div className="flex items-center gap-3">
           <span className="text-yellow-400 text-xs font-black uppercase tracking-widest">● Preview</span>
           <span className="text-yellow-400/60 text-xs font-mono">
-            {post.status === 'published' ? 'Publicado' : 'Borrador — no visible al público'}
+            {post.status === 'published' ? t('posts.published') : t('posts.draft')}
           </span>
         </div>
         <Link to="/dashboard"
@@ -43,7 +45,7 @@ export default function PostPreview() {
           <span className={`px-3 py-1 rounded-full text-xs font-bold ${
             post.status === 'published' ? 'bg-green-500/10 text-green-400' : 'bg-yellow-500/10 text-yellow-400'
           }`}>
-            {post.status === 'published' ? '● Publicado' : '○ Borrador'}
+            {post.status === 'published' ? t('posts.published') : t('posts.draft')}
           </span>
           <span>{new Date(post.published_at ?? post.created_at).toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' })}</span>
           {post.views > 0 && <span>{post.views} vistas</span>}

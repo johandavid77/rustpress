@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useState, useEffect } from 'react'
 import { postsApi } from '../../api/posts'
 import RichEditor from '../../components/Editor/RichEditor'
@@ -11,6 +12,7 @@ interface Props {
 }
 
 export default function EditPost({ post, onBack, onSaved }: Props) {
+  const { t } = useTranslation()
   const [title, setTitle]               = useState(post.title)
   const [excerpt, setExcerpt]           = useState(post.excerpt ?? '')
   const [content, setContent]           = useState(post.content ?? '')
@@ -109,7 +111,7 @@ export default function EditPost({ post, onBack, onSaved }: Props) {
               ${post.status === 'published'
                 ? 'border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/10'
                 : 'border-green-500/30 text-green-400 hover:bg-green-500/10'}`}>
-            {post.status === 'published' ? '○ Despublicar' : '● Publicar'}
+            {post.status === 'published' ? t('posts.published') : t('posts.draft')}
           </button>
           <button onClick={handleSave} disabled={saving}
             className="px-4 py-2 bg-[#7c6aff] rounded-lg text-sm font-bold hover:bg-[#6b5be6] disabled:opacity-50">
@@ -123,7 +125,7 @@ export default function EditPost({ post, onBack, onSaved }: Props) {
       <div className="mb-2 flex items-center gap-3">
         <span className={`text-xs font-mono px-3 py-1 rounded-full font-semibold
           ${post.status === 'published' ? 'bg-green-500/10 text-green-400' : 'bg-yellow-500/10 text-yellow-400'}`}>
-          {post.status === 'published' ? '● Publicado' : '○ Borrador'}
+          {post.status === 'published' ? t('posts.published') : t('posts.draft')}
         </span>
         <span className="text-xs text-[#888899] font-mono">{post.slug}</span>
       </div>
