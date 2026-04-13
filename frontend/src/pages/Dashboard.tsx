@@ -179,11 +179,11 @@ export default function Dashboard() {
           <p className="text-sm text-[#888899] font-mono">{viewTitle}</p>
           <a href="/" target="_blank" rel="noopener noreferrer"
             className="flex items-center gap-2 px-4 py-1.5 border border-[#2a2a3a] rounded-lg text-xs text-[#888899] hover:text-white hover:border-[#7c6aff] font-semibold transition-all">
-            <ExternalLink size={13} /> Preview site
+            <ExternalLink size={13} /> {t('nav.previewSite')}
           </a>
             <a href="/shop" target="_blank" rel="noopener noreferrer"
               className="flex items-center gap-2 px-4 py-1.5 border border-[#2a2a3a] rounded-lg text-xs text-[#888899] hover:text-white hover:border-[#7c6aff] font-semibold transition-all">
-              <ShoppingBag size={13} /> Ver tienda
+              <ShoppingBag size={13} /> {t('nav.viewStore')}
             </a>
         <NotificationBell onNavigate={(v) => setView(v as any)} />
         </header>
