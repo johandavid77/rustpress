@@ -16,10 +16,18 @@ export default function Checkout() {
   const [done, setDone]       = useState<any>(null)
 
   useEffect(() => {
-    apiClient.get('/cart').then((res: any) => {
-      setCart(res)
-      setLoading(false)
-    }).catch(() => setLoading(false))
+    fetch('/api/v1/shop/products?' + Object.keys(JSON.parse(localStorage.getItem('rustcms_cart') || '{}')).map(id => 'ids[]=' + id).join('&'))
+      .then(r => r.json())
+      .then((prods: any) => {
+        const cartMap: Record<string, number> = JSON.parse(localStorage.getItem('rustcms_cart') || '{}')
+        const prodList = Array.isArray(prods?.data) ? prods.data : Array.isArray(prods) ? prods : []
+        const items = Object.entries(cartMap).map(([id, qty]) => {
+          const p = prodList.find((x: any) => x.id === id)
+          return p ? { id, product_id: id, name: p.name, price: p.price, quantity: qty, subtotal: p.price * qty } : null
+        }).filter(Boolean)
+        const total = items.reduce((acc: number, i: any) => acc + i.subtotal, 0)
+        setCart({ items, total, coupon_discount: 0 })
+      }).catch(() => setLoading(false))
   }, [])
 
   const place = async () => {
