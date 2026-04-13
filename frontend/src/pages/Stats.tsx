@@ -108,7 +108,7 @@ export default function Stats({ onNavigate }: { onNavigate?: (v: string) => void
         {/* Pedidos recientes */}
         <div className="border border-[#2a2a3a] rounded-2xl overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 border-b border-[#2a2a3a] bg-[#1a1a2e]">
-            <span className="text-xs font-semibold uppercase tracking-widest text-[#555566]">Pedidos recientes</span>
+            <span className="text-xs font-semibold uppercase tracking-widest text-[#555566]">{t('overview.recentOrders')}</span>
             {onNavigate && (
               <button onClick={() => onNavigate('orders')} className="text-[#555566] hover:text-white transition-colors">
                 <ArrowRight size={14} />
@@ -140,7 +140,7 @@ export default function Stats({ onNavigate }: { onNavigate?: (v: string) => void
         {/* Posts recientes */}
         <div className="border border-[#2a2a3a] rounded-2xl overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 border-b border-[#2a2a3a] bg-[#1a1a2e]">
-            <span className="text-xs font-semibold uppercase tracking-widest text-[#555566]">Posts recientes</span>
+            <span className="text-xs font-semibold uppercase tracking-widest text-[#555566]">{t('overview.recentPosts')}</span>
             {onNavigate && (
               <button onClick={() => onNavigate('posts')} className="text-[#555566] hover:text-white transition-colors">
                 <ArrowRight size={14} />
