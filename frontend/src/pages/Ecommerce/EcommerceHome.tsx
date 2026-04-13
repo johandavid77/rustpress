@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
 import { ShoppingBag, Package, Users, Tag, Archive, BarChart2, Settings, ArrowLeft } from 'lucide-react'
 import EcommerceOverview from './EcommerceOverview'
@@ -23,6 +24,7 @@ const tabs = [
 ]
 
 export default function EcommerceHome({ onBack }: Props) {
+  const { t } = useTranslation()
   const [tab, setTab] = useState<Tab>('overview')
 
   return (
@@ -59,7 +61,7 @@ export default function EcommerceHome({ onBack }: Props) {
         <div className="p-3 border-t border-[#1a1a24]">
           <a href="/shop" target="_blank"
             className="flex items-center gap-2 px-3 py-2 border border-[#2a2a3a] rounded-xl text-xs text-[#888899] hover:border-[#7c6aff] hover:text-white transition-all">
-            <ShoppingBag size={12} /> Ver tienda pública
+            <ShoppingBag size={12} /> {t('nav.viewStore')}
           </a>
         </div>
       </div>
