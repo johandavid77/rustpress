@@ -15,7 +15,7 @@ export default function Shop() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading]   = useState(true)
   const [search, setSearch]     = useState('')
-  const [cart, setCart] = useState<Record<string, number>>({}); return s ? JSON.parse(s) : {} } catch(_) { return {} } })
+  const [cart, setCart]    = useState<Record<string, number>>({})
 
   useEffect(() => { load() }, [search])
 
@@ -36,4 +36,4 @@ const addToCart = (productId: string) => {
     return next
   })
 }
-}
+
