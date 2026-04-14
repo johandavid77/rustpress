@@ -29,8 +29,8 @@
     "users": "Usuarios",
     "plugins": "Plugins",
     "themes": "Temas",
-    "settings": "Configuracion",
-    "logout": "Cerrar sesion",
+    "settings": "Configuración",
+    "logout": "Cerrar sesión",
     "previewSite": "Vista previa",
     "viewStore": "Ver tienda",
     "home": "Inicio"
@@ -77,7 +77,7 @@
     "users": "Usuarios",
     "recentOrders": "Pedidos recientes",
     "recentPosts": "Posts recientes",
-    "noOrders": "Sin pedidos aun",
+    "noOrders": "Sin pedidos aún",
     "today": "Hoy",
     "pending": "Pendientes",
     "drafts": "Borradores",
@@ -89,7 +89,9 @@
     "ordersPending": "Pendientes",
     "ofStock": "en stock",
     "media": "archivos media",
-    "subtitle": "Metricas en tiempo real de tu sitio"
+    "subtitle": "Metricas en tiempo real de tu sitio",
+    "outOfStock": "Sin stock",
+    "users3": "usuarios activos"
   },
   "posts": {
     "title": "Posts",

@@ -89,7 +89,9 @@
     "ordersPending": "Pending",
     "ofStock": "in stock",
     "media": "media files",
-    "subtitle": "Real-time metrics for your site"
+    "subtitle": "Real-time metrics for your site",
+    "outOfStock": "Out of stock",
+    "users3": "active users"
   },
   "posts": {
     "title": "Posts",
