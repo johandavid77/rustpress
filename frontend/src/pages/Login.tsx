@@ -7,6 +7,7 @@ import { authApi } from '../api/auth'
 export default function Login() {
   const { setAuth } = useAuthStore()
   const navigate = useNavigate()
+  const location = useLocation()
   const [searchParams] = useSearchParams()
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
@@ -22,7 +23,25 @@ export default function Login() {
       const data = await authApi.login({ email, password })
       setAuth((data as any).user, (data as any).token);
         localStorage.setItem('access_token', (data as any).token)
-      navigate('/admin')
+      // Sincronizar carrito localStorage → backend
+      try {
+        const cartRaw = localStorage.getItem('rustcms_cart')
+        if (cartRaw) {
+          const cartMap: Record<string, number> = JSON.parse(cartRaw)
+          for (const [productId, quantity] of Object.entries(cartMap)) {
+            await fetch('/api/v1/cart/items', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (data as any).token },
+              body: JSON.stringify({ product_id: productId, quantity })
+            })
+          }
+        }
+      } catch(_) {}
+
+      // Redirigir al redirect param o al admin
+      const params = new URLSearchParams(location.search)
+      const redirect = params.get('redirect') || '/admin'
+      navigate(redirect)
     } catch (e: any) {
       setError(e?.response?.data?.error || 'Error al iniciar sesión')
     } finally { setLoading(false) }
