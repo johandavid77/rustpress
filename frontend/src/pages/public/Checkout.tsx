@@ -16,18 +16,35 @@ export default function Checkout() {
   const [done, setDone]       = useState<any>(null)
 
   useEffect(() => {
-    fetch('/api/v1/shop/products?' + Object.keys(JSON.parse(localStorage.getItem('rustcms_cart') || '{}')).map(id => 'ids[]=' + id).join('&'))
-      .then(r => r.json())
-      .then((prods: any) => {
+    (async () => {
+      try {
         const cartMap: Record<string, number> = JSON.parse(localStorage.getItem('rustcms_cart') || '{}')
-        const prodList = Array.isArray(prods?.data) ? prods.data : Array.isArray(prods) ? prods : []
-        const items = Object.entries(cartMap).map(([id, qty]) => {
-          const p = prodList.find((x: any) => x.id === id)
-          return p ? { id, product_id: id, name: p.name, price: p.price, quantity: qty, subtotal: p.price * qty } : null
-        }).filter(Boolean)
-        const total = items.reduce((acc: number, i: any) => acc + i.subtotal, 0)
+        const ids = Object.keys(cartMap)
+        if (ids.length === 0) { setLoading(false); return }
+
+        const items: any[] = []
+        for (const id of ids) {
+          try {
+            const res = await fetch('/api/v1/shop/products/' + id)
+            const p = await res.json()
+            const prod = p?.data ?? p
+            if (prod?.id) {
+              const qty = cartMap[id]
+              items.push({
+                id, product_id: id,
+                name: prod.name,
+                price: prod.price,
+                quantity: qty,
+                subtotal: prod.price * qty,
+                images: prod.images ?? [],
+              })
+            }
+          } catch(_) {}
+        }
+        const total = items.reduce((acc, i) => acc + i.subtotal, 0)
         setCart({ items, total, coupon_discount: 0 })
-      }).catch(() => setLoading(false))
+      } catch(_) {} finally { setLoading(false) }
+    })()
   }, [])
 
   const place = async () => {
