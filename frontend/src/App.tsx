@@ -33,7 +33,9 @@ export default function App() {
       .catch(() => {})
   }, [])
 
-  if (maintenance) return <MaintenancePage />
+  // Mantenimiento: bloquear solo rutas públicas, no el admin
+  const isAdminRoute = window.location.pathname.startsWith('/admin')
+  if (maintenance && !isAdminRoute) return <MaintenancePage />
 
   return (
     <BrowserRouter>
