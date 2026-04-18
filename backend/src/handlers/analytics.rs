@@ -303,3 +303,60 @@ async fn realtime(
         })).collect::<Vec<_>>()
     })))
 }
+
+pub async fn revenue_monthly(
+    pool: web::Data<PgPool>,
+    _auth: AuthUserWithRole,
+) -> AppResult<HttpResponse> {
+    let rows = sqlx::query!(
+        r#"SELECT
+            TO_CHAR(DATE_TRUNC('month', created_at), 'YYYY-MM') as month,
+            COALESCE(SUM(total), 0.0)::float8 as revenue,
+            COUNT(*)::int as orders
+           FROM orders
+           WHERE created_at >= NOW() - INTERVAL '12 months'
+             AND status NOT IN ('cancelled', 'refunded')
+           GROUP BY DATE_TRUNC('month', created_at)
+           ORDER BY DATE_TRUNC('month', created_at)"#
+    )
+    .fetch_all(pool.get_ref())
+    .await?;
+
+    let data: Vec<_> = rows.iter().map(|r| serde_json::json!({
+        "month":   r.month,
+        "revenue": r.revenue.unwrap_or(0.0),
+        "orders":  r.orders.unwrap_or(0),
+    })).collect();
+
+    Ok(HttpResponse::Ok().json(serde_json::json!({ "data": data })))
+}
+
+pub async fn top_products_sales(
+    pool: web::Data<PgPool>,
+    _auth: AuthUserWithRole,
+) -> AppResult<HttpResponse> {
+    let rows = sqlx::query!(
+        r#"SELECT
+            p.name,
+            p.id::text as id,
+            COALESCE(SUM(oi.quantity), 0)::int8 as total_sold,
+            COALESCE(SUM(oi.quantity * oi.price), 0.0)::float8 as total_revenue
+           FROM products p
+           LEFT JOIN order_items oi ON oi.product_id = p.id
+           LEFT JOIN orders o ON o.id = oi.order_id AND o.status NOT IN ('cancelled','refunded')
+           GROUP BY p.id, p.name
+           ORDER BY total_sold DESC
+           LIMIT 10"#
+    )
+    .fetch_all(pool.get_ref())
+    .await?;
+
+    let data: Vec<_> = rows.iter().map(|r| serde_json::json!({
+        "id":            r.id,
+        "name":          r.name,
+        "total_sold":    r.total_sold.unwrap_or(0),
+        "total_revenue": r.total_revenue.unwrap_or(0.0),
+    })).collect();
+
+    Ok(HttpResponse::Ok().json(serde_json::json!({ "data": data })))
+}

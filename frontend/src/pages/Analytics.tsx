@@ -123,7 +123,46 @@ export default function Analytics() {
             </ResponsiveContainer>
           </div>
 
-          {/* Revenue diario */}
+          {/* Ingresos por mes - últimos 12 meses */}
+        {monthly.length > 0 && (
+          <div className="rounded-2xl border border-[#2a2a3a] bg-[#0e0e1a] p-5 mt-6">
+            <p className="text-sm font-bold mb-4">Ingresos por mes (últimos 12 meses)</p>
+            <BarChart width={600} height={220} data={monthly} style={{maxWidth:'100%'}}>
+              <XAxis dataKey="month" tick={{fill:'#555566',fontSize:11}} />
+              <YAxis tick={{fill:'#555566',fontSize:11}} tickFormatter={(v:number) => '$'+v.toFixed(0)} />
+              <Tooltip formatter={(v:number) => ['$'+v.toFixed(2), 'Ingresos']}
+                contentStyle={{background:'#0e0e1a',border:'1px solid #2a2a3a',borderRadius:12}} />
+              <Bar dataKey="revenue" fill="#7c6aff" radius={[4,4,0,0]} />
+            </BarChart>
+          </div>
+        )}
+
+        {/* Top productos más vendidos */}
+        {topSales.length > 0 && (
+          <div className="rounded-2xl border border-[#2a2a3a] bg-[#0e0e1a] p-5 mt-6">
+            <p className="text-sm font-bold mb-4">Productos más vendidos</p>
+            <div className="space-y-2">
+              {topSales.slice(0,8).map((p:any, i:number) => (
+                <div key={p.id} className="flex items-center gap-3">
+                  <span className="text-xs text-[#555566] w-4">{i+1}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs text-white truncate">{p.name}</span>
+                      <span className="text-xs text-[#7c6aff] font-bold ml-2 shrink-0">${p.total_revenue.toFixed(2)}</span>
+                    </div>
+                    <div className="h-1.5 bg-[#1a1a2e] rounded-full overflow-hidden">
+                      <div className="h-full bg-[#7c6aff] rounded-full"
+                        style={{width: `${Math.min(100, (p.total_sold / (topSales[0]?.total_sold||1)) * 100)}%`}} />
+                    </div>
+                  </div>
+                  <span className="text-xs text-[#555566] w-12 text-right">{p.total_sold} uds</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Revenue diario */}
           <div className="bg-[#111118] border border-[#2a2a3a] rounded-xl p-6 mb-6">
             <p className="text-sm font-bold mb-4">Revenue por día</p>
             <ResponsiveContainer width="100%" height={180}>
