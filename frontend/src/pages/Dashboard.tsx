@@ -45,9 +45,10 @@ const THEMES = [
 
 export default function Dashboard() {
   const { t } = useTranslation()
-  const { user } = useAuthStore()
-  const roleName = (user as any)?.role_name ?? 'admin'
   const { user, logout } = useAuthStore()
+  const roleName = (user as any)?.role_name ?? 'admin'
+  const isAdmin  = ['admin', 'super_admin'].includes(roleName)
+  const isEditor = ['admin', 'super_admin', 'editor'].includes(roleName)
   const [view, setView] = useState<View>('home')
   const [showEcommerce, setShowEcommerce] = useState(false)
   const [posts, setPosts] = useState<any[]>([])
