@@ -140,7 +140,7 @@ export default function GalleryAdmin() {
             <div key={item.id} className="group relative rounded-xl overflow-hidden border border-[#2a2a3a] bg-[#0e0e1a] aspect-square">
               {isImage(item.mime_type) ? (
                 <img src={item.url} alt={item.alt_text ?? item.original_name}
-                  className="w-full h-full object-cover transition-transform group-hover:scale-105" />
+                  className="w-full h-full object-cover transition-transform group-hover:scale-105" loading="lazy" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
                   <Image size={32} className="text-[#555566]" />
@@ -173,7 +173,7 @@ export default function GalleryAdmin() {
               <div key={item.id} className="flex items-center gap-4 px-4 py-3 hover:bg-white/[0.02]">
                 <div className="w-12 h-12 rounded-lg overflow-hidden bg-[#1a1a2e] shrink-0 border border-[#2a2a3a]">
                   {isImage(item.mime_type)
-                    ? <img src={item.url} alt="" className="w-full h-full object-cover" />
+                    ? <img src={item.url} alt="" className="w-full h-full object-cover" loading="lazy" />
                     : <div className="w-full h-full flex items-center justify-center"><Image size={18} className="text-[#555566]" /></div>
                   }
                 </div>
@@ -209,7 +209,7 @@ export default function GalleryAdmin() {
           </button>
           <div className="relative max-w-4xl max-h-[85vh] w-full" onClick={e => e.stopPropagation()}>
             <img src={lightbox.url} alt={lightbox.alt_text ?? lightbox.original_name}
-              className="w-full h-full object-contain rounded-xl" />
+              className="w-full h-full object-contain rounded-xl" loading="lazy" />
             <div className="mt-3 flex items-center justify-between px-1">
               <div>
                 <div className="text-sm text-white font-medium">{lightbox.original_name}</div>

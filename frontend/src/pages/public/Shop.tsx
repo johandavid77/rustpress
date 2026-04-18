@@ -192,7 +192,7 @@ export default function Shop() {
                     <div className="aspect-square bg-[#1a1a2e] relative overflow-hidden">
                       {product.images[0] ? (
                         <img src={product.images[0]} alt={product.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
                           <ShoppingCart size={32} className="text-[#333344]" />

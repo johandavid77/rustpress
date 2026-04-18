@@ -64,7 +64,7 @@ export default function Wishlist() {
             <Link to={`/shop/${item.slug}`}>
               <div className="aspect-square bg-[#1a1a2e] overflow-hidden">
                 {item.images[0]
-                  ? <img src={item.images[0]} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                  ? <img src={item.images[0]} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" loading="lazy" />
                   : <div className="w-full h-full flex items-center justify-center"><Heart size={24} className="text-[#333344]" /></div>
                 }
               </div>
