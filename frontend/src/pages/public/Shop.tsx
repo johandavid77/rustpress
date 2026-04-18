@@ -15,6 +15,12 @@ export default function Shop() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading]   = useState(true)
   const [search, setSearch]     = useState('')
+  const [category, setCategory] = useState('')
+  const [sortBy, setSortBy]     = useState('newest')
+  const [minPrice, setMinPrice] = useState('')
+  const [maxPrice, setMaxPrice] = useState('')
+  const [categories, setCategories] = useState<{id:string,name:string}[]>([])
+  const [showFilters, setShowFilters] = useState(false)
   const [cart, setCart]         = useState<Record<string, number>>({})
 
   useEffect(() => {
@@ -25,12 +31,24 @@ export default function Shop() {
     load()
   }, [])
 
-  useEffect(() => { load() }, [search])
+  useEffect(() => {
+    fetch('/api/v1/shop/categories').then(r => r.json()).then((d:any) => {
+      setCategories(Array.isArray(d?.data) ? d.data : Array.isArray(d) ? d : [])
+    }).catch(() => {})
+  }, [])
+
+  useEffect(() => { load() }, [search, category, sortBy, minPrice, maxPrice])
 
   const load = async () => {
     setLoading(true)
     try {
-      const params = search ? `?search=${search}&status=active` : '?status=active'
+      const p = new URLSearchParams({ status: 'active' })
+      if (search) p.set('search', search)
+      if (category) p.set('category', category)
+      if (sortBy) p.set('sort', sortBy)
+      if (minPrice) p.set('min_price', minPrice)
+      if (maxPrice) p.set('max_price', maxPrice)
+      const params = '?' + p.toString()
       const res: any = await apiClient.get(`/shop/products${params}`)
       setProducts(Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [])
     } catch(e) { console.error(e) }
@@ -79,10 +97,58 @@ export default function Shop() {
       </header>
 
       <main className="max-w-6xl mx-auto px-6 py-10">
-        <div className="mb-8">
-          <h1 className="text-3xl font-black mb-1">Tienda</h1>
-          <p className="text-[#888899] text-sm">{products.length} productos disponibles</p>
+        <div className="mb-6 flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <h1 className="text-3xl font-black mb-1">Tienda</h1>
+            <p className="text-[#888899] text-sm">{products.length} productos disponibles</p>
+          </div>
+          <button onClick={() => setShowFilters(f => !f)}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl border border-[#2a2a3a] text-sm text-[#888899] hover:text-white hover:border-[#7c6aff] transition-all">
+            <Filter size={15} />
+            {showFilters ? 'Ocultar filtros' : 'Filtros avanzados'}
+          </button>
         </div>
+
+        {showFilters && (
+          <div className="mb-6 p-4 rounded-2xl border border-[#2a2a3a] bg-[#0e0e1a] grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div>
+              <label className="text-xs text-[#555566] uppercase tracking-wider block mb-1">Categoría</label>
+              <select value={category} onChange={e => setCategory(e.target.value)}
+                className="w-full bg-[#1a1a2e] border border-[#2a2a3a] rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-[#7c6aff]">
+                <option value="">Todas</option>
+                {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="text-xs text-[#555566] uppercase tracking-wider block mb-1">Ordenar por</label>
+              <select value={sortBy} onChange={e => setSortBy(e.target.value)}
+                className="w-full bg-[#1a1a2e] border border-[#2a2a3a] rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-[#7c6aff]">
+                <option value="newest">Más recientes</option>
+                <option value="price_asc">Precio: menor a mayor</option>
+                <option value="price_desc">Precio: mayor a menor</option>
+                <option value="popular">Más populares</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-xs text-[#555566] uppercase tracking-wider block mb-1">Precio mín.</label>
+              <input type="number" value={minPrice} onChange={e => setMinPrice(e.target.value)}
+                placeholder="0" min="0"
+                className="w-full bg-[#1a1a2e] border border-[#2a2a3a] rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-[#7c6aff]" />
+            </div>
+            <div>
+              <label className="text-xs text-[#555566] uppercase tracking-wider block mb-1">Precio máx.</label>
+              <input type="number" value={maxPrice} onChange={e => setMaxPrice(e.target.value)}
+                placeholder="9999" min="0"
+                className="w-full bg-[#1a1a2e] border border-[#2a2a3a] rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-[#7c6aff]" />
+            </div>
+            {(category || minPrice || maxPrice || sortBy !== 'newest') && (
+              <button onClick={() => { setCategory(''); setMinPrice(''); setMaxPrice(''); setSortBy('newest') }}
+                className="col-span-full text-xs text-[#7c6aff] hover:underline text-left">
+                Limpiar filtros
+              </button>
+            )}
+          </div>
+        )}
 
         {loading ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
