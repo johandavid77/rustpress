@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
-import { useAuthStore } from '../../store/authStore'
-import { apiClient } from '../../api/client'
+import { useAuthStore } from '../store/authStore'
+import { apiClient } from '../api/client'
 import { User, Lock, Camera, Save, Eye, EyeOff } from 'lucide-react'
 
 export default function Profile() {
