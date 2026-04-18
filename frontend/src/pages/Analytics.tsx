@@ -13,6 +13,8 @@ const ORANGE = '#f59e0b'
 export default function Analytics() {
   const [days, setDays]         = useState(30)
   const [dash, setDash]         = useState<any>(null)
+  const [monthly, setMonthly]   = useState<any[]>([])
+  const [topSales, setTopSales]   = useState<any[]>([])
   const [topPosts, setTopPosts] = useState<any[]>([])
   const [topProds, setTopProds] = useState<any[]>([])
   const [funnel, setFunnel]     = useState<any[]>([])
