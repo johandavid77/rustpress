@@ -4,6 +4,7 @@ import Bookings from './pages/public/Bookings'
 import ProductDetail from './pages/public/ProductDetail'
 import Cart from './pages/public/Cart'
 import Wishlist from './pages/public/Wishlist'
+import NotFound from './pages/public/NotFound'
 import Checkout from './pages/public/Checkout'
 import PaymentSuccess from './pages/public/PaymentSuccess'
 import PaymentCancel from './pages/public/PaymentCancel'
@@ -62,7 +63,8 @@ export default function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/admin" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
         <Route path="*" element={<Navigate to="/blog" />} />
-      </Routes>
+        <Route path='*' element={<NotFound />} />
+        </Routes>
     </BrowserRouter>
   )
 }
