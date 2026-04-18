@@ -102,11 +102,6 @@ export default function Dashboard() {
     finally { setSavingTheme(false) }
   }
 
-  // Permisos por rol
-  const isAdmin   = ['admin', 'super_admin'].includes(roleName)
-  const isEditor  = ['admin', 'super_admin', 'editor'].includes(roleName)
-  const isAuthor  = ['admin', 'super_admin', 'editor', 'author'].includes(roleName)
-
   const nav = [
     { id: 'home'     as View, icon: LayoutDashboard, label: t('nav.home')    },
     { id: 'posts'    as View, icon: FileText,         label: t('nav.posts')   },
