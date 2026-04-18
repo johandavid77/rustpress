@@ -123,16 +123,32 @@ fn optimize_image(filepath: &str) -> Result<u64, Box<dyn std::error::Error>> {
     match ext.as_str() {
         "jpg" | "jpeg" => {
             let mut out = std::fs::File::create(filepath)?;
-            let mut encoder = image::codecs::jpeg::JpegEncoder::new_with_quality(&mut out, 85);
+            let mut encoder = image::codecs::jpeg::JpegEncoder::new_with_quality(&mut out, 82);
             encoder.encode_image(&img)?;
         }
-        "png" => {
-            img.save(filepath)?;
-        }
-        "webp" => {
+        "png" | "webp" => {
             img.save(filepath)?;
         }
         _ => {}
+    }
+
+    // Generar thumbnail 400px en subdirectorio thumbs/
+    if let Some(parent) = path.parent() {
+        let thumb_dir = parent.join("thumbs");
+        let _ = std::fs::create_dir_all(&thumb_dir);
+        if let Some(fname) = path.file_name() {
+            let thumb_path = thumb_dir.join(fname);
+            let thumb = img.resize(400, 400, image::imageops::FilterType::Triangle);
+            match ext.as_str() {
+                "jpg" | "jpeg" => {
+                    if let Ok(mut out) = std::fs::File::create(&thumb_path) {
+                        let mut enc = image::codecs::jpeg::JpegEncoder::new_with_quality(&mut out, 75);
+                        let _ = enc.encode_image(&thumb);
+                    }
+                }
+                _ => { let _ = thumb.save(&thumb_path); }
+            }
+        }
     }
 
     Ok(std::fs::metadata(filepath)?.len())
