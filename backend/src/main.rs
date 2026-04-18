@@ -73,6 +73,24 @@ async fn main() -> anyhow::Result<()> {
 
     let bind_addr = format!("{}:{}", cfg.host, cfg.port);
 
+    // Backup automático cada 24 horas
+    let backup_dir_auto = cfg.backup_dir.clone();
+    let db_url_auto = cfg.database_url.clone();
+    tokio::spawn(async move {
+        loop {
+            tokio::time::sleep(tokio::time::Duration::from_secs(86400)).await;
+            let ts = chrono::Utc::now().format("%Y%m%d_%H%M%S");
+            let filename = format!("auto_backup_{}.sql", ts);
+            let filepath = format!("{}/{}", backup_dir_auto, filename);
+            let _ = std::fs::create_dir_all(&backup_dir_auto);
+            let _ = std::process::Command::new("pg_dump")
+                .arg(&db_url_auto)
+                .arg("-f").arg(&filepath)
+                .output();
+            eprintln!("[auto-backup] {}", filename);
+        }
+    });
+
     HttpServer::new(move || {
         let cors = Cors::default()
             .allowed_origin(&cfg.frontend_url)
