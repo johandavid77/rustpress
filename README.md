@@ -507,48 +507,48 @@ GPL-3.0 © 2026 Johan David — [github.com/johandavid77/rustpress](https://gith
 > Estado actual: v1.0.0 — Sistema completo con 24 plugins, tienda, pagos, i18n ES/EN, Docker producción.
 
 ### 🔴 v1.1.0 — Fixes urgentes
-- [ ] Claves i18n faltantes en dashboard (`overview.ofStock`, `overview.users3`, subclaves de tarjetas)
-- [ ] "Ver tienda" en header del admin no cambia de idioma en EN
-- [ ] Subclaves de stats hardcodeadas en Stats.tsx (Low stock, Borradores, Total)
-- [ ] Carrito: sincronizar localStorage → backend al hacer login
-- [ ] Checkout: mostrar resumen con imágenes y precios reales
-- [ ] Página pública de mantenimiento: verificar que bloquea realmente a visitantes
+- [x] Claves i18n faltantes en dashboard (`overview.ofStock`, `overview.users3`, subclaves de tarjetas)
+- [x] "Ver tienda" en header del admin no cambia de idioma en EN
+- [x] Subclaves de stats hardcodeadas en Stats.tsx (Low stock, Borradores, Total)
+- [x] Carrito: sincronizar localStorage → backend al hacer login
+- [x] Checkout: mostrar resumen con imágenes y precios reales
+- [x] Página pública de mantenimiento: verificar que bloquea realmente a visitantes
 
 ### 🟡 v1.2.0 — Seguridad y permisos reales
-- [ ] Middleware de permisos en frontend — rutas del admin protegidas por rol (Editor, Moderador, Admin)
-- [ ] Ocultar secciones del sidebar según rol del usuario logueado
+- [x] Middleware de permisos en frontend — rutas del admin protegidas por rol (Editor, Moderador, Admin)
+- [x] Ocultar secciones del sidebar según rol del usuario logueado
 - [ ] Proteger endpoints del backend con has_permission() por recurso
 - [ ] Log de actividad: registrar automáticamente create/update/delete en posts, productos y usuarios
 - [ ] Sesiones: invalidar JWT al cambiar contraseña
 
 ### 🟡 v1.3.0 — Tienda mejorada
-- [ ] UI pública de reseñas — formulario desde página de producto
-- [ ] Filtros avanzados en tienda — rango de precio, ordenar por precio/popularidad/nuevo
-- [ ] Filtro por categoría desde URL (/shop?category=ropa)
+- [x] UI pública de reseñas — formulario desde página de producto
+- [x] Filtros avanzados en tienda — rango de precio, ordenar por precio/popularidad/nuevo
+- [x] Filtro por categoría desde URL (/shop?category=ropa)
 - [ ] Página de producto mejorada — galería, zoom, variantes con selector visual
-- [ ] Wishlist / Lista de deseos
+- [x] Wishlist / Lista de deseos
 - [ ] Historial de pedidos para el cliente desde su perfil
 - [ ] Email de confirmación de pedido automático
 - [ ] Stock en tiempo real sin recargar
 
 ### 🟡 v1.4.0 — Experiencia de usuario
-- [ ] Onboarding wizard al primer login (sitio, logo, primer post, primer producto, SMTP)
-- [ ] Página 404 personalizable con links sugeridos y buscador
-- [ ] Perfil de usuario — cambiar avatar, contraseña y preferencias
+- [x] Onboarding wizard al primer login (sitio, logo, primer post, primer producto, SMTP)
+- [x] Página 404 personalizable con links sugeridos y buscador
+- [x] Perfil de usuario — cambiar avatar, contraseña y preferencias
 - [ ] Editor de posts mejorado — bloques al estilo Notion
 - [ ] Preview en tiempo real del post mientras se escribe
-- [ ] Borrador automático cada 30 segundos en el editor
+- [x] Borrador automático cada 30 segundos en el editor
 
 ### 🟢 v1.5.0 — Performance y optimización
-- [ ] Optimización automática de imágenes al subir (resize + compress + WebP)
-- [ ] Lazy loading de imágenes en tienda y galería
-- [ ] Cache de páginas públicas en Redis (TTL configurable desde admin)
+- [x] Optimización automática de imágenes al subir (resize + compress + WebP)
+- [x] Lazy loading de imágenes en tienda y galería
+- [x] Cache de páginas públicas en Redis (TTL configurable desde admin)
 - [ ] CDN-ready — servir uploads desde S3/R2/Cloudflare
 - [ ] Lighthouse score > 90 en todas las páginas públicas
 
 ### 🟢 v1.6.0 — Analytics avanzados
-- [ ] Gráfica de ingresos por mes (últimos 12 meses)
-- [ ] Productos más vendidos con cantidad e ingresos
+- [x] Gráfica de ingresos por mes (últimos 12 meses)
+- [x] Productos más vendidos con cantidad e ingresos
 - [ ] Tasa de conversión carrito → checkout → pago completado
 - [ ] Origen del tráfico (referrer, UTM params)
 - [ ] Exportar estadísticas a CSV
@@ -557,15 +557,15 @@ GPL-3.0 © 2026 Johan David — [github.com/johandavid77/rustpress](https://gith
 ### 🟢 v1.7.0 — Integraciones externas
 - [ ] Plugin Google Analytics / Plausible
 - [ ] Plugin Mailchimp / Brevo — sincronizar suscriptores
-- [ ] Plugin WhatsApp Business — botón flotante configurable
+- [x] Plugin WhatsApp Business — botón flotante configurable
 - [ ] Plugin Livechat (Tawk.to / Crisp)
 - [ ] Login social — Google OAuth y GitHub OAuth
-- [ ] Plugin de mapa con ubicación del negocio
+- [x] Plugin de mapa con ubicación del negocio
 
 ### 🟢 v1.8.0 — Multi-tenant y escalabilidad
 - [ ] Soporte multi-idioma en contenido (posts y productos en ES/EN/FR etc.)
 - [ ] Multi-sitio — un backend, varios frontends independientes
-- [ ] Backup automático programado — cron a S3/R2
+- [x] Backup automático programado — cron a S3/R2
 - [ ] Monitoreo de uptime con alertas por email/Slack
 
 ### 🔵 v2.0.0 — Plataforma
