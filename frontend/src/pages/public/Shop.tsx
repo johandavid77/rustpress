@@ -2,7 +2,7 @@ import SEO from '../../components/SEO/SEO'
 import NewsletterWidget from '../../components/Newsletter/NewsletterWidget'
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ShoppingCart, Search, Filter } from 'lucide-react'
+import { ShoppingCart, Search, Filter, Heart } from 'lucide-react'
 import { apiClient } from '../../api/client'
 
 interface Product {
@@ -53,6 +53,17 @@ export default function Shop() {
       setProducts(Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [])
     } catch(e) { console.error(e) }
     finally { setLoading(false) }
+  }
+
+  const addToWishlist = (product: Product) => {
+    try {
+      const saved = localStorage.getItem('rustcms_wishlist')
+      const wish: any[] = saved ? JSON.parse(saved) : []
+      if (!wish.find(i => i.id === product.id)) {
+        wish.push({ id: product.id, name: product.name, price: product.price, slug: product.slug, images: product.images })
+        localStorage.setItem('rustcms_wishlist', JSON.stringify(wish))
+      }
+    } catch(_) {}
   }
 
   const addToCart = (productId: string) => {
@@ -211,6 +222,10 @@ export default function Shop() {
                         <span className="text-xs text-[#555566] line-through">${product.compare_price.toFixed(2)}</span>
                       )}
                     </div>
+                    <button onClick={() => addToWishlist(product)}
+                      className="p-2 rounded-xl border border-[#2a2a3a] text-[#555566] hover:text-red-400 hover:border-red-500/30 transition-all shrink-0">
+                      <Heart size={14} />
+                    </button>
                     <button
                       onClick={() => addToCart(product.id)}
                       disabled={product.stock === 0}

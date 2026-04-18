@@ -3,6 +3,7 @@ import Shop from './pages/public/Shop'
 import Bookings from './pages/public/Bookings'
 import ProductDetail from './pages/public/ProductDetail'
 import Cart from './pages/public/Cart'
+import Wishlist from './pages/public/Wishlist'
 import Checkout from './pages/public/Checkout'
 import PaymentSuccess from './pages/public/PaymentSuccess'
 import PaymentCancel from './pages/public/PaymentCancel'
@@ -46,6 +47,7 @@ export default function App() {
         <Route path='/shop/:slug' element={<ProductDetail />} />
         <Route path='/shop' element={<Shop />} />
         <Route path='/cart' element={<Cart />} />
+          <Route path='/wishlist' element={<Wishlist />} />
         <Route path='/checkout/success' element={<PaymentSuccess />} />
         <Route path='/checkout/cancel' element={<PaymentCancel />} />
         <Route path='/checkout' element={<PrivateRoute><Checkout /></PrivateRoute>} />
