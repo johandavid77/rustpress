@@ -132,8 +132,7 @@ export default function Analytics() {
             <BarChart width={600} height={220} data={monthly} style={{maxWidth:'100%'}}>
               <XAxis dataKey="month" tick={{fill:'#555566',fontSize:11}} />
               <YAxis tick={{fill:'#555566',fontSize:11}} tickFormatter={(v:number) => '$'+v.toFixed(0)} />
-              <Tooltip formatter={(v:number) => '$'+v.toFixed(2)}
-                contentStyle={{background:'#0e0e1a',border:'1px solid #2a2a3a',borderRadius:12}} />
+              <Tooltip contentStyle={{background:'#0e0e1a',border:'1px solid #2a2a3a',borderRadius:12}} />
               <Bar dataKey="revenue" fill="#7c6aff" radius={[4,4,0,0]} />
             </BarChart>
           </div>
