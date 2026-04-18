@@ -5,6 +5,7 @@ import ProductDetail from './pages/public/ProductDetail'
 import Cart from './pages/public/Cart'
 import Wishlist from './pages/public/Wishlist'
 import NotFound from './pages/public/NotFound'
+import WhatsAppFloat from './components/WhatsAppFloat'
 import Profile from './pages/Profile'
 import Checkout from './pages/public/Checkout'
 import PaymentSuccess from './pages/public/PaymentSuccess'
@@ -66,6 +67,7 @@ export default function App() {
         <Route path="*" element={<Navigate to="/blog" />} />
         <Route path='*' element={<NotFound />} />
         </Routes>
+      <WhatsAppFloat />
     </BrowserRouter>
   )
 }
