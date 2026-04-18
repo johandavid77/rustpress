@@ -50,6 +50,23 @@ export default function EditPost({ post, onBack, onSaved }: Props) {
     return () => clearTimeout(t)
   }, [isDirty, title, excerpt, content, language, seoTitle, seoDescription, ogImage, publishAt])
 
+  // Autosave cada 30 segundos
+  const [lastSaved, setLastSaved] = useState<Date | null>(null)
+  const [autoSaving, setAutoSaving] = useState(false)
+
+  useEffect(() => {
+    if (!post?.id) return
+    const interval = setInterval(async () => {
+      setAutoSaving(true)
+      try {
+        await handleSave()
+        setLastSaved(new Date())
+      } catch(_) {}
+      finally { setAutoSaving(false) }
+    }, 30000)
+    return () => clearInterval(interval)
+  }, [post])
+
   const handleSave = async () => {
     if (!title.trim()) { setError('El título es requerido'); return }
     setSaving(true); setError('')
@@ -113,7 +130,15 @@ export default function EditPost({ post, onBack, onSaved }: Props) {
                 : 'border-green-500/30 text-green-400 hover:bg-green-500/10'}`}>
             {post.status === 'published' ? t('posts.published') : t('posts.draft')}
           </button>
-          <button onClick={handleSave} disabled={saving}
+          <span className="text-xs text-[#555566] flex items-center gap-1.5">
+          {autoSaving && <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse inline-block" />}
+          {lastSaved && !autoSaving && (
+            <span className="text-[#444455]">
+              Guardado {lastSaved.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}
+            </span>
+          )}
+        </span>
+        <button onClick={handleSave} disabled={saving}
             className="px-4 py-2 bg-[#7c6aff] rounded-lg text-sm font-bold hover:bg-[#6b5be6] disabled:opacity-50">
             {saving ? 'Guardando...' : 'Guardar cambios'}
           </button>
