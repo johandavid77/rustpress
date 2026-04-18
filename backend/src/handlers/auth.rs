@@ -70,8 +70,21 @@ async fn register(
     )?;
 
     Ok(HttpResponse::Created().json(serde_json::json!({
-        "user":  UserPublic::from(user),
-        "token": token
+        "token": token,
+        "user": {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "role_id": user.role_id,
+            "role_name": if let Some(rid) = user.role_id {
+                sqlx::query_scalar!("SELECT name FROM roles WHERE id = $1", rid)
+                    .fetch_optional(pool.get_ref()).await.unwrap_or(None)
+            } else { None },
+            "is_active": user.is_active,
+            "created_at": user.created_at,
+            "avatar": user.avatar,
+            "bio": user.bio,
+        },
     })))
 }
 
@@ -102,8 +115,21 @@ async fn login(
     )?;
 
     Ok(HttpResponse::Ok().json(serde_json::json!({
-        "user":  UserPublic::from(user),
-        "token": token
+        "token": token,
+        "user": {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "role_id": user.role_id,
+            "role_name": if let Some(rid) = user.role_id {
+                sqlx::query_scalar!("SELECT name FROM roles WHERE id = $1", rid)
+                    .fetch_optional(pool.get_ref()).await.unwrap_or(None)
+            } else { None },
+            "is_active": user.is_active,
+            "created_at": user.created_at,
+            "avatar": user.avatar,
+            "bio": user.bio,
+        },
     })))
 }
 

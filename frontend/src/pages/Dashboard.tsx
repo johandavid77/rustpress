@@ -45,6 +45,8 @@ const THEMES = [
 
 export default function Dashboard() {
   const { t } = useTranslation()
+  const { user } = useAuthStore()
+  const roleName = (user as any)?.role_name ?? 'admin'
   const { user, logout } = useAuthStore()
   const [view, setView] = useState<View>('home')
   const [showEcommerce, setShowEcommerce] = useState(false)
@@ -99,6 +101,11 @@ export default function Dashboard() {
     finally { setSavingTheme(false) }
   }
 
+  // Permisos por rol
+  const isAdmin   = ['admin', 'super_admin'].includes(roleName)
+  const isEditor  = ['admin', 'super_admin', 'editor'].includes(roleName)
+  const isAuthor  = ['admin', 'super_admin', 'editor', 'author'].includes(roleName)
+
   const nav = [
     { id: 'home'     as View, icon: LayoutDashboard, label: t('nav.home')    },
     { id: 'posts'    as View, icon: FileText,         label: t('nav.posts')   },
@@ -130,9 +137,17 @@ export default function Dashboard() {
           </div>
           <nav className="flex flex-col gap-0.5">
           {[
-            { label: 'General' as string, items: ['home','posts','media','users','themes','plugins'] },
-            { label: 'Contenido', items: ['api-keys','profile','roles'] },
-            { label: 'Tienda', items: ['ecommerce-settings','shop-products','shop-coupons','shop-inventory','shop-orders','shop-reviews'] },
+            { label: 'General' as string, items: [
+              'home', 'posts',
+              ...(isEditor ? ['media'] : []),
+              ...(isAdmin ? ['users', 'themes', 'plugins'] : []),
+            ]},
+            ...(isAdmin ? [{ label: 'Contenido', items: ['api-keys','profile','roles'] }] : []),
+            { label: 'Tienda', items: [
+              ...(isEditor ? ['ecommerce-settings','shop-products'] : []),
+              ...(isAdmin ? ['shop-coupons','shop-inventory'] : []),
+              ...(isEditor ? ['shop-orders','shop-reviews'] : []),
+            ] },
             { label: 'Analítica', items: ['analytics'] },
           ].map(section => {
             const sectionItems = nav.filter(n => section.items.includes(n.id))
@@ -264,6 +279,8 @@ function PostsView({ posts, loading, onReload, onNewPost, onEditPost, selected, 
   selected: Set<string>, toggleSelect: (id: string, e: React.MouseEvent) => void
 }) {
   const { t } = useTranslation()
+  const { user } = useAuthStore()
+  const roleName = (user as any)?.role_name ?? 'admin'
   const [sortView, setSortView] = useState(false)
   const [localPosts, setLocalPosts] = useState(posts)
   useEffect(() => { setLocalPosts(posts) }, [posts])
