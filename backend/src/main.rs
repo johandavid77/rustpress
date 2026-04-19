@@ -73,6 +73,9 @@ async fn main() -> anyhow::Result<()> {
 
     let bind_addr = format!("{}:{}", cfg.host, cfg.port);
 
+    // Clonar pool para spawns antes de moverlo
+    let pool_mon = pool.clone();
+
     // Backup automático cada 24 horas
     let backup_dir_auto = cfg.backup_dir.clone();
     let db_url_auto = cfg.database_url.clone();
