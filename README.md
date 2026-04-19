@@ -555,23 +555,23 @@ GPL-3.0 © 2026 Johan David — [github.com/johandavid77/rustpress](https://gith
 - [ ] Alertas configurables por email (ventas, stock bajo)
 
 ### 🟢 v1.7.0 — Integraciones externas
-- [ ] Plugin Google Analytics / Plausible
+- [x] Plugin Google Analytics / Plausible
 - [ ] Plugin Mailchimp / Brevo — sincronizar suscriptores
 - [x] Plugin WhatsApp Business — botón flotante configurable
 - [ ] Plugin Livechat (Tawk.to / Crisp)
-- [ ] Login social — Google OAuth y GitHub OAuth
+- [x] Login social — Google OAuth y GitHub OAuth
 - [x] Plugin de mapa con ubicación del negocio
 
 ### 🟢 v1.8.0 — Multi-tenant y escalabilidad
 - [ ] Soporte multi-idioma en contenido (posts y productos en ES/EN/FR etc.)
 - [ ] Multi-sitio — un backend, varios frontends independientes
 - [x] Backup automático programado — cron a S3/R2
-- [ ] Monitoreo de uptime con alertas por email/Slack
+- [x] Monitoreo de uptime con alertas por email/Slack
 
 ### 🔵 v2.0.0 — Plataforma
 - [ ] Marketplace de plugins — instalar de terceros desde el admin
 - [ ] Marketplace de temas — cambiar diseño del sitio público desde admin
-- [ ] API pública documentada con Swagger/OpenAPI
+- [x] API pública documentada con Swagger/OpenAPI
 - [ ] SDK JavaScript para integrar con cualquier frontend
 - [ ] CLI tool — rustpress new, rustpress deploy, rustpress backup
 - [ ] App móvil admin (React Native)
