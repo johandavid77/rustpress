@@ -52,6 +52,7 @@ async fn main() -> anyhow::Result<()> {
     );
     let email_data = web::Data::new(email_service);
 
+    let pool_mon = pool.clone();
     let pool_data = web::Data::new(pool);
     let redis = crate::cache::create_redis_pool(&cfg.redis_url).await.expect("Failed to connect to Redis");
     let redis_data = web::Data::new(tokio::sync::Mutex::new(redis));
@@ -72,9 +73,6 @@ async fn main() -> anyhow::Result<()> {
         .unwrap();
 
     let bind_addr = format!("{}:{}", cfg.host, cfg.port);
-
-    // Clonar pool para spawns antes de moverlo
-    let pool_mon = pool.clone();
 
     // Backup automático cada 24 horas
     let backup_dir_auto = cfg.backup_dir.clone();
