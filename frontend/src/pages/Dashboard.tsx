@@ -136,7 +136,7 @@ export default function Dashboard() {
             { label: 'General' as string, items: [
               'home', 'posts',
               ...(isEditor ? ['media'] : []),
-              ...(isAdmin ? ['users', 'themes', 'plugins'] : []),
+              ...(isAdmin ? ['users', 'themes', 'plugins', 'marketplace'] : []),
             ]},
             ...(isAdmin ? [{ label: 'Contenido', items: ['api-keys','profile','roles'] }] : []),
             { label: 'Tienda', items: [
