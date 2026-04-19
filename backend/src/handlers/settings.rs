@@ -118,3 +118,28 @@ pub async fn health_detailed(
         }
     })))
 }
+
+pub async fn uptime_stats(
+    pool: web::Data<PgPool>,
+    _auth: AuthUserWithRole,
+) -> AppResult<HttpResponse> {
+    let events = sqlx::query!(
+        r#"SELECT status, checked_at FROM uptime_events ORDER BY checked_at DESC LIMIT 288"#
+    )
+    .fetch_all(pool.get_ref()).await?;
+
+    let total = events.len();
+    let up = events.iter().filter(|e| e.status == "up").count();
+    let uptime_pct = if total > 0 { (up as f64 / total as f64) * 100.0 } else { 100.0 };
+
+    let data: Vec<_> = events.iter().map(|e| serde_json::json!({
+        "status": e.status,
+        "checked_at": e.checked_at,
+    })).collect();
+
+    Ok(HttpResponse::Ok().json(serde_json::json!({
+        "uptime_pct": uptime_pct,
+        "total_checks": total,
+        "events": data,
+    })))
+}

@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS uptime_events (
+    id UUID PRIMARY KEY,
+    status VARCHAR(10) NOT NULL,
+    checked_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);

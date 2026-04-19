@@ -91,6 +91,35 @@ async fn main() -> anyhow::Result<()> {
         }
     });
 
+    // Monitor de uptime cada 5 minutos
+    {
+        let site_url_mon = cfg.frontend_url.clone();
+        let pool_mon = pool.clone();
+        tokio::spawn(async move {
+            let mut fails: u32 = 0;
+            loop {
+                tokio::time::sleep(tokio::time::Duration::from_secs(300)).await;
+                let ok = reqwest::get(format!("{}/health", site_url_mon))
+                    .await.map(|r| r.status().is_success()).unwrap_or(false);
+                if ok {
+                    if fails > 0 {
+                        eprintln!("[uptime] Recuperado tras {} fallos", fails);
+                        let _ = sqlx::query!(
+                            "INSERT INTO uptime_events (id, status, checked_at) VALUES (gen_random_uuid(), 'up', NOW())"
+                        ).execute(&pool_mon).await;
+                        fails = 0;
+                    }
+                } else {
+                    fails += 1;
+                    eprintln!("[uptime] FALLO #{}", fails);
+                    let _ = sqlx::query!(
+                        "INSERT INTO uptime_events (id, status, checked_at) VALUES (gen_random_uuid(), 'down', NOW())"
+                    ).execute(&pool_mon).await;
+                }
+            }
+        });
+    }
+
     HttpServer::new(move || {
         let cors = Cors::default()
             .allowed_origin(&cfg.frontend_url)
