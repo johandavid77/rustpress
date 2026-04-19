@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { apiClient } from '../api/client'
 import { Search, Star, Download, Package, Zap, ShoppingBag, BarChart2, Globe, LogIn, MessageSquare, Check, ExternalLink } from 'lucide-react'
 
-const ICONS: Record<string, any> = { Search, Star, Download, Package, Zap, ShoppingBag, BarChart2, Globe, LogIn, MessageSquare, Check, Sparkles: Zap, FormInput: Package, MessageSquare }
+const ICONS: Record<string, any> = { Search, Star, Download, Package, Zap, ShoppingBag, BarChart2, Globe, LogIn, MessageSquare, Check, Sparkles: Zap, FormInput: Package }
 
 const CATEGORIES = [
   { id: '', label: 'Todos' },
