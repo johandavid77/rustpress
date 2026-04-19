@@ -209,3 +209,11 @@ async fn health_check() -> actix_web::HttpResponse {
         "version": env!("CARGO_PKG_VERSION")
     }))
 }// NOTA: agregar estas rutas al web::scope de arriba
+
+async fn serve_openapi() -> actix_web::HttpResponse {
+    let json = include_str!("../static/openapi.json");
+    actix_web::HttpResponse::Ok()
+        .content_type("application/json")
+        .append_header(("Access-Control-Allow-Origin", "*"))
+        .body(json)
+}
