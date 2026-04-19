@@ -190,6 +190,7 @@ async fn main() -> anyhow::Result<()> {
                     .configure(handlers::analytics::configure)  // 👈 nuevo
             )
             .route("/health", web::get().to(health_check))
+                .route("/api-docs/openapi.json", web::get().to(serve_openapi))
             .route("/health/detailed", web::get().to(handlers::settings::health_detailed))
                 .route("/uptime", web::get().to(handlers::settings::uptime_stats))
             .route("/sitemap.xml", web::get().to(handlers::feed::sitemap))
