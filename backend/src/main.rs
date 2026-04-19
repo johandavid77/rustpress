@@ -94,7 +94,7 @@ async fn main() -> anyhow::Result<()> {
     // Monitor de uptime cada 5 minutos
     {
         let site_url_mon = cfg.frontend_url.clone();
-        let pool_mon = pool.clone();
+    let pool_mon = pool.clone();
         tokio::spawn(async move {
             let mut fails: u32 = 0;
             loop {
