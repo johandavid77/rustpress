@@ -569,8 +569,8 @@ GPL-3.0 © 2026 Johan David — [github.com/johandavid77/rustpress](https://gith
 - [x] Monitoreo de uptime con alertas por email/Slack
 
 ### 🔵 v2.0.0 — Plataforma
-- [ ] Marketplace de plugins — instalar de terceros desde el admin
-- [ ] Marketplace de temas — cambiar diseño del sitio público desde admin
+- [x] Marketplace de plugins — instalar de terceros desde el admin
+- [x] Marketplace de temas — cambiar diseño del sitio público desde admin
 - [x] API pública documentada con Swagger/OpenAPI
 - [x] SDK JavaScript para integrar con cualquier frontend
 - [x] CLI tool — rustpress new, rustpress deploy, rustpress backup
