@@ -572,8 +572,8 @@ GPL-3.0 © 2026 Johan David — [github.com/johandavid77/rustpress](https://gith
 - [ ] Marketplace de plugins — instalar de terceros desde el admin
 - [ ] Marketplace de temas — cambiar diseño del sitio público desde admin
 - [x] API pública documentada con Swagger/OpenAPI
-- [ ] SDK JavaScript para integrar con cualquier frontend
-- [ ] CLI tool — rustpress new, rustpress deploy, rustpress backup
+- [x] SDK JavaScript para integrar con cualquier frontend
+- [x] CLI tool — rustpress new, rustpress deploy, rustpress backup
 - [ ] App móvil admin (React Native)
 
 ### ✅ v1.0.0 — Completado
@@ -590,3 +590,42 @@ GPL-3.0 © 2026 Johan David — [github.com/johandavid77/rustpress](https://gith
 - [x] Docker producción con Nginx + SSL + certbot
 - [x] CI/CD con GitHub Actions
 - [x] 32 tests automatizados (0 failed)
+
+---
+
+## SDK JavaScript / TypeScript
+
+Instala el SDK para integrar RustPress en cualquier proyecto:
+
+```bash
+npm install @rustpress/sdk
+```
+
+```typescript
+import { createClient } from '@rustpress/sdk'
+
+const client = createClient({ baseUrl: 'https://tu-sitio.com' })
+
+const { token } = await client.login('admin@ejemplo.com', 'password')
+const posts     = await client.getPosts({ limit: 10 })
+const products  = await client.getProducts({ sort: 'newest' })
+```
+
+Métodos disponibles: `login`, `register`, `getPosts`, `getProducts`, `createOrder`, `initPayment`, `uploadMedia`, `trackEvent`, `subscribe`, `search`, `health`, `uptime` y más.
+
+---
+
+## CLI Tool
+
+```bash
+npm install -g @rustpress/cli
+
+rustpress login --url https://tu-sitio.com
+rustpress status
+rustpress posts list
+rustpress stats
+rustpress backup
+rustpress deploy
+rustpress whoami
+rustpress logout
+```
