@@ -9,3 +9,6 @@
 
 // Integration tests
 #[cfg(test)] mod integration_auth;
+
+pub mod shop_tests;
+pub mod analytics_tests;
