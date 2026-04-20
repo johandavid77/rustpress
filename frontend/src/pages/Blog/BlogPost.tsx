@@ -1,3 +1,4 @@
+import CommentsSection from '../../components/Comments/Comments'
 import { useState, useEffect } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { apiClient } from '../../api/client'
