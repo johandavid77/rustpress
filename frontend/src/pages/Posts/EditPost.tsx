@@ -53,6 +53,7 @@ export default function EditPost({ post, onBack, onSaved }: Props) {
   // Autosave cada 30 segundos
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
   const [autoSaving, setAutoSaving] = useState(false)
+  const [splitView, setSplitView]   = useState(false)
 
   useEffect(() => {
     if (!post?.id) return
@@ -119,7 +120,11 @@ export default function EditPost({ post, onBack, onSaved }: Props) {
           {isDirty && (
             <span className="text-xs font-mono text-yellow-500/60">● Sin guardar</span>
           )}
-          <a href={`/preview/${post.id}`} target="_blank" rel="noopener noreferrer"
+          <button onClick={() => setSplitView(v => !v)}
+              className={"flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all " + (splitView ? "border-[#7c6aff] bg-[#7c6aff]/10 text-[#7c6aff]" : "border-[#2a2a3a] text-[#888899] hover:text-white")}>
+              ⚡ Split
+            </button>
+            <a href={`/preview/${post.id}`} target="_blank" rel="noopener noreferrer"
             className="px-4 py-2 border border-yellow-500/30 rounded-lg text-sm font-mono text-yellow-400 hover:bg-yellow-500/10 transition-all">
             👁 Preview
           </a>
