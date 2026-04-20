@@ -60,7 +60,7 @@ export default function BlogPost() {
             prose-hr:border-[#2a2a3a]"
           dangerouslySetInnerHTML={{ __html: post.content ?? '' }}
         />
-        <Comments postId={post.id} />
+        <CommentsSection postId={post.id} />
       <div className="border-t border-[#2a2a3a] mt-16 pt-8">
           <Link to="/blog" className="text-sm font-mono text-[#888899] hover:text-white">← Volver al blog</Link>
         </div>
