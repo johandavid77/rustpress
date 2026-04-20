@@ -536,15 +536,15 @@ GPL-3.0 © 2026 Johan David — [github.com/johandavid77/rustpress](https://gith
 - [x] Página 404 personalizable con links sugeridos y buscador
 - [x] Perfil de usuario — cambiar avatar, contraseña y preferencias
 - [x] Editor de posts mejorado — bloques al estilo Notion
-- [ ] Preview en tiempo real del post mientras se escribe
+- [x] Preview en tiempo real del post mientras se escribe
 - [x] Borrador automático cada 30 segundos en el editor
 
 ### 🟢 v1.5.0 — Performance y optimización
 - [x] Optimización automática de imágenes al subir (resize + compress + WebP)
 - [x] Lazy loading de imágenes en tienda y galería
 - [x] Cache de páginas públicas en Redis (TTL configurable desde admin)
-- [ ] CDN-ready — servir uploads desde S3/R2/Cloudflare
-- [ ] Lighthouse score > 90 en todas las páginas públicas
+- [x] CDN-ready — servir uploads desde S3/R2/Cloudflare
+- [x] Lighthouse score > 90 en todas las páginas públicas
 
 ### 🟢 v1.6.0 — Analytics avanzados
 - [x] Gráfica de ingresos por mes (últimos 12 meses)
@@ -552,11 +552,11 @@ GPL-3.0 © 2026 Johan David — [github.com/johandavid77/rustpress](https://gith
 - [ ] Tasa de conversión carrito → checkout → pago completado
 - [ ] Origen del tráfico (referrer, UTM params)
 - [ ] Exportar estadísticas a CSV
-- [ ] Alertas configurables por email (ventas, stock bajo)
+- [x] Alertas configurables por email (ventas, stock bajo)
 
 ### 🟢 v1.7.0 — Integraciones externas
 - [x] Plugin Google Analytics / Plausible
-- [ ] Plugin Mailchimp / Brevo — sincronizar suscriptores
+- [x] Plugin Mailchimp / Brevo — sincronizar suscriptores
 - [x] Plugin WhatsApp Business — botón flotante configurable
 - [ ] Plugin Livechat (Tawk.to / Crisp)
 - [x] Login social — Google OAuth y GitHub OAuth
@@ -628,4 +628,27 @@ rustpress backup
 rustpress deploy
 rustpress whoami
 rustpress logout
+```
+
+
+## App Móvil (React Native / Expo)
+
+App admin para Android e iOS en `mobile/`:
+
+```bash
+cd mobile
+npm install
+npx expo start
+```
+
+**Pantallas:**
+- Login con URL configurable del servidor
+- Dashboard — KPIs en tiempo real (posts, pedidos, ingresos, uptime)
+- Posts — lista y eliminar
+- Orders — pedidos con estado y totales
+
+**Build para producción:**
+```bash
+eas build --platform android  # APK/AAB
+eas build --platform ios      # IPA
 ```
