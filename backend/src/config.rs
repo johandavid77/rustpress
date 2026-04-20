@@ -10,6 +10,12 @@ pub struct AppConfig {
     pub jwt_expiry_hours: u64,
     pub upload_dir:      String,
     pub max_upload_mb:   u64,
+    pub s3_bucket:      Option<String>,
+    pub s3_region:      Option<String>,
+    pub s3_endpoint:    Option<String>,
+    pub s3_access_key:  Option<String>,
+    pub s3_secret_key:  Option<String>,
+    pub s3_public_url:  Option<String>,
     // 👇 estos van aquí, en el struct
     pub smtp_host:       String,
     pub smtp_port:       u16,
@@ -38,6 +44,12 @@ impl AppConfig {
             smtp_password:    std::env::var("SMTP_PASSWORD").unwrap_or_else(|_| "".into()),
             redis_url:          std::env::var("REDIS_URL").unwrap_or_else(|_| "redis://127.0.0.1:6379".into()),
             backup_dir:         std::env::var("BACKUP_DIR").unwrap_or_else(|_| "./backups".into()),
+            s3_bucket:     std::env::var("S3_BUCKET").ok(),
+            s3_region:     std::env::var("S3_REGION").ok(),
+            s3_endpoint:   std::env::var("S3_ENDPOINT").ok(),
+            s3_access_key: std::env::var("S3_ACCESS_KEY").ok(),
+            s3_secret_key: std::env::var("S3_SECRET_KEY").ok(),
+            s3_public_url: std::env::var("S3_PUBLIC_URL").ok(),
         })
     }
 }

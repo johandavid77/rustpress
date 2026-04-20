@@ -153,3 +153,100 @@ fn optimize_image(filepath: &str) -> Result<u64, Box<dyn std::error::Error>> {
 
     Ok(std::fs::metadata(filepath)?.len())
 }
+
+/// Upload file to S3/R2-compatible storage using presigned PUT
+/// Returns the public URL or None if S3 not configured
+pub async fn upload_to_s3(
+    cfg: &crate::config::AppConfig,
+    data: &[u8],
+    filename: &str,
+    content_type: &str,
+) -> Option<String> {
+    let bucket   = cfg.s3_bucket.as_ref()?;
+    let endpoint = cfg.s3_endpoint.as_ref()?;
+    let access   = cfg.s3_access_key.as_ref()?;
+    let secret   = cfg.s3_secret_key.as_ref()?;
+    let region   = cfg.s3_region.as_deref().unwrap_or("auto");
+
+    // Simple S3 PUT using reqwest with AWS Signature V4
+    // For Cloudflare R2, endpoint = https://<account_id>.r2.cloudflarestorage.com
+    let url = format!("{}/{}/{}", endpoint.trim_end_matches('/'), bucket, filename);
+
+    let client = reqwest::Client::new();
+
+    // Build minimal AWS SigV4 - using x-amz-content-sha256 unsigned for simplicity
+    let now = chrono::Utc::now();
+    let date_str  = now.format("%Y%m%d").to_string();
+    let dt_str    = now.format("%Y%m%dT%H%M%SZ").to_string();
+
+    use hmac::{Hmac, Mac};
+    use sha2::{Digest, Sha256};
+
+    let body_hash = hex::encode(Sha256::digest(data));
+
+    let canonical = format!(
+        "PUT
+/{}/{}
+
+content-type:{}
+host:{}
+x-amz-content-sha256:{}
+x-amz-date:{}
+
+content-type;host;x-amz-content-sha256;x-amz-date
+{}",
+        bucket, filename,
+        content_type,
+        endpoint.replace("https://","").replace("http://",""),
+        body_hash, dt_str, body_hash
+    );
+
+    let string_to_sign = format!(
+        "AWS4-HMAC-SHA256
+{}
+{}/{}/s3/aws4_request
+{}",
+        dt_str, date_str, region,
+        hex::encode(Sha256::digest(canonical.as_bytes()))
+    );
+
+    let sign_key = |key: &[u8], msg: &str| -> Vec<u8> {
+        let mut mac = Hmac::<Sha256>::new_from_slice(key).unwrap();
+        mac.update(msg.as_bytes());
+        mac.finalize().into_bytes().to_vec()
+    };
+
+    let k_date    = sign_key(format!("AWS4{}", secret).as_bytes(), &date_str);
+    let k_region  = sign_key(&k_date, region);
+    let k_service = sign_key(&k_region, "s3");
+    let k_signing = sign_key(&k_service, "aws4_request");
+    let signature = hex::encode({
+        let mut mac = Hmac::<Sha256>::new_from_slice(&k_signing).unwrap();
+        mac.update(string_to_sign.as_bytes());
+        mac.finalize().into_bytes()
+    });
+
+    let auth = format!(
+        "AWS4-HMAC-SHA256 Credential={}/{}/{}/s3/aws4_request, SignedHeaders=content-type;host;x-amz-content-sha256;x-amz-date, Signature={}",
+        access, date_str, region, signature
+    );
+
+    let res = client.put(&url)
+        .header("Authorization", auth)
+        .header("Content-Type", content_type)
+        .header("x-amz-content-sha256", &body_hash)
+        .header("x-amz-date", &dt_str)
+        .body(data.to_vec())
+        .send()
+        .await;
+
+    match res {
+        Ok(r) if r.status().is_success() => {
+            let public_url = cfg.s3_public_url.as_ref()
+                .map(|base| format!("{}/{}", base.trim_end_matches('/'), filename))
+                .unwrap_or(url);
+            Some(public_url)
+        }
+        _ => None,
+    }
+}
