@@ -48,7 +48,8 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <Routes>
+      <Suspense fallback={<div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center"><div className="w-8 h-8 border-2 border-[#7c6aff] border-t-transparent rounded-full animate-spin" /></div>}>
+        <Routes>
         <Route path="/" element={<Navigate to="/blog" />} />
         <Route path="/blog" element={<ThemedBlogIndex />} />
         <Route path='/bookings' element={<Bookings />} />
@@ -72,6 +73,7 @@ export default function App() {
         <Route path="*" element={<Navigate to="/blog" />} />
         <Route path='*' element={<NotFound />} />
         </Routes>
+      </Suspense>
       <WhatsAppFloat />
     </BrowserRouter>
   )
