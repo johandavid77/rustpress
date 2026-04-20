@@ -154,5 +154,120 @@ pub fn configure(cfg: &mut web::ServiceConfig) {
             .route("/campaigns", web::post().to(create_campaign))
             .route("/campaigns/{id}", web::delete().to(delete_campaign))
             .route("/campaigns/{id}/send", web::post().to(send_campaign))
+                .route("/sync/mailchimp",  web::post().to(sync_mailchimp))
+                .route("/sync/brevo",      web::post().to(sync_brevo))
     );
+}
+
+#[derive(serde::Deserialize)]
+pub struct MailchimpSync {
+    pub api_key: String,
+    pub list_id: String,
+}
+
+#[derive(serde::Deserialize)]
+pub struct BrevoSync {
+    pub api_key: String,
+    pub list_id: Option<i64>,
+}
+
+pub async fn sync_mailchimp(
+    pool: web::Data<PgPool>,
+    _auth: AuthUserWithRole,
+    body: web::Json<MailchimpSync>,
+) -> AppResult<HttpResponse> {
+    // Get local subscribers
+    let subs = sqlx::query!(
+        "SELECT email, name FROM newsletter_subscribers WHERE active = true"
+    )
+    .fetch_all(pool.get_ref())
+    .await?;
+
+    let dc = body.api_key.split('-').last().unwrap_or("us1");
+    let url = format!("https://{}.api.mailchimp.com/3.0/lists/{}/members", dc, body.list_id);
+
+    let client = reqwest::Client::new();
+    let mut synced = 0;
+    let mut errors = 0;
+
+    for sub in &subs {
+        let name_parts: Vec<&str> = sub.name.as_deref().unwrap_or("").splitn(2, ' ').collect();
+        let fname = name_parts.first().unwrap_or(&"");
+        let lname = if name_parts.len() > 1 { name_parts[1] } else { "" };
+
+        let payload = serde_json::json!({
+            "email_address": sub.email,
+            "status": "subscribed",
+            "merge_fields": { "FNAME": fname, "LNAME": lname }
+        });
+
+        let res = client.post(&url)
+            .basic_auth("anystring", Some(&body.api_key))
+            .json(&payload)
+            .send()
+            .await;
+
+        match res {
+            Ok(r) if r.status().is_success() || r.status().as_u16() == 400 => synced += 1,
+            _ => errors += 1,
+        }
+    }
+
+    Ok(HttpResponse::Ok().json(serde_json::json!({
+        "synced": synced,
+        "errors": errors,
+        "total": subs.len(),
+        "provider": "mailchimp"
+    })))
+}
+
+pub async fn sync_brevo(
+    pool: web::Data<PgPool>,
+    _auth: AuthUserWithRole,
+    body: web::Json<BrevoSync>,
+) -> AppResult<HttpResponse> {
+    let subs = sqlx::query!(
+        "SELECT email, name FROM newsletter_subscribers WHERE active = true"
+    )
+    .fetch_all(pool.get_ref())
+    .await?;
+
+    let client = reqwest::Client::new();
+    let mut synced = 0;
+    let mut errors = 0;
+
+    for sub in &subs {
+        let name_parts: Vec<&str> = sub.name.as_deref().unwrap_or("").splitn(2, ' ').collect();
+        let fname = name_parts.first().unwrap_or(&"").to_string();
+        let lname = if name_parts.len() > 1 { name_parts[1].to_string() } else { String::new() };
+
+        let mut payload = serde_json::json!({
+            "email": sub.email,
+            "attributes": { "FIRSTNAME": fname, "LASTNAME": lname },
+            "updateEnabled": true
+        });
+
+        if let Some(list_id) = body.list_id {
+            payload["listIds"] = serde_json::json!([list_id]);
+        }
+
+        let res = client.post("https://api.brevo.com/v3/contacts")
+            .header("api-key", &body.api_key)
+            .header("Content-Type", "application/json")
+            .json(&payload)
+            .send()
+            .await;
+
+        match res {
+            Ok(r) if r.status().as_u16() < 400 => synced += 1,
+            _ => errors += 1,
+        }
+    }
+
+    Ok(HttpResponse::Ok().json(serde_json::json!({
+        "synced": synced,
+        "errors": errors,
+        "total": subs.len(),
+        "provider": "brevo"
+    })))
 }

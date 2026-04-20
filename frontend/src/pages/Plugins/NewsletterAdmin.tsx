@@ -6,7 +6,92 @@ import { Mail, Users, Send, Trash2, Plus, Loader2, CheckCircle, FileText } from 
 interface Subscriber { id: string; email: string; name?: string; active: boolean; created_at: string }
 interface Campaign { id: string; subject: string; body: string; status: string; sent_count: number; sent_at?: string; created_at: string }
 
-type Tab = 'subscribers' | 'campaigns' | 'new-campaign'
+type Tab = 'subscribers' | 'campaigns' | 'new-campaign' | 'sync'
+
+
+function SyncPanel() {
+  const [provider, setProvider] = useState<'mailchimp' | 'brevo'>('mailchimp')
+  const [apiKey, setApiKey]     = useState('')
+  const [listId, setListId]     = useState('')
+  const [syncing, setSyncing]   = useState(false)
+  const [result, setResult]     = useState<any>(null)
+
+  const sync = async () => {
+    setSyncing(true); setResult(null)
+    try {
+      const body = provider === 'mailchimp'
+        ? { api_key: apiKey, list_id: listId }
+        : { api_key: apiKey, list_id: listId ? parseInt(listId) : null }
+      const res: any = await apiClient.post('/newsletter/sync/' + provider, body)
+      setResult(res?.data ?? res)
+    } catch(e: any) {
+      setResult({ error: e?.message ?? 'Sync failed' })
+    } finally { setSyncing(false) }
+  }
+
+  const inputCls = "w-full bg-[#1a1a2e] border border-[#2a2a3a] rounded-xl px-4 py-2.5 text-sm text-white placeholder-[#555566] outline-none focus:border-[#7c6aff]"
+
+  return (
+    <div className="max-w-lg space-y-5">
+      <div className="p-4 rounded-2xl border border-[#2a2a3a] bg-[#0e0e1a]">
+        <p className="text-sm font-bold text-white mb-1">Sync subscribers</p>
+        <p className="text-xs text-[#555566]">Export all active subscribers to Mailchimp or Brevo</p>
+      </div>
+
+      <div className="flex gap-2">
+        {(['mailchimp', 'brevo'] as const).map(p => (
+          <button key={p} onClick={() => setProvider(p)}
+            className={"flex-1 py-2.5 rounded-xl border text-sm font-bold transition-all " + (
+              provider === p ? 'bg-[#7c6aff]/10 border-[#7c6aff] text-[#7c6aff]' : 'border-[#2a2a3a] text-[#888899] hover:text-white'
+            )}>
+            {p === 'mailchimp' ? '🐒 Mailchimp' : '📧 Brevo'}
+          </button>
+        ))}
+      </div>
+
+      <div className="space-y-3">
+        <div>
+          <label className="text-xs text-[#555566] uppercase tracking-wider block mb-1.5">
+            {provider === 'mailchimp' ? 'Mailchimp API Key' : 'Brevo API Key'}
+          </label>
+          <input value={apiKey} onChange={e => setApiKey(e.target.value)}
+            className={inputCls}
+            placeholder={provider === 'mailchimp' ? 'xxxxxxxx-us1' : 'xkeysib-...'} />
+          <p className="text-xs text-[#444455] mt-1">
+            {provider === 'mailchimp'
+              ? 'Account → Extras → API keys'
+              : 'SMTP & API → API Keys → Create API key'}
+          </p>
+        </div>
+        <div>
+          <label className="text-xs text-[#555566] uppercase tracking-wider block mb-1.5">
+            {provider === 'mailchimp' ? 'Audience / List ID' : 'List ID (optional)'}
+          </label>
+          <input value={listId} onChange={e => setListId(e.target.value)}
+            className={inputCls}
+            placeholder={provider === 'mailchimp' ? 'abc123def' : '42'} />
+        </div>
+      </div>
+
+      <button onClick={sync} disabled={syncing || !apiKey || (provider === 'mailchimp' && !listId)}
+        className="w-full py-3 rounded-xl bg-[#7c6aff] hover:bg-[#6a58e8] text-white font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-50 transition-all">
+        {syncing ? 'Syncing...' : `Sync to ${provider === 'mailchimp' ? 'Mailchimp' : 'Brevo'}`}
+      </button>
+
+      {result && (
+        <div className={"p-4 rounded-2xl border text-sm " + (result.error ? 'bg-red-500/10 border-red-500/20 text-red-400' : 'bg-green-500/10 border-green-500/20 text-green-400')}>
+          {result.error ? result.error : (
+            <div className="space-y-1">
+              <p className="font-bold">✓ Sync complete</p>
+              <p>Synced: {result.synced} / {result.total}</p>
+              {result.errors > 0 && <p className="text-yellow-400">Errors: {result.errors}</p>}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default function NewsletterAdmin() {
   const { t } = useTranslation()
@@ -175,6 +260,11 @@ export default function NewsletterAdmin() {
       )}
 
       {/* Nueva campaña */}
+      
+      {tab === 'sync' && (
+        <SyncPanel />
+      )}
+
       {tab === 'new-campaign' && (
         <div className="p-6 rounded-2xl border border-[#2a2a3a] bg-[#0e0e1a] flex flex-col gap-4">
           <h2 className="text-sm font-semibold text-[#888899] uppercase tracking-widest">Nueva campaña</h2>
