@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use uuid::Uuid;
 
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, Default)]
 pub struct User {
     pub id:         Uuid,
     pub username:   String,
@@ -15,6 +15,9 @@ pub struct User {
     pub password:   String,
     pub role_id:    Option<Uuid>,
     pub is_active:  bool,
+    #[serde(default)]
+    #[sqlx(default)]
+    pub tenant_id: Option<uuid::Uuid>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
     pub bio:        Option<String>,
@@ -26,7 +29,7 @@ pub struct User {
 }
 
 /// Safe public view (no password)
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct UserPublic {
     pub id:        Uuid,
     pub username:  String,

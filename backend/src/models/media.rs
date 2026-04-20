@@ -14,6 +14,9 @@ pub struct MediaFile {
     pub thumbnail_url: Option<String>,
     pub alt_text:      Option<String>,
     pub uploaded_by:   Option<Uuid>,
+    #[serde(default)]
+    #[sqlx(default)]
+    pub tenant_id: Option<uuid::Uuid>,
     pub created_at:    DateTime<Utc>,
 }
 

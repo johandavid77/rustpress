@@ -36,7 +36,7 @@ async fn list_comments(
     let comments = sqlx::query_as!(
         Comment,
         r#"SELECT c.id, c.post_id, c.author_id, c.content, c.status,
-                  c.created_at, c.updated_at
+                  c.created_at, c.updated_at, c.tenant_id
            FROM comments c
            WHERE c.post_id = $1 AND c.status = 'approved'
            ORDER BY c.created_at ASC
@@ -81,7 +81,7 @@ async fn create_comment(
         Comment,
         r#"INSERT INTO comments (post_id, author_id, content, status)
            VALUES ($1, $2, $3, 'pending')
-           RETURNING *"#,
+           RETURNING id, post_id, author_id, content, status, created_at, updated_at, tenant_id"#,
         *post_id,
         auth.0.sub,
         body.content.trim(),
@@ -101,7 +101,7 @@ async fn approve_comment(
     let comment = sqlx::query_as!(
         Comment,
         r#"UPDATE comments SET status = 'approved', updated_at = NOW()
-           WHERE id = $1 RETURNING *"#,
+           WHERE id = $1 RETURNING id, post_id, author_id, content, status, created_at, updated_at, tenant_id"#,
         *id,
     )
     .fetch_optional(pool.get_ref())
@@ -131,7 +131,7 @@ pub async fn list_all_comments(
 ) -> AppResult<HttpResponse> {
     let comments = sqlx::query_as!(
         Comment,
-        r#"SELECT * FROM comments ORDER BY created_at DESC"#,
+        r#"SELECT id, post_id, author_id, content, status, created_at, updated_at, tenant_id FROM comments ORDER BY created_at DESC"#,
     )
     .fetch_all(pool.get_ref())
     .await?;

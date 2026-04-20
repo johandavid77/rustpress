@@ -33,6 +33,9 @@ pub struct Post {
     pub author_id:    Uuid,
     pub meta:         serde_json::Value,
     pub published_at: Option<DateTime<Utc>>,
+    #[serde(default)]
+    #[sqlx(default)]
+    pub tenant_id: Option<uuid::Uuid>,
     pub created_at:   DateTime<Utc>,
     pub updated_at:      DateTime<Utc>,
     pub seo_title:       Option<String>,

@@ -12,6 +12,9 @@ pub struct PluginRecord {
     pub is_enabled:   bool,
     pub config:       serde_json::Value,
     pub installed_at: DateTime<Utc>,
+    #[serde(default)]
+    #[sqlx(default)]
+    pub tenant_id: Option<uuid::Uuid>,
 }
 
 #[derive(Debug, Deserialize)]
