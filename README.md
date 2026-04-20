@@ -535,7 +535,7 @@ GPL-3.0 © 2026 Johan David — [github.com/johandavid77/rustpress](https://gith
 - [x] Onboarding wizard al primer login (sitio, logo, primer post, primer producto, SMTP)
 - [x] Página 404 personalizable con links sugeridos y buscador
 - [x] Perfil de usuario — cambiar avatar, contraseña y preferencias
-- [ ] Editor de posts mejorado — bloques al estilo Notion
+- [x] Editor de posts mejorado — bloques al estilo Notion
 - [ ] Preview en tiempo real del post mientras se escribe
 - [x] Borrador automático cada 30 segundos en el editor
 
@@ -564,7 +564,7 @@ GPL-3.0 © 2026 Johan David — [github.com/johandavid77/rustpress](https://gith
 
 ### 🟢 v1.8.0 — Multi-tenant y escalabilidad
 - [ ] Soporte multi-idioma en contenido (posts y productos en ES/EN/FR etc.)
-- [ ] Multi-sitio — un backend, varios frontends independientes
+- [x] Multi-sitio — un backend, varios frontends independientes
 - [x] Backup automático programado — cron a S3/R2
 - [x] Monitoreo de uptime con alertas por email/Slack
 
@@ -574,7 +574,7 @@ GPL-3.0 © 2026 Johan David — [github.com/johandavid77/rustpress](https://gith
 - [x] API pública documentada con Swagger/OpenAPI
 - [x] SDK JavaScript para integrar con cualquier frontend
 - [x] CLI tool — rustpress new, rustpress deploy, rustpress backup
-- [ ] App móvil admin (React Native)
+- [x] App móvil admin (React Native)
 
 ### ✅ v1.0.0 — Completado
 - [x] Backend Rust con Actix-Web, SQLx, JWT, bcrypt
