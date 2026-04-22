@@ -360,3 +360,105 @@ pub async fn top_products_sales(
 
     Ok(HttpResponse::Ok().json(serde_json::json!({ "data": data })))
 }
+
+pub fn configure_exports(cfg: &mut web::ServiceConfig) {
+    cfg.service(
+        web::scope("/export")
+            .route("/orders.csv",      web::get().to(export_orders_csv))
+            .route("/posts.csv",       web::get().to(export_posts_csv))
+            .route("/subscribers.csv", web::get().to(export_subscribers_csv))
+            .route("/products.csv",    web::get().to(export_products_csv))
+    );
+}
+
+pub async fn export_orders_csv(
+    pool: web::Data<PgPool>,
+    _auth: AuthUserWithRole,
+) -> AppResult<HttpResponse> {
+    let rows = sqlx::query!(
+        "SELECT id::text, status, total, created_at FROM orders ORDER BY created_at DESC LIMIT 5000"
+    ).fetch_all(pool.get_ref()).await?;
+
+    let mut csv = String::from("id,status,total,created_at\n");
+    for r in &rows {
+        csv.push_str(&format!("{},{},{:.2},{}\n",
+            r.id.as_deref().unwrap_or(""),
+            r.status,
+            r.total,
+            r.created_at.format("%Y-%m-%d %H:%M:%S")));
+    }
+    Ok(HttpResponse::Ok()
+        .content_type("text/csv; charset=utf-8")
+        .insert_header(("Content-Disposition", "attachment; filename=\"orders.csv\""))
+        .body(csv))
+}
+
+pub async fn export_posts_csv(
+    pool: web::Data<PgPool>,
+    _auth: AuthUserWithRole,
+) -> AppResult<HttpResponse> {
+    let rows = sqlx::query!(
+        "SELECT id::text, title, status, views, created_at FROM posts ORDER BY created_at DESC LIMIT 5000"
+    ).fetch_all(pool.get_ref()).await?;
+
+    let mut csv = String::from("id,title,status,views,created_at\n");
+    for r in &rows {
+        let title = r.title.replace('"', "\"\"");
+        let status = r.status.clone();
+        let views = r.views;
+        csv.push_str(&format!("{},\"{}\",{},{},{}\n",
+            r.id.as_deref().unwrap_or(""),
+            title, status, views,
+            r.created_at.format("%Y-%m-%d %H:%M:%S")));
+    }
+    Ok(HttpResponse::Ok()
+        .content_type("text/csv; charset=utf-8")
+        .insert_header(("Content-Disposition", "attachment; filename=\"posts.csv\""))
+        .body(csv))
+}
+
+pub async fn export_subscribers_csv(
+    pool: web::Data<PgPool>,
+    _auth: AuthUserWithRole,
+) -> AppResult<HttpResponse> {
+    let rows = sqlx::query!(
+        "SELECT email, name, active, created_at FROM newsletter_subscribers ORDER BY created_at DESC LIMIT 10000"
+    ).fetch_all(pool.get_ref()).await?;
+
+    let mut csv = String::from("email,name,active,created_at\n");
+    for r in &rows {
+        let name = r.name.as_deref().unwrap_or("").replace('"', "\"\"");
+        csv.push_str(&format!("{},{},{},{}\n",
+            r.email, name, r.active,
+            r.created_at.format("%Y-%m-%d %H:%M:%S")));
+    }
+    Ok(HttpResponse::Ok()
+        .content_type("text/csv; charset=utf-8")
+        .insert_header(("Content-Disposition", "attachment; filename=\"subscribers.csv\""))
+        .body(csv))
+}
+
+pub async fn export_products_csv(
+    pool: web::Data<PgPool>,
+    _auth: AuthUserWithRole,
+) -> AppResult<HttpResponse> {
+    let rows = sqlx::query!(
+        "SELECT id::text, name, price, stock, status, created_at FROM products ORDER BY created_at DESC LIMIT 5000"
+    ).fetch_all(pool.get_ref()).await?;
+
+    let mut csv = String::from("id,name,price,stock,status,created_at\n");
+    for r in &rows {
+        let name = r.name.replace('"', "\"\"");
+        let price = r.price;
+        let stock = r.stock;
+        let status = r.status.clone();
+        csv.push_str(&format!("{},\"{}\",{:.2},{},{},{}\n",
+            r.id.as_deref().unwrap_or(""),
+            name, price, stock, status,
+            r.created_at.format("%Y-%m-%d %H:%M:%S")));
+    }
+    Ok(HttpResponse::Ok()
+        .content_type("text/csv; charset=utf-8")
+        .insert_header(("Content-Disposition", "attachment; filename=\"products.csv\""))
+        .body(csv))
+}
