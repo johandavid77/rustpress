@@ -82,9 +82,12 @@ pub async fn get_tenant(
 
 pub async fn create_tenant(
     pool: web::Data<PgPool>,
-    _auth: AuthUserWithRole,
+    auth: AuthUserWithRole,
     body: web::Json<CreateTenantDto>,
 ) -> AppResult<HttpResponse> {
+    if !auth.has_permission("tenants:write") {
+        return Ok(HttpResponse::Forbidden().json(serde_json::json!({"error":"Forbidden"})));
+    }
     let tenant = sqlx::query_as!(
         Tenant,
         r#"INSERT INTO tenants (name, slug, domain, plan)
@@ -136,8 +139,11 @@ pub async fn update_tenant(
 pub async fn delete_tenant(
     pool: web::Data<PgPool>,
     path: web::Path<Uuid>,
-    _auth: AuthUserWithRole,
+    auth: AuthUserWithRole,
 ) -> AppResult<HttpResponse> {
+    if !auth.has_permission("tenants:write") {
+        return Ok(HttpResponse::Forbidden().json(serde_json::json!({"error":"Forbidden"})));
+    }
     let id = path.into_inner();
     // No permitir borrar el tenant default
     if id.to_string() == "00000000-0000-0000-0000-000000000001" {

@@ -373,8 +373,11 @@ pub fn configure_exports(cfg: &mut web::ServiceConfig) {
 
 pub async fn export_orders_csv(
     pool: web::Data<PgPool>,
-    _auth: AuthUserWithRole,
+    auth: AuthUserWithRole,
 ) -> AppResult<HttpResponse> {
+    if !auth.has_permission("analytics:read") {
+        return Ok(HttpResponse::Forbidden().json(serde_json::json!({"error":"Forbidden"})));
+    }
     let rows = sqlx::query!(
         "SELECT id::text, status, total, created_at FROM orders ORDER BY created_at DESC LIMIT 5000"
     ).fetch_all(pool.get_ref()).await?;
@@ -395,8 +398,11 @@ pub async fn export_orders_csv(
 
 pub async fn export_posts_csv(
     pool: web::Data<PgPool>,
-    _auth: AuthUserWithRole,
+    auth: AuthUserWithRole,
 ) -> AppResult<HttpResponse> {
+    if !auth.has_permission("analytics:read") {
+        return Ok(HttpResponse::Forbidden().json(serde_json::json!({"error":"Forbidden"})));
+    }
     let rows = sqlx::query!(
         "SELECT id::text, title, status, views, created_at FROM posts ORDER BY created_at DESC LIMIT 5000"
     ).fetch_all(pool.get_ref()).await?;
@@ -419,8 +425,11 @@ pub async fn export_posts_csv(
 
 pub async fn export_subscribers_csv(
     pool: web::Data<PgPool>,
-    _auth: AuthUserWithRole,
+    auth: AuthUserWithRole,
 ) -> AppResult<HttpResponse> {
+    if !auth.has_permission("analytics:read") {
+        return Ok(HttpResponse::Forbidden().json(serde_json::json!({"error":"Forbidden"})));
+    }
     let rows = sqlx::query!(
         "SELECT email, name, active, created_at FROM newsletter_subscribers ORDER BY created_at DESC LIMIT 10000"
     ).fetch_all(pool.get_ref()).await?;
@@ -440,8 +449,11 @@ pub async fn export_subscribers_csv(
 
 pub async fn export_products_csv(
     pool: web::Data<PgPool>,
-    _auth: AuthUserWithRole,
+    auth: AuthUserWithRole,
 ) -> AppResult<HttpResponse> {
+    if !auth.has_permission("analytics:read") {
+        return Ok(HttpResponse::Forbidden().json(serde_json::json!({"error":"Forbidden"})));
+    }
     let rows = sqlx::query!(
         "SELECT id::text, name, price, stock, status, created_at FROM products ORDER BY created_at DESC LIMIT 5000"
     ).fetch_all(pool.get_ref()).await?;
