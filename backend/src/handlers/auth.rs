@@ -19,6 +19,7 @@ pub fn configure(cfg: &mut web::ServiceConfig) {
             .route("/me",       web::get().to(me))
 	    .route("/forgot-password", web::post().to(forgot_password))
 	    .route("/reset-password",  web::post().to(reset_password))
+                .route("/change-password", web::post().to(change_password))
     );
 }
 
@@ -96,7 +97,7 @@ async fn login(
 ) -> AppResult<HttpResponse> {
     let user: User = sqlx::query_as!(
         User,
-        "SELECT id, username, email, password, role_id, is_active, created_at, updated_at, bio, avatar, website, twitter, github, public, tenant_id FROM users WHERE email = $1 AND is_active = true",
+        "SELECT id, username, email, password, role_id, is_active, created_at, updated_at, bio, avatar, website, twitter, github, public, tenant_id, password_changed_at FROM users WHERE email = $1 AND is_active = true",
         body.email
     )
     .fetch_optional(pool.get_ref())
@@ -136,7 +137,7 @@ async fn login(
 async fn me(auth: AuthUser, pool: Data<PgPool>) -> AppResult<HttpResponse> {
     let user: User = sqlx::query_as!(
         User,
-        "SELECT id, username, email, password, role_id, is_active, created_at, updated_at, bio, avatar, website, twitter, github, public, tenant_id FROM users WHERE id = $1",
+        "SELECT id, username, email, password, role_id, is_active, created_at, updated_at, bio, avatar, website, twitter, github, public, tenant_id, password_changed_at FROM users WHERE id = $1",
         auth.0.sub
     )
     .fetch_optional(pool.get_ref())
@@ -165,7 +166,7 @@ async fn forgot_password(
 ) -> AppResult<HttpResponse> {
     // Busca el usuario (si no existe respondemos igual para no revelar emails)
     let user = sqlx::query!(
-        "SELECT id, username, email, password, role_id, is_active, created_at, updated_at, bio, avatar, website, twitter, github, public, tenant_id FROM users WHERE email = $1 AND is_active = true",
+        "SELECT id, username, email, password, role_id, is_active, created_at, updated_at, bio, avatar, website, twitter, github, public, tenant_id, password_changed_at FROM users WHERE email = $1 AND is_active = true",
         body.email
     )
     .fetch_optional(pool.get_ref())
@@ -236,4 +237,46 @@ async fn reset_password(
     Ok(HttpResponse::Ok().json(serde_json::json!({
         "message": "Contraseña actualizada exitosamente"
     })))
+}
+
+#[derive(serde::Deserialize)]
+pub struct ChangePasswordDto {
+    pub current_password: String,
+    pub new_password:     String,
+}
+
+async fn change_password(
+    pool:  web::Data<sqlx::PgPool>,
+    auth:  crate::middleware::auth::AuthUser,
+    body:  web::Json<ChangePasswordDto>,
+) -> crate::errors::AppResult<actix_web::HttpResponse> {
+    use crate::services::auth_service::AuthService;
+
+    let user = sqlx::query!(
+        "SELECT id, password FROM users WHERE id = $1",
+        auth.0.sub
+    )
+    .fetch_optional(pool.get_ref())
+    .await?
+    .ok_or_else(|| crate::errors::AppError::NotFound("User not found".into()))?;
+
+    if !AuthService::verify_password(&body.current_password, &user.password)? {
+        return Ok(actix_web::HttpResponse::BadRequest()
+            .json(serde_json::json!({"error": "Current password is incorrect"})));
+    }
+
+    if body.new_password.len() < 8 {
+        return Ok(actix_web::HttpResponse::BadRequest()
+            .json(serde_json::json!({"error": "Password must be at least 8 characters"})));
+    }
+
+    let hashed = AuthService::hash_password(&body.new_password)?;
+    sqlx::query!(
+        "UPDATE users SET password = $1, password_changed_at = NOW(), updated_at = NOW() WHERE id = $2",
+        hashed, auth.0.sub
+    )
+    .execute(pool.get_ref())
+    .await?;
+
+    Ok(actix_web::HttpResponse::Ok().json(serde_json::json!({"ok": true, "message": "Password changed successfully"})))
 }

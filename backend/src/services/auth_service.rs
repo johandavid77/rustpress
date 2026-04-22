@@ -12,6 +12,8 @@ pub struct Claims {
     pub role_id: Option<Uuid>,
     pub exp:     i64,
     pub iat:     i64,
+    #[serde(default)]
+    pub pwd_iat:  i64,
 }
 
 pub struct AuthService;
@@ -41,6 +43,7 @@ impl AuthService {
             role_id,
             iat:     now.timestamp(),
             exp:     (now + Duration::hours(expiry_hours as i64)).timestamp(),
+                pwd_iat: 0, // set by caller if needed
         };
         encode(
             &Header::default(),

@@ -26,6 +26,9 @@ pub struct User {
     pub twitter:    Option<String>,
     pub github:     Option<String>,
     pub public:     bool,
+    #[serde(default)]
+    #[sqlx(default)]
+    pub password_changed_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 /// Safe public view (no password)
