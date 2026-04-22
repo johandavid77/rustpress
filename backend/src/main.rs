@@ -176,6 +176,7 @@ async fn main() -> anyhow::Result<()> {
                 .configure(handlers::tenants::configure)
                 .configure(handlers::notifications::configure_alerts)
                 .configure(handlers::analytics::configure_exports)
+                .configure(handlers::analytics::configure_traffic)
                     .configure(handlers::sliders::configure)
                     .configure(handlers::menus::configure)
                     .configure(handlers::comments::configure)

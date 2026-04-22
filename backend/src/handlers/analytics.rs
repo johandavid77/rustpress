@@ -462,3 +462,83 @@ pub async fn export_products_csv(
         .insert_header(("Content-Disposition", "attachment; filename=\"products.csv\""))
         .body(csv))
 }
+
+
+
+pub fn configure_traffic(cfg: &mut web::ServiceConfig) {
+    cfg.service(
+        web::scope("/traffic")
+            .route("/sources", web::get().to(traffic_sources))
+            .route("/utm",     web::get().to(utm_stats))
+    );
+}
+
+async fn traffic_sources(
+    pool:  web::Data<sqlx::PgPool>,
+    _auth: AuthUserWithRole,
+    query: web::Query<std::collections::HashMap<String, String>>,
+) -> AppResult<HttpResponse> {
+    let days = query.get("days").and_then(|d| d.parse::<i32>().ok()).unwrap_or(30);
+
+    let rows = sqlx::query!(
+        r#"SELECT
+            CASE
+                WHEN referrer IS NULL OR referrer = '' THEN 'Direct'
+                WHEN referrer LIKE '%google%'   THEN 'Google'
+                WHEN referrer LIKE '%facebook%' THEN 'Facebook'
+                WHEN referrer LIKE '%twitter%' OR referrer LIKE '%t.co%' THEN 'Twitter/X'
+                WHEN referrer LIKE '%instagram%' THEN 'Instagram'
+                WHEN referrer LIKE '%youtube%'  THEN 'YouTube'
+                WHEN referrer LIKE '%linkedin%' THEN 'LinkedIn'
+                ELSE 'Other'
+            END as "source!: String",
+            COUNT(DISTINCT session_id)::int as "sessions!: i32",
+            COUNT(*)::int as "pageviews!: i32"
+           FROM analytics_events
+           WHERE created_at >= NOW() - ($1 || ' days')::interval
+           GROUP BY 1
+           ORDER BY 2 DESC
+           LIMIT 20"#,
+        days.to_string()
+    )
+    .fetch_all(pool.get_ref())
+    .await?;
+
+    let data: Vec<serde_json::Value> = rows.iter().map(|r| serde_json::json!({
+        "source":    r.source,
+        "sessions":  r.sessions,
+        "pageviews": r.pageviews,
+    })).collect();
+
+    Ok(HttpResponse::Ok().json(serde_json::json!({ "data": data })))
+}
+
+async fn utm_stats(
+    pool:  web::Data<sqlx::PgPool>,
+    _auth: AuthUserWithRole,
+    query: web::Query<std::collections::HashMap<String, String>>,
+) -> AppResult<HttpResponse> {
+    let days = query.get("days").and_then(|d| d.parse::<i32>().ok()).unwrap_or(30);
+
+    let rows = sqlx::query!(
+        r#"SELECT
+            COALESCE(referrer, '') as "referrer!: String",
+            COUNT(DISTINCT session_id)::int as "sessions!: i32"
+           FROM analytics_events
+           WHERE created_at >= NOW() - ($1 || ' days')::interval
+             AND referrer IS NOT NULL AND referrer != ''
+           GROUP BY referrer
+           ORDER BY 2 DESC
+           LIMIT 20"#,
+        days.to_string()
+    )
+    .fetch_all(pool.get_ref())
+    .await?;
+
+    let data: Vec<serde_json::Value> = rows.iter().map(|r| serde_json::json!({
+        "referrer":  r.referrer,
+        "sessions":  r.sessions,
+    })).collect();
+
+    Ok(HttpResponse::Ok().json(serde_json::json!({ "data": data })))
+}

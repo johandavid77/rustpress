@@ -10,6 +10,76 @@ const PURPLE = '#7c6aff'
 const GREEN  = '#22c55e'
 const ORANGE = '#f59e0b'
 
+
+function TrafficPanel({ days }: { days: number }) {
+  const [sources,  setSources]  = useState<any[]>([])
+  const [referrers,setReferrers]= useState<any[]>([])
+  const [loading,  setLoading]  = useState(true)
+
+  useEffect(() => {
+    setLoading(true)
+    Promise.all([
+      apiClient.get(`/traffic/sources?days=${days}`),
+      apiClient.get(`/traffic/utm?days=${days}`),
+    ]).then(([s, r]: any[]) => {
+      setSources(Array.isArray(s?.data) ? s.data : [])
+      setReferrers(Array.isArray(r?.data) ? r.data : [])
+    }).catch(() => {}).finally(() => setLoading(false))
+  }, [days])
+
+  const max = Math.max(...sources.map((s: any) => s.sessions), 1)
+
+  const SOURCE_COLORS: Record<string, string> = {
+    'Direct': '#7c6aff', 'Google': '#4ade80', 'Facebook': '#60a5fa',
+    'Twitter/X': '#38bdf8', 'Instagram': '#f472b6', 'YouTube': '#f87171',
+    'LinkedIn': '#fb923c', 'Other': '#888899',
+  }
+
+  if (loading) return <div className="py-20 text-center text-[#555566]">Loading traffic data...</div>
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="rounded-2xl border border-[#2a2a3a] bg-[#0e0e1a] p-5">
+        <h3 className="text-sm font-bold text-white mb-4">Traffic Sources</h3>
+        {sources.length === 0 ? (
+          <p className="text-sm text-[#555566]">No traffic data yet</p>
+        ) : (
+          <div className="space-y-3">
+            {sources.map((s: any) => (
+              <div key={s.source}>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm text-white">{s.source}</span>
+                  <span className="text-xs text-[#555566]">{s.sessions} sessions</span>
+                </div>
+                <div className="h-2 rounded-full bg-[#1a1a2e] overflow-hidden">
+                  <div className="h-full rounded-full transition-all"
+                    style={{ width: `${(s.sessions / max) * 100}%`, backgroundColor: SOURCE_COLORS[s.source] ?? '#7c6aff' }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="rounded-2xl border border-[#2a2a3a] bg-[#0e0e1a] p-5">
+        <h3 className="text-sm font-bold text-white mb-4">Top Referrers</h3>
+        {referrers.length === 0 ? (
+          <p className="text-sm text-[#555566]">No referrer data yet</p>
+        ) : (
+          <div className="space-y-2">
+            {referrers.slice(0,10).map((r: any, i: number) => (
+              <div key={i} className="flex items-center justify-between p-2 rounded-xl hover:bg-[#1a1a2e] transition-colors">
+                <p className="text-xs text-[#888899] truncate max-w-[200px]">{r.referrer}</p>
+                <span className="text-xs font-bold text-white shrink-0 ml-2">{r.sessions}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 export default function Analytics() {
   const [days, setDays]         = useState(30)
   const [dash, setDash]         = useState<any>(null)
@@ -17,9 +87,10 @@ export default function Analytics() {
   const [topSales, setTopSales]   = useState<any[]>([])
   const [topPosts, setTopPosts] = useState<any[]>([])
   const [topProds, setTopProds] = useState<any[]>([])
+  const [traffic, setTraffic]  = useState<any[]>([])
   const [funnel, setFunnel]     = useState<any[]>([])
   const [realtime, setRealtime] = useState<any>(null)
-  const [tab, setTab]           = useState<'overview'|'content'|'shop'|'realtime'>('overview')
+  const [tab, setTab]           = useState<'overview'|'content'|'shop'|'realtime'|'traffic'>('overview')
 
   useEffect(() => { loadAll() }, [days])
   useEffect(() => {
@@ -36,11 +107,13 @@ export default function Analytics() {
         apiClient.get(`/analytics/top-posts?days=${days}`),
         apiClient.get(`/analytics/top-products?days=${days}`),
         apiClient.get(`/analytics/funnel?days=${days}`),
+      apiClient.get(`/traffic/sources?days=${days}`),
       ])
       setDash(d)
       setTopPosts(Array.isArray(tp) ? tp : [])
       setTopProds(Array.isArray(tpr) ? tpr : [])
       setFunnel(Array.isArray((f as any)?.funnel) ? (f as any).funnel : [])
+      // traffic handled separately
     } catch(e) { console.error(e) }
   }
 
