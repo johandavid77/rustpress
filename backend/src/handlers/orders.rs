@@ -26,6 +26,7 @@ pub fn configure(cfg: &mut web::ServiceConfig) {
             .route("",        web::post().to(create_order))
             .route("/{id}",   web::get().to(get_order))
             .route("/{id}/status", web::put().to(update_status))
+                .route("/my",        web::get().to(my_orders))
     );
 }
 
@@ -231,4 +232,32 @@ async fn update_status(
         body.status, *id
     ).execute(pool.get_ref()).await?;
     Ok(HttpResponse::Ok().json(serde_json::json!({"ok": true})))
+}
+
+async fn my_orders(
+    pool: web::Data<sqlx::PgPool>,
+    auth: crate::middleware::auth::AuthUserWithRole,
+) -> crate::errors::AppResult<actix_web::HttpResponse> {
+    let rows = sqlx::query!(
+        r#"SELECT id::text, status, subtotal, discount, total,
+                  shipping_addr, notes, created_at
+           FROM orders WHERE user_id = $1
+           ORDER BY created_at DESC LIMIT 50"#,
+        auth.user_id
+    )
+    .fetch_all(pool.get_ref())
+    .await?;
+
+    let orders: Vec<serde_json::Value> = rows.iter().map(|r| serde_json::json!({
+        "id":           r.id,
+        "status":       r.status,
+        "subtotal":     r.subtotal,
+        "discount":     r.discount,
+        "total":        r.total,
+        "shipping_addr":r.shipping_addr,
+        "notes":        r.notes,
+        "created_at":   r.created_at.format("%Y-%m-%d %H:%M:%S").to_string(),
+    })).collect();
+
+    Ok(actix_web::HttpResponse::Ok().json(serde_json::json!({ "data": orders })))
 }
