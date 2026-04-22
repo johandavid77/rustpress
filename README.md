@@ -525,11 +525,11 @@ GPL-3.0 © 2026 Johan David — [github.com/johandavid77/rustpress](https://gith
 - [x] UI pública de reseñas — formulario desde página de producto
 - [x] Filtros avanzados en tienda — rango de precio, ordenar por precio/popularidad/nuevo
 - [x] Filtro por categoría desde URL (/shop?category=ropa)
-- [ ] Página de producto mejorada — galería, zoom, variantes con selector visual
+- [x] Página de producto mejorada — galería, zoom, variantes con selector visual
 - [x] Wishlist / Lista de deseos
 - [x] Historial de pedidos para el cliente desde su perfil
 - [x] Email de confirmación de pedido automático
-- [ ] Stock en tiempo real sin recargar
+- [x] Stock en tiempo real sin recargar
 
 ### 🟡 v1.4.0 — Experiencia de usuario
 - [x] Onboarding wizard al primer login (sitio, logo, primer post, primer producto, SMTP)
@@ -549,8 +549,8 @@ GPL-3.0 © 2026 Johan David — [github.com/johandavid77/rustpress](https://gith
 ### 🟢 v1.6.0 — Analytics avanzados
 - [x] Gráfica de ingresos por mes (últimos 12 meses)
 - [x] Productos más vendidos con cantidad e ingresos
-- [ ] Tasa de conversión carrito → checkout → pago completado
-- [ ] Origen del tráfico (referrer, UTM params)
+- [x] Tasa de conversión carrito → checkout → pago completado
+- [x] Origen del tráfico (referrer, UTM params)
 - [x] Exportar estadísticas a CSV
 - [x] Alertas configurables por email (ventas, stock bajo)
 
