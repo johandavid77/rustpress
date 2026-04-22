@@ -518,8 +518,8 @@ GPL-3.0 © 2026 Johan David — [github.com/johandavid77/rustpress](https://gith
 - [x] Middleware de permisos en frontend — rutas del admin protegidas por rol (Editor, Moderador, Admin)
 - [x] Ocultar secciones del sidebar según rol del usuario logueado
 - [ ] Proteger endpoints del backend con has_permission() por recurso
-- [ ] Log de actividad: registrar automáticamente create/update/delete en posts, productos y usuarios
-- [ ] Sesiones: invalidar JWT al cambiar contraseña
+- [x] Log de actividad: registrar automáticamente create/update/delete en posts, productos y usuarios
+- [x] Sesiones: invalidar JWT al cambiar contraseña
 
 ### 🟡 v1.3.0 — Tienda mejorada
 - [x] UI pública de reseñas — formulario desde página de producto
@@ -527,8 +527,8 @@ GPL-3.0 © 2026 Johan David — [github.com/johandavid77/rustpress](https://gith
 - [x] Filtro por categoría desde URL (/shop?category=ropa)
 - [ ] Página de producto mejorada — galería, zoom, variantes con selector visual
 - [x] Wishlist / Lista de deseos
-- [ ] Historial de pedidos para el cliente desde su perfil
-- [ ] Email de confirmación de pedido automático
+- [x] Historial de pedidos para el cliente desde su perfil
+- [x] Email de confirmación de pedido automático
 - [ ] Stock en tiempo real sin recargar
 
 ### 🟡 v1.4.0 — Experiencia de usuario
@@ -551,7 +551,7 @@ GPL-3.0 © 2026 Johan David — [github.com/johandavid77/rustpress](https://gith
 - [x] Productos más vendidos con cantidad e ingresos
 - [ ] Tasa de conversión carrito → checkout → pago completado
 - [ ] Origen del tráfico (referrer, UTM params)
-- [ ] Exportar estadísticas a CSV
+- [x] Exportar estadísticas a CSV
 - [x] Alertas configurables por email (ventas, stock bajo)
 
 ### 🟢 v1.7.0 — Integraciones externas
