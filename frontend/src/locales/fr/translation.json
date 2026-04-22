@@ -1,0 +1,107 @@
+{
+  "common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "create": "Créer",
+    "search": "Rechercher",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "confirm": "Confirmer",
+    "back": "Retour",
+    "close": "Fermer",
+    "yes": "Oui",
+    "no": "Non",
+    "actions": "Actions",
+    "status": "Statut",
+    "date": "Date",
+    "name": "Nom",
+    "email": "Email"
+  },
+  "nav": {
+    "home": "Accueil",
+    "posts": "Articles",
+    "media": "Médias",
+    "users": "Utilisateurs",
+    "plugins": "Plugins",
+    "themes": "Thèmes",
+    "settings": "Paramètres",
+    "shop": "Boutique",
+    "analytics": "Analytiques",
+    "dashboard": "Tableau de bord",
+    "logout": "Déconnexion"
+  },
+  "auth": {
+    "login": "Connexion",
+    "logout": "Déconnexion",
+    "email": "Email",
+    "password": "Mot de passe",
+    "sign_in": "Se connecter",
+    "forgot_password": "Mot de passe oublié?",
+    "reset_password": "Réinitialiser",
+    "welcome_back": "Bon retour!"
+  },
+  "overview": {
+    "title": "Tableau de bord",
+    "total_posts": "Total articles",
+    "total_users": "Total utilisateurs",
+    "total_orders": "Total commandes",
+    "revenue": "Revenus",
+    "recent_orders": "Commandes récentes",
+    "welcome": "Bienvenue"
+  },
+  "posts": {
+    "title": "Articles",
+    "new_post": "Nouvel article",
+    "edit_post": "Modifier",
+    "publish": "Publier",
+    "draft": "Brouillon",
+    "published": "Publié",
+    "author": "Auteur",
+    "category": "Catégorie",
+    "tags": "Tags",
+    "content": "Contenu"
+  },
+  "plugins": {
+    "title": "Plugins",
+    "installed": "Installés",
+    "available": "Disponibles",
+    "activate": "Activer",
+    "deactivate": "Désactiver"
+  },
+  "shop": {
+    "title": "Boutique",
+    "products": "Produits",
+    "orders": "Commandes",
+    "customers": "Clients",
+    "revenue": "Revenus",
+    "add_product": "Ajouter un produit",
+    "price": "Prix",
+    "stock": "Stock",
+    "in_stock": "En stock",
+    "out_of_stock": "Rupture de stock"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "general": "Général",
+    "appearance": "Apparence",
+    "security": "Sécurité",
+    "site_name": "Nom du site",
+    "language": "Langue",
+    "save_changes": "Enregistrer"
+  },
+  "maintenance": {
+    "title": "Maintenance",
+    "enable": "Activer",
+    "disable": "Désactiver",
+    "message": "Message"
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "welcome": "Bienvenue",
+    "quick_actions": "Actions rapides",
+    "recent_activity": "Activité récente"
+  }
+}

@@ -4,6 +4,7 @@ import { Globe } from 'lucide-react'
 const LANGUAGES = [
   { code: 'es', label: 'Español', flag: '🇪🇸' },
   { code: 'en', label: 'English', flag: '🇺🇸' },
+  { code: 'fr', label: 'Français', flag: '🇫🇷' },
 ]
 
 export default function LanguageSelector() {
