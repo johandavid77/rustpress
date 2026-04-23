@@ -656,9 +656,9 @@ eas build --platform ios      # IPA
 ## Pendientes v2.1
 
 ### Actualizaciones de dependencias
-- [ ] Actualizar actix-web 4.x → 4.13.0
-- [ ] Actualizar sqlx 0.7.x → 0.8.6
-- [ ] Actualizar dependencias frontend (Vite, React, TipTap, Recharts)
+- [x] Actualizar actix-web 4.x → 4.13.0
+- [x] Actualizar sqlx 0.7.x → 0.8.6
+- [x] Actualizar dependencias frontend (Vite, React, TipTap, Recharts)
 
 ### API & Documentación
 - [ ] OpenAPI/Swagger auto-generado con utoipa
