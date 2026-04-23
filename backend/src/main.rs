@@ -1,6 +1,9 @@
 use actix_cors::Cors;
 use actix_governor::{Governor, GovernorConfigBuilder};
 use actix_files::Files;
+use handlers::ws::WsClients;
+use std::sync::{Arc, Mutex};
+use std::collections::HashMap;
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -40,6 +43,7 @@ async fn main() -> anyhow::Result<()> {
     let cfg: AppConfig = AppConfig::from_env()?;
     info!("🚀 RustCMS starting on {}:{}", cfg.host, cfg.port);
 
+    let ws_clients: web::Data<WsClients> = web::Data::new(Arc::new(Mutex::new(HashMap::new())));
     let pool = create_pool(&cfg.database_url).await?;
     sqlx::migrate!("./migrations").run(&pool).await?;
     info!("✅ Database connected & migrations applied");
@@ -127,6 +131,7 @@ async fn main() -> anyhow::Result<()> {
     }
 
     handlers::health::init_start_time();
+    let ws_clients_srv = ws_clients.clone();
     HttpServer::new(move || {
         let cors = Cors::default()
             .allowed_origin(&cfg.frontend_url)
@@ -184,6 +189,7 @@ async fn main() -> anyhow::Result<()> {
                 .configure(handlers::analytics::configure_exports)
                 .configure(handlers::analytics::configure_traffic)
                 .configure(handlers::health::configure)
+                .configure(handlers::ws::configure)
                     .configure(handlers::sliders::configure)
                     .configure(handlers::menus::configure)
                     .configure(handlers::comments::configure)

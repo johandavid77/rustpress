@@ -33,3 +33,4 @@ pub mod maintenance;
 pub mod activity;
 pub mod tenants;
 pub mod health;
+pub mod ws;
