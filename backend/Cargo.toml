@@ -15,7 +15,7 @@ path = "src/lib.rs"
 tokio-stream = "0.1"
 async-stream = "0.3"
 # Web framework
-actix-web       = "4"
+actix-web = "4.13"
 actix-multipart = "0.6"
 actix-files = "0.6"
 actix-cors      = "0.7"
@@ -24,7 +24,7 @@ actix-cors      = "0.7"
 tokio           = { version = "1", features = ["full"] }
 
 # Database
-sqlx = { version = "0.7", features = [
+sqlx = { version = "0.8", features = [
     "postgres",
     "runtime-tokio-rustls",
     "uuid",
