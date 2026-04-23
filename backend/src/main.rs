@@ -1,6 +1,7 @@
 use actix_cors::Cors;
 use actix_governor::{Governor, GovernorConfigBuilder};
 use actix_files::Files;
+use handlers::graphql::{create_schema, AppSchema};
 use handlers::ws::WsClients;
 use std::sync::{Arc, Mutex};
 use std::collections::HashMap;
@@ -46,6 +47,7 @@ async fn main() -> anyhow::Result<()> {
     let ws_clients: web::Data<WsClients> = web::Data::new(Arc::new(Mutex::new(HashMap::new())));
     let pool = create_pool(&cfg.database_url).await?;
     sqlx::migrate!("./migrations").run(&pool).await?;
+    let gql_schema = web::Data::new(create_schema(pool.clone()));
     info!("✅ Database connected & migrations applied");
 
     let plugin_registry: PluginRegistry = PluginRegistry::new();
@@ -167,6 +169,7 @@ async fn main() -> anyhow::Result<()> {
                         .configure(handlers::backup::configure)
                         .configure(handlers::updates::configure)
                         .configure(handlers::search::configure)
+                .configure(handlers::graphql::configure)
                         .configure(handlers::notifications::configure)
                         .configure(handlers::redirects::configure)
                         .configure(handlers::newsletter::configure)

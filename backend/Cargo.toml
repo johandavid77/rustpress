@@ -33,6 +33,10 @@ sqlx = { version = "0.8", features = [
     "json"
 ]}
 
+# GraphQL
+async-graphql = { version = "7", features = ["chrono", "uuid"] }
+async-graphql-actix-web = "7"
+
 # OpenAPI
 utoipa = { version = "4", features = ["actix_extras", "chrono", "uuid"] }
 utoipa-swagger-ui = { version = "7", features = ["actix-web"] }
