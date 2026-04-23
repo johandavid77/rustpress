@@ -662,7 +662,7 @@ eas build --platform ios      # IPA
 
 ### API & Documentación
 - [x] OpenAPI/Swagger auto-generado con utoipa
-- [ ] GraphQL endpoint con async-graphql
+- [x] GraphQL endpoint con async-graphql
 
 ### Tiempo real
 - [x] WebSockets nativos para notificaciones dashboard en tiempo real
