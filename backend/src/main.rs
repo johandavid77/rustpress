@@ -3,6 +3,9 @@ use actix_governor::{Governor, GovernorConfigBuilder};
 use actix_files::Files;
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
+use std::time::{SystemTime, UNIX_EPOCH};
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::OnceLock;
 use actix_web::{middleware, web, App, HttpServer};
 use tracing::info;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
@@ -123,6 +126,7 @@ async fn main() -> anyhow::Result<()> {
         });
     }
 
+    handlers::health::init_start_time();
     HttpServer::new(move || {
         let cors = Cors::default()
             .allowed_origin(&cfg.frontend_url)
@@ -179,6 +183,7 @@ async fn main() -> anyhow::Result<()> {
                 .configure(handlers::notifications::configure_alerts)
                 .configure(handlers::analytics::configure_exports)
                 .configure(handlers::analytics::configure_traffic)
+                .configure(handlers::health::configure)
                     .configure(handlers::sliders::configure)
                     .configure(handlers::menus::configure)
                     .configure(handlers::comments::configure)
