@@ -665,7 +665,7 @@ eas build --platform ios      # IPA
 - [ ] GraphQL endpoint con async-graphql
 
 ### Tiempo real
-- [ ] WebSockets nativos para notificaciones dashboard en tiempo real
+- [x] WebSockets nativos para notificaciones dashboard en tiempo real
 - [ ] Chat interno entre admins vía WebSocket
 
 ### Base de datos
