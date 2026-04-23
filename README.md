@@ -666,7 +666,7 @@ eas build --platform ios      # IPA
 
 ### Tiempo real
 - [x] WebSockets nativos para notificaciones dashboard en tiempo real
-- [ ] Chat interno entre admins vía WebSocket
+- [x] Chat interno entre admins vía WebSocket
 
 ### Base de datos
 - [x] Aprovechar PostgreSQL full-text search para búsqueda de posts y productos
