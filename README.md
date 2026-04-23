@@ -669,7 +669,7 @@ eas build --platform ios      # IPA
 - [ ] Chat interno entre admins vía WebSocket
 
 ### Base de datos
-- [ ] Aprovechar PostgreSQL full-text search para búsqueda de posts y productos
+- [x] Aprovechar PostgreSQL full-text search para búsqueda de posts y productos
 - [ ] Índices de búsqueda vectorial para recomendaciones de productos
 
 ### DevOps
