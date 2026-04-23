@@ -661,7 +661,7 @@ eas build --platform ios      # IPA
 - [x] Actualizar dependencias frontend (Vite, React, TipTap, Recharts)
 
 ### API & Documentación
-- [ ] OpenAPI/Swagger auto-generado con utoipa
+- [x] OpenAPI/Swagger auto-generado con utoipa
 - [ ] GraphQL endpoint con async-graphql
 
 ### Tiempo real
