@@ -517,7 +517,7 @@ GPL-3.0 © 2026 Johan David — [github.com/johandavid77/rustpress](https://gith
 ### 🟡 v1.2.0 — Seguridad y permisos reales
 - [x] Middleware de permisos en frontend — rutas del admin protegidas por rol (Editor, Moderador, Admin)
 - [x] Ocultar secciones del sidebar según rol del usuario logueado
-- [ ] Proteger endpoints del backend con has_permission() por recurso
+- [x] Proteger endpoints del backend con has_permission() por recurso
 - [x] Log de actividad: registrar automáticamente create/update/delete en posts, productos y usuarios
 - [x] Sesiones: invalidar JWT al cambiar contraseña
 
@@ -558,12 +558,12 @@ GPL-3.0 © 2026 Johan David — [github.com/johandavid77/rustpress](https://gith
 - [x] Plugin Google Analytics / Plausible
 - [x] Plugin Mailchimp / Brevo — sincronizar suscriptores
 - [x] Plugin WhatsApp Business — botón flotante configurable
-- [ ] Plugin Livechat (Tawk.to / Crisp)
+- [x] Plugin Livechat (Tawk.to / Crisp)
 - [x] Login social — Google OAuth y GitHub OAuth
 - [x] Plugin de mapa con ubicación del negocio
 
 ### 🟢 v1.8.0 — Multi-tenant y escalabilidad
-- [ ] Soporte multi-idioma en contenido (posts y productos en ES/EN/FR etc.)
+- [x] Soporte multi-idioma en contenido (posts y productos en ES/EN/FR etc.)
 - [x] Multi-sitio — un backend, varios frontends independientes
 - [x] Backup automático programado — cron a S3/R2
 - [x] Monitoreo de uptime con alertas por email/Slack
