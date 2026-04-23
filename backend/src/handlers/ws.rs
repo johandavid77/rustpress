@@ -47,3 +47,45 @@ async fn ws_handler(
 
     Ok(res)
 }
+
+pub fn configure_chat(cfg: &mut web::ServiceConfig) {
+    cfg.route("/ws/chat", web::get().to(chat_handler));
+}
+
+async fn chat_handler(
+    req: HttpRequest,
+    stream: web::Payload,
+    clients: web::Data<WsClients>,
+    query: web::Query<std::collections::HashMap<String, String>>,
+) -> Result<HttpResponse, actix_web::Error> {
+    let username = query.get("user").cloned().unwrap_or_else(|| "Anonymous".into());
+    let (res, mut session, mut msg_stream) = actix_ws::handle(&req, stream)?;
+
+    let client_id = format!("chat:{}:{}", username, uuid::Uuid::new_v4());
+    clients.lock().unwrap().insert(client_id.clone(), session.clone());
+
+    let clients_clone = clients.clone();
+    actix_web::rt::spawn(async move {
+        use futures_util::StreamExt;
+        while let Some(Ok(msg)) = msg_stream.next().await {
+            match msg {
+                actix_ws::Message::Text(text) => {
+                    let payload = serde_json::json!({
+                        "type": "chat",
+                        "from": username,
+                        "message": text.to_string(),
+                        "timestamp": std::time::SystemTime::now()
+                            .duration_since(std::time::UNIX_EPOCH).unwrap().as_millis() as u64,
+                    }).to_string();
+                    broadcast(&clients_clone, &payload).await;
+                }
+                actix_ws::Message::Ping(b) => { let _ = session.pong(&b).await; }
+                actix_ws::Message::Close(_) => break,
+                _ => {}
+            }
+        }
+        clients_clone.lock().unwrap().remove(&client_id);
+    });
+
+    Ok(res)
+}

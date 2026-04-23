@@ -190,6 +190,7 @@ async fn main() -> anyhow::Result<()> {
                 .configure(handlers::analytics::configure_traffic)
                 .configure(handlers::health::configure)
                 .configure(handlers::ws::configure)
+                .configure(handlers::ws::configure_chat)
                     .configure(handlers::sliders::configure)
                     .configure(handlers::menus::configure)
                     .configure(handlers::comments::configure)
