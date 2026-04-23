@@ -673,5 +673,5 @@ eas build --platform ios      # IPA
 - [ ] Índices de búsqueda vectorial para recomendaciones de productos
 
 ### DevOps
-- [ ] GitHub Actions CI/CD — build + test automático en cada push
-- [ ] Health check endpoint con versión, DB status y uptime
+- [x] GitHub Actions CI/CD — build + test automático en cada push
+- [x] Health check endpoint con versión, DB status y uptime
