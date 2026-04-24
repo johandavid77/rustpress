@@ -33,6 +33,9 @@ sqlx = { version = "0.8", features = [
     "json"
 ]}
 
+# Vector search
+pgvector = { version = "0.4", features = ["sqlx"] }
+
 # GraphQL
 async-graphql = { version = "7", features = ["chrono", "uuid"] }
 async-graphql-actix-web = "7"

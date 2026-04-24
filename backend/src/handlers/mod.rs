@@ -35,3 +35,4 @@ pub mod tenants;
 pub mod health;
 pub mod ws;
 pub mod graphql;
+pub mod vector_search;
