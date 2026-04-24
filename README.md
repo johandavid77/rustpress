@@ -679,7 +679,7 @@ eas build --platform ios      # IPA
 ## Pendientes v2.2
 
 ### Performance & Caché
-- [ ] Redis caché para endpoints de alta demanda (posts, productos, analytics)
+- [x] Redis caché para endpoints de alta demanda (posts, productos, analytics)
 - [ ] Rate limiting por IP y por usuario
 - [ ] Compresión gzip/brotli en respuestas HTTP
 
