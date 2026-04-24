@@ -675,3 +675,30 @@ eas build --platform ios      # IPA
 ### DevOps
 - [x] GitHub Actions CI/CD — build + test automático en cada push
 - [x] Health check endpoint con versión, DB status y uptime
+
+## Pendientes v2.2
+
+### Performance & Caché
+- [ ] Redis caché para endpoints de alta demanda (posts, productos, analytics)
+- [ ] Rate limiting por IP y por usuario
+- [ ] Compresión gzip/brotli en respuestas HTTP
+
+### Seguridad
+- [ ] 2FA (autenticación de dos factores) con TOTP
+- [ ] Audit log inmutable — registro de todas las acciones admin
+- [ ] Content Security Policy headers
+
+### UX Admin
+- [ ] Dashboard con drag & drop para reordenar widgets
+- [ ] Modo oscuro/claro con persistencia
+- [ ] Atajos de teclado globales (Cmd+K command palette)
+
+### E-commerce
+- [ ] Sistema de cupones y descuentos
+- [ ] Carrito abandonado — email de recuperación automático
+- [ ] Reportes de ventas en PDF descargable
+
+### DevOps
+- [ ] Dockerfile optimizado multi-stage para producción
+- [ ] Healthcheck en docker-compose con reinicio automático
+- [ ] Backup automático de DB a S3/R2
