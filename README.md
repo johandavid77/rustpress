@@ -670,7 +670,7 @@ eas build --platform ios      # IPA
 
 ### Base de datos
 - [x] Aprovechar PostgreSQL full-text search para búsqueda de posts y productos
-- [ ] Índices de búsqueda vectorial para recomendaciones de productos
+- [x] Índices de búsqueda vectorial para recomendaciones de productos
 
 ### DevOps
 - [x] GitHub Actions CI/CD — build + test automático en cada push
