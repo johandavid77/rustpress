@@ -1,5 +1,7 @@
 use actix_web::{web, HttpResponse};
 use sqlx::PgPool;
+use crate::cache::{get_cached, set_cached, RedisPool};
+use tokio::sync::Mutex;
 use uuid::Uuid;
 
 use crate::{
@@ -20,7 +22,16 @@ fn slugify(s: &str) -> String {
 }
 
 
-pub async fn get_product_by_slug(pool: web::Data<PgPool>, slug: web::Path<String>) -> AppResult<HttpResponse> {
+pub async fn get_product_by_slug(pool: web::Data<PgPool>, slug: web::Path<String>, redis: web::Data<Mutex<RedisPool>>) -> AppResult<HttpResponse> {
+    let cache_key = format!("products:slug:{}", slug);
+    {
+        let mut r = redis.lock().await;
+        if let Some(cached) = get_cached(&mut r, &cache_key).await {
+            if let Ok(val) = serde_json::from_str::<serde_json::Value>(&cached) {
+                return Ok(HttpResponse::Ok().json(val));
+            }
+        }
+    }
     let slug = slug.into_inner();
     let row = sqlx::query!(
         r#"SELECT id, name, slug, description, price, compare_price, cost_price,
@@ -108,7 +119,17 @@ async fn delete_category(
 
 pub async fn list_products(
     pool: web::Data<PgPool>, query: web::Query<ProductQuery>,
+    redis: web::Data<Mutex<RedisPool>>,
 ) -> AppResult<HttpResponse> {
+    let cache_key = format!("products:list:{}:{}:{}", query.status.as_deref().unwrap_or("active"), query.page.unwrap_or(1), query.per_page.unwrap_or(20));
+    {
+        let mut r = redis.lock().await;
+        if let Some(cached) = get_cached(&mut r, &cache_key).await {
+            if let Ok(val) = serde_json::from_str::<serde_json::Value>(&cached) {
+                return Ok(HttpResponse::Ok().json(val));
+            }
+        }
+    }
     let page     = query.page.unwrap_or(1).max(1);
     let per_page = query.per_page.unwrap_or(20).min(100);
     let offset   = (page - 1) * per_page;
@@ -130,7 +151,12 @@ pub async fn list_products(
         "category_id": p.category_id, "images": p.images,
         "tags": p.tags, "sku": p.sku, "created_at": p.created_at,
     })).collect();
-    Ok(HttpResponse::Ok().json(serde_json::json!({"data": data, "page": page, "per_page": per_page})))
+    let response = serde_json::json!({"data": data, "page": page, "per_page": per_page});
+    if let Ok(serialized) = serde_json::to_string(&response) {
+        let mut r = redis.lock().await;
+        set_cached(&mut r, &cache_key, &serialized, 300).await;
+    }
+    Ok(HttpResponse::Ok().json(response))
 }
 
 pub async fn get_product(pool: web::Data<PgPool>, id: web::Path<Uuid>) -> AppResult<HttpResponse> {
