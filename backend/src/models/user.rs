@@ -29,6 +29,8 @@ pub struct User {
     #[serde(default)]
     #[sqlx(default)]
     pub password_changed_at: Option<chrono::DateTime<chrono::Utc>>,
+    pub totp_enabled: bool,
+    pub totp_secret:  Option<String>,
 }
 
 /// Safe public view (no password)
