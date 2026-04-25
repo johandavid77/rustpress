@@ -686,7 +686,7 @@ eas build --platform ios      # IPA
 ### Seguridad
 - [ ] 2FA (autenticación de dos factores) con TOTP
 - [ ] Audit log inmutable — registro de todas las acciones admin
-- [ ] Content Security Policy headers
+- [x] Content Security Policy headers
 
 ### UX Admin
 - [ ] Dashboard con drag & drop para reordenar widgets
