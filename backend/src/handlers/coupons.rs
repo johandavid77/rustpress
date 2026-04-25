@@ -1,125 +1,113 @@
 use actix_web::{web, HttpResponse};
 use sqlx::PgPool;
 use serde::{Deserialize, Serialize};
-use crate::errors::AppResult;
-use crate::middleware::auth::AuthUserWithRole;
+use crate::middleware::auth::{AuthUserWithRole, AuthUser};
 
-#[derive(Serialize, sqlx::FromRow)]
-pub struct Coupon {
-    pub id: uuid::Uuid,
-    pub code: String,
-    pub r#type: String,
-    pub value: f64,
-    pub min_order: Option<f64>,
-    pub max_uses: Option<i32>,
-    pub uses: i32,
-    pub expires_at: Option<chrono::DateTime<chrono::Utc>>,
-    pub active: bool,
-    pub created_at: chrono::DateTime<chrono::Utc>,
-}
-
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct CreateCoupon {
     pub code: String,
-    pub r#type: String,
-    pub value: f64,
-    pub min_order: Option<f64>,
+    pub discount_type: String,
+    pub discount_value: f64,
+    pub min_order_amount: Option<f64>,
     pub max_uses: Option<i32>,
     pub expires_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 #[derive(Deserialize)]
-pub struct UpdateCoupon {
-    pub value: Option<f64>,
-    pub min_order: Option<f64>,
-    pub max_uses: Option<i32>,
-    pub expires_at: Option<chrono::DateTime<chrono::Utc>>,
-    pub active: Option<bool>,
-}
-
-pub async fn list_coupons(pool: web::Data<PgPool>, _auth: AuthUserWithRole) -> AppResult<HttpResponse> {
-    let rows = sqlx::query_as!(Coupon,
-        r#"SELECT id, code, type as "type", value, min_order, max_uses, uses, expires_at, active, created_at
-           FROM coupons ORDER BY created_at DESC"#
-    ).fetch_all(pool.get_ref()).await?;
-    Ok(HttpResponse::Ok().json(rows))
-}
-
-pub async fn create_coupon(pool: web::Data<PgPool>, _auth: AuthUserWithRole, body: web::Json<CreateCoupon>) -> AppResult<HttpResponse> {
-    let code = body.code.to_uppercase();
-    let row = sqlx::query_as!(Coupon,
-        r#"INSERT INTO coupons (code, type, value, min_order, max_uses, expires_at)
-           VALUES ($1, $2, $3, $4, $5, $6)
-           RETURNING id, code, type as "type", value, min_order, max_uses, uses, expires_at, active, created_at"#,
-        code, body.r#type, body.value, body.min_order, body.max_uses, body.expires_at
-    ).fetch_one(pool.get_ref()).await?;
-    Ok(HttpResponse::Created().json(row))
-}
-
-pub async fn update_coupon(pool: web::Data<PgPool>, _auth: AuthUserWithRole, path: web::Path<uuid::Uuid>, body: web::Json<UpdateCoupon>) -> AppResult<HttpResponse> {
-    let row = sqlx::query_as!(Coupon,
-        r#"UPDATE coupons SET
-            value = COALESCE($1, value),
-            min_order = COALESCE($2, min_order),
-            max_uses = COALESCE($3, max_uses),
-            expires_at = COALESCE($4, expires_at),
-            active = COALESCE($5, active)
-           WHERE id = $6
-           RETURNING id, code, type as "type", value, min_order, max_uses, uses, expires_at, active, created_at"#,
-        body.value, body.min_order, body.max_uses, body.expires_at, body.active, *path
-    ).fetch_one(pool.get_ref()).await?;
-    Ok(HttpResponse::Ok().json(row))
-}
-
-pub async fn delete_coupon(pool: web::Data<PgPool>, _auth: AuthUserWithRole, path: web::Path<uuid::Uuid>) -> AppResult<HttpResponse> {
-    sqlx::query!("DELETE FROM coupons WHERE id = $1", *path).execute(pool.get_ref()).await?;
-    Ok(HttpResponse::Ok().json(serde_json::json!({"ok": true})))
-}
-
-pub async fn toggle_coupon(pool: web::Data<PgPool>, _auth: AuthUserWithRole, path: web::Path<uuid::Uuid>) -> AppResult<HttpResponse> {
-    let row = sqlx::query_as!(Coupon,
-        r#"UPDATE coupons SET active = NOT active WHERE id = $1
-           RETURNING id, code, type as "type", value, min_order, max_uses, uses, expires_at, active, created_at"#,
-        *path
-    ).fetch_one(pool.get_ref()).await?;
-    Ok(HttpResponse::Ok().json(row))
-}
-
-// Publico: validar cupon
-pub async fn validate_coupon(pool: web::Data<PgPool>, path: web::Path<String>) -> AppResult<HttpResponse> {
-    let code = path.to_uppercase();
-    let row = sqlx::query_as!(Coupon,
-        r#"SELECT id, code, type as "type", value, min_order, max_uses, uses, expires_at, active, created_at
-           FROM coupons WHERE code = $1 AND active = true"#,
-        code
-    ).fetch_optional(pool.get_ref()).await?;
-
-    match row {
-        None => Ok(HttpResponse::NotFound().json(serde_json::json!({"error": "Cupon no valido o inactivo"}))),
-        Some(c) => {
-            if let Some(max) = c.max_uses {
-                if c.uses >= max {
-                    return Ok(HttpResponse::BadRequest().json(serde_json::json!({"error": "Cupon agotado"})));
-                }
-            }
-            if let Some(exp) = c.expires_at {
-                if exp < chrono::Utc::now() {
-                    return Ok(HttpResponse::BadRequest().json(serde_json::json!({"error": "Cupon expirado"})));
-                }
-            }
-            Ok(HttpResponse::Ok().json(c))
-        }
-    }
+pub struct ApplyCoupon {
+    pub code: String,
+    pub order_amount: f64,
 }
 
 pub fn configure(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::scope("/coupons")
-            .route("", web::get().to(list_coupons))
-            .route("", web::post().to(create_coupon))
-            .route("/validate/{code}", web::get().to(validate_coupon))
-            .route("/{id}", web::put().to(update_coupon))
-            .route("/{id}", web::delete().to(delete_coupon))
-            .route("/{id}/toggle", web::post().to(toggle_coupon))
+            .route("",       web::get().to(list_coupons))
+            .route("",       web::post().to(create_coupon))
+            .route("/apply", web::post().to(apply_coupon))
+            .route("/{id}",  web::delete().to(delete_coupon))
     );
+}
+
+async fn list_coupons(pool: web::Data<PgPool>, _auth: AuthUserWithRole) -> crate::errors::AppResult<HttpResponse> {
+    let rows = sqlx::query!(
+        "SELECT id::text, code, discount_type, discount_value::float8 as dv,
+                min_order_amount::float8 as moa,
+                max_uses, used_count, expires_at, active, created_at
+         FROM coupons ORDER BY created_at DESC"
+    ).fetch_all(pool.get_ref()).await?;
+
+    let data = rows.iter().map(|r| serde_json::json!({
+        "id": r.id, "code": r.code, "discount_type": r.discount_type,
+        "discount_value": r.dv, "min_order_amount": r.moa,
+        "max_uses": r.max_uses, "used_count": r.used_count,
+        "expires_at": r.expires_at.map(|d| d.format("%Y-%m-%d %H:%M:%S").to_string()),
+        "active": r.active.unwrap_or(true),
+        "created_at": r.created_at.format("%Y-%m-%d").to_string(),
+    })).collect::<Vec<_>>();
+    Ok(HttpResponse::Ok().json(serde_json::json!({"data": data})))
+}
+
+async fn create_coupon(
+    pool: web::Data<PgPool>, _auth: AuthUserWithRole, body: web::Json<CreateCoupon>
+) -> crate::errors::AppResult<HttpResponse> {
+    let id = sqlx::query_scalar!(
+        "INSERT INTO coupons (code, discount_type, discount_value, min_order_amount, max_uses, expires_at)
+         VALUES ($1, $2, $3, $4, $5, $6) RETURNING id::text",
+        body.code.to_uppercase(), body.discount_type, body.discount_value,
+        body.min_order_amount, body.max_uses, body.expires_at
+    ).fetch_one(pool.get_ref()).await?;
+    Ok(HttpResponse::Created().json(serde_json::json!({"id": id, "code": body.code.to_uppercase()})))
+}
+
+async fn apply_coupon(
+    pool: web::Data<PgPool>, _auth: AuthUser, body: web::Json<ApplyCoupon>
+) -> crate::errors::AppResult<HttpResponse> {
+    let c = sqlx::query!(
+        "SELECT discount_type, discount_value::float8 as dv, min_order_amount::float8 as moa,
+                max_uses, used_count, expires_at, active
+         FROM coupons WHERE code = $1",
+        body.code.to_uppercase()
+    ).fetch_optional(pool.get_ref()).await?;
+
+    let c = match c {
+        None => return Ok(HttpResponse::NotFound().json(serde_json::json!({"error": "Cupón no encontrado"}))),
+        Some(c) => c,
+    };
+
+    if !c.active.unwrap_or(false) {
+        return Ok(HttpResponse::BadRequest().json(serde_json::json!({"error": "Cupón inactivo"})));
+    }
+    if let Some(exp) = c.expires_at {
+        if exp < chrono::Utc::now() {
+            return Ok(HttpResponse::BadRequest().json(serde_json::json!({"error": "Cupón expirado"})));
+        }
+    }
+    if let Some(max) = c.max_uses {
+        if c.used_count >= max {
+            return Ok(HttpResponse::BadRequest().json(serde_json::json!({"error": "Cupón agotado"})));
+        }
+    }
+    if body.order_amount < c.moa {
+        return Ok(HttpResponse::BadRequest().json(serde_json::json!({"error": "Monto mínimo no alcanzado"})));
+    }
+
+    let dv = c.dv;
+    let discount = if c.discount_type == "percent" {
+        (body.order_amount * dv) / 100.0
+    } else { dv };
+
+    Ok(HttpResponse::Ok().json(serde_json::json!({
+        "valid": true, "discount": discount,
+        "final_amount": (body.order_amount - discount).max(0.0),
+        "type": c.discount_type,
+    })))
+}
+
+async fn delete_coupon(
+    pool: web::Data<PgPool>, _auth: AuthUserWithRole, id: web::Path<uuid::Uuid>
+) -> crate::errors::AppResult<HttpResponse> {
+    sqlx::query!("UPDATE coupons SET active = FALSE WHERE id = $1", *id)
+        .execute(pool.get_ref()).await?;
+    Ok(HttpResponse::Ok().json(serde_json::json!({"ok": true})))
 }

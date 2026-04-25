@@ -142,9 +142,9 @@ async fn create_order(
     // Aplicar cupón si existe
     if let Some(code) = &body.coupon_code {
         let coupon = sqlx::query!(
-            "SELECT id, type, value, min_order, max_uses, uses
-             FROM coupons WHERE code = $1 AND active = true
-             AND (expires_at IS NULL OR expires_at > NOW())",
+        "SELECT id, discount_type, discount_value::float8 as value, min_order_amount::float8 as min_order, max_uses, used_count as uses
+         FROM coupons WHERE code = $1 AND active = true AND (expires_at IS NULL OR expires_at > NOW())",
+
             code
         ).fetch_optional(pool.get_ref()).await?;
 
@@ -152,12 +152,12 @@ async fn create_order(
             let valid_min = c.min_order.map(|m| subtotal >= m).unwrap_or(true);
             let valid_uses = c.max_uses.map(|m| c.uses < m).unwrap_or(true);
             if valid_min && valid_uses {
-                discount = if c.r#type == "percent" {
-                    subtotal * c.value / 100.0
+                discount = if c.discount_type == "percent" {
+                    subtotal * c.value.unwrap_or(0.0) / 100.0
                 } else {
-                    c.value.min(subtotal)
+                    c.value.unwrap_or(0.0).min(subtotal)
                 };
-                sqlx::query!("UPDATE coupons SET uses = uses + 1 WHERE id = $1", c.id)
+                sqlx::query!("UPDATE coupons SET used_count = used_count + 1 WHERE id = $1", c.id)
                     .execute(pool.get_ref()).await?;
             }
         }
