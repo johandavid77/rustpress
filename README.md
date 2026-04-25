@@ -691,7 +691,7 @@ eas build --platform ios      # IPA
 ### UX Admin
 - [ ] Dashboard con drag & drop para reordenar widgets
 - [ ] Modo oscuro/claro con persistencia
-- [ ] Atajos de teclado globales (Cmd+K command palette)
+- [x] Atajos de teclado globales (Cmd+K command palette)
 
 ### E-commerce
 - [ ] Sistema de cupones y descuentos
