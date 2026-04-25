@@ -145,6 +145,7 @@ async fn main() -> anyhow::Result<()> {
             .max_age(3600);
 
         App::new()
+                .wrap(Governor::new(&governor_conf))
             .wrap(cors)
             .wrap(middleware::Compress::default())
             .wrap(Governor::new(&governor_conf))
