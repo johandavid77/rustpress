@@ -699,6 +699,6 @@ eas build --platform ios      # IPA
 - [ ] Reportes de ventas en PDF descargable
 
 ### DevOps
-- [ ] Dockerfile optimizado multi-stage para producción
+- [x] Dockerfile optimizado multi-stage para producción
 - [ ] Healthcheck en docker-compose con reinicio automático
 - [ ] Backup automático de DB a S3/R2
