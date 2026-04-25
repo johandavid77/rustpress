@@ -700,5 +700,5 @@ eas build --platform ios      # IPA
 
 ### DevOps
 - [x] Dockerfile optimizado multi-stage para producción
-- [ ] Healthcheck en docker-compose con reinicio automático
+- [x] Healthcheck en docker-compose con reinicio automático
 - [ ] Backup automático de DB a S3/R2
