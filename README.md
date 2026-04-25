@@ -681,7 +681,7 @@ eas build --platform ios      # IPA
 ### Performance & Caché
 - [x] Redis caché para endpoints de alta demanda (posts, productos, analytics)
 - [x] Rate limiting por IP y por usuario
-- [ ] Compresión gzip/brotli en respuestas HTTP
+- [x] Compresión gzip/brotli en respuestas HTTP
 
 ### Seguridad
 - [ ] 2FA (autenticación de dos factores) con TOTP
