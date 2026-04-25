@@ -694,7 +694,7 @@ eas build --platform ios      # IPA
 - [x] Atajos de teclado globales (Cmd+K command palette)
 
 ### E-commerce
-- [ ] Sistema de cupones y descuentos
+- [x] Sistema de cupones y descuentos
 - [ ] Carrito abandonado — email de recuperación automático
 - [ ] Reportes de ventas en PDF descargable
 
