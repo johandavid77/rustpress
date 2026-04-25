@@ -684,7 +684,7 @@ eas build --platform ios      # IPA
 - [x] Compresión gzip/brotli en respuestas HTTP
 
 ### Seguridad
-- [ ] 2FA (autenticación de dos factores) con TOTP
+- [x] 2FA (autenticación de dos factores) con TOTP
 - [ ] Audit log inmutable — registro de todas las acciones admin
 - [x] Content Security Policy headers
 
