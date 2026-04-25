@@ -173,6 +173,7 @@ async fn main() -> anyhow::Result<()> {
                 .configure(handlers::graphql::configure)
                 .configure(handlers::vector_search::configure)
                 .configure(handlers::totp::configure)
+                .configure(handlers::audit::configure)
                         .configure(handlers::notifications::configure)
                         .configure(handlers::redirects::configure)
                         .configure(handlers::newsletter::configure)

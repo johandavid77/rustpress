@@ -37,3 +37,4 @@ pub mod ws;
 pub mod graphql;
 pub mod vector_search;
 pub mod totp;
+pub mod audit;
