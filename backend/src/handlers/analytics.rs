@@ -388,7 +388,7 @@ pub async fn export_orders_csv(
             r.id.as_deref().unwrap_or(""),
             r.status,
             r.total,
-            r.created_at.format("%Y-%m-%d %H:%M:%S")));
+            r.created_at.format("%Y-%m-%d %H:%M:%S").to_string()));
     }
     Ok(HttpResponse::Ok()
         .content_type("text/csv; charset=utf-8")
@@ -415,7 +415,7 @@ pub async fn export_posts_csv(
         csv.push_str(&format!("{},\"{}\",{},{},{}\n",
             r.id.as_deref().unwrap_or(""),
             title, status, views,
-            r.created_at.format("%Y-%m-%d %H:%M:%S")));
+            r.created_at.format("%Y-%m-%d %H:%M:%S").to_string()));
     }
     Ok(HttpResponse::Ok()
         .content_type("text/csv; charset=utf-8")
@@ -438,8 +438,8 @@ pub async fn export_subscribers_csv(
     for r in &rows {
         let name = r.name.as_deref().unwrap_or("").replace('"', "\"\"");
         csv.push_str(&format!("{},{},{},{}\n",
-            r.email, name, r.active,
-            r.created_at.format("%Y-%m-%d %H:%M:%S")));
+            r.email, name, r.active.unwrap_or(false),
+            r.created_at.map(|d| d.format("%Y-%m-%d %H:%M:%S").to_string()).unwrap_or_default()));
     }
     Ok(HttpResponse::Ok()
         .content_type("text/csv; charset=utf-8")
@@ -467,7 +467,7 @@ pub async fn export_products_csv(
         csv.push_str(&format!("{},\"{}\",{:.2},{},{},{}\n",
             r.id.as_deref().unwrap_or(""),
             name, price, stock, status,
-            r.created_at.format("%Y-%m-%d %H:%M:%S")));
+            r.created_at.format("%Y-%m-%d %H:%M:%S").to_string()));
     }
     Ok(HttpResponse::Ok()
         .content_type("text/csv; charset=utf-8")

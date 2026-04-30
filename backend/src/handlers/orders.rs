@@ -149,13 +149,13 @@ async fn create_order(
         ).fetch_optional(pool.get_ref()).await?;
 
         if let Some(c) = coupon {
-            let valid_min = c.min_order.map(|m| subtotal >= m).unwrap_or(true);
-            let valid_uses = c.max_uses.map(|m| c.uses < m).unwrap_or(true);
+            let valid_min = subtotal >= c.min_order.unwrap_or(0.0);
+            let valid_uses = c.max_uses.map(|m| c.uses.unwrap_or(0) < m).unwrap_or(true);
             if valid_min && valid_uses {
                 discount = if c.discount_type == "percent" {
-                    subtotal * c.value.unwrap_or(0.0) / 100.0
+                    subtotal * c.value / 100.0
                 } else {
-                    c.value.unwrap_or(0.0).min(subtotal)
+                    c.value.min(subtotal)
                 };
                 sqlx::query!("UPDATE coupons SET used_count = used_count + 1 WHERE id = $1", c.id)
                     .execute(pool.get_ref()).await?;

@@ -42,8 +42,8 @@ async fn list_coupons(pool: web::Data<PgPool>, _auth: AuthUserWithRole) -> crate
         "discount_value": r.dv, "min_order_amount": r.moa,
         "max_uses": r.max_uses, "used_count": r.used_count,
         "expires_at": r.expires_at.map(|d| d.format("%Y-%m-%d %H:%M:%S").to_string()),
-        "active": r.active.unwrap_or(true),
-        "created_at": r.created_at.format("%Y-%m-%d").to_string(),
+        "active": r.active,
+        "created_at": r.created_at.map(|d| d.format("%Y-%m-%d").to_string()).unwrap_or_default(),
     })).collect::<Vec<_>>();
     Ok(HttpResponse::Ok().json(serde_json::json!({"data": data})))
 }
@@ -84,11 +84,11 @@ async fn apply_coupon(
         }
     }
     if let Some(max) = c.max_uses {
-        if c.used_count >= max {
+        if c.used_count.unwrap_or(0) >= max {
             return Ok(HttpResponse::BadRequest().json(serde_json::json!({"error": "Cupón agotado"})));
         }
     }
-    if body.order_amount < c.moa {
+    if body.order_amount < c.moa.unwrap_or(0.0) {
         return Ok(HttpResponse::BadRequest().json(serde_json::json!({"error": "Monto mínimo no alcanzado"})));
     }
 

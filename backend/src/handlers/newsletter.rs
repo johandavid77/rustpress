@@ -11,20 +11,20 @@ pub struct Subscriber {
     pub id: uuid::Uuid,
     pub email: String,
     pub name: Option<String>,
-    pub active: bool,
-    pub confirmed: bool,
-    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub active: Option<bool>,
+    pub confirmed: Option<bool>,
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 #[derive(Serialize, sqlx::FromRow)]
 pub struct Campaign {
     pub id: uuid::Uuid,
     pub subject: String,
-    pub body: String,
+    pub body: Option<String>,
     pub sent_at: Option<chrono::DateTime<chrono::Utc>>,
-    pub sent_count: i32,
-    pub status: String,
-    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub sent_count: Option<i32>,
+    pub status: Option<String>,
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 #[derive(Deserialize)]
@@ -58,7 +58,7 @@ pub async fn list_subscribers(pool: web::Data<PgPool>, _auth: AuthUserWithRole) 
         "SELECT id, email, name, active, confirmed, created_at FROM newsletter_subscribers ORDER BY created_at DESC"
     ).fetch_all(pool.get_ref()).await?;
     let total = rows.len();
-    let active = rows.iter().filter(|s| s.active).count();
+    let active = rows.iter().filter(|s| s.active.unwrap_or(false)).count();
     Ok(HttpResponse::Ok().json(serde_json::json!({
         "subscribers": rows,
         "total": total,
@@ -120,7 +120,7 @@ pub async fn send_campaign(
         for sub in &subscribers {
             let unsub = format!("/newsletter/unsubscribe/{}", sub.email);
             let footer = "<br><hr><p>Recibes este email porque te suscribiste a RustCMS. <a href='".to_string() + &unsub + "'>Desuscribirse</a></p>";
-            let body = campaign.body.clone() + &footer;
+            let body = campaign.body.clone().unwrap_or_default() + &footer;
             match mailer.send(&sub.email, &campaign.subject, body).await {
                 Ok(_) => sent += 1,
                 Err(e) => tracing::warn!("Failed to send to {}: {}", sub.email, e),

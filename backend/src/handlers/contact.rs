@@ -10,28 +10,28 @@ use crate::config::AppConfig;
 pub struct ContactForm {
     pub id: uuid::Uuid,
     pub name: String,
-    pub slug: String,
-    pub fields: serde_json::Value,
-    pub email_to: String,
-    pub active: bool,
-    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub slug: Option<String>,
+    pub fields: Option<serde_json::Value>,
+    pub email_to: Option<String>,
+    pub active: Option<bool>,
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 #[derive(Serialize, sqlx::FromRow)]
 pub struct Submission {
     pub id: uuid::Uuid,
-    pub form_id: uuid::Uuid,
-    pub data: serde_json::Value,
-    pub read: bool,
-    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub form_id: Option<uuid::Uuid>,
+    pub data: Option<serde_json::Value>,
+    pub read: Option<bool>,
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 #[derive(Deserialize)]
 pub struct CreateForm {
     pub name: String,
-    pub slug: String,
-    pub fields: serde_json::Value,
-    pub email_to: String,
+    pub slug: Option<String>,
+    pub fields: Option<serde_json::Value>,
+    pub email_to: Option<String>,
 }
 
 #[derive(Deserialize)]
@@ -93,7 +93,7 @@ pub async fn submit_form(
             "<h2>Nuevo mensaje del formulario: {}</h2><pre>{}</pre>",
             form.name, data_str
         );
-        let _ = mailer.send(&form.email_to, &format!("Nuevo contacto: {}", form.name), email_body).await;
+        let _ = mailer.send(&form.email_to.clone().unwrap_or_default(), &format!("Nuevo contacto: {}", form.name), email_body).await;
     }
 
     Ok(HttpResponse::Created().json(serde_json::json!({"ok": true, "message": "Mensaje enviado correctamente"})))

@@ -372,7 +372,7 @@ pub async fn get_stats(
 
     // Contar imagenes de productos y sliders
     let product_images = sqlx::query_scalar!(
-        "SELECT COALESCE(SUM(jsonb_array_length(images)), 0) FROM products WHERE images IS NOT NULL AND jsonb_array_length(images) > 0"
+        "SELECT COALESCE(SUM(array_length(images, 1)), 0) FROM products WHERE images IS NOT NULL AND array_length(images, 1) > 0"
     ).fetch_one(pool.get_ref()).await.unwrap_or(Some(0));
 
     let slider_images = sqlx::query_scalar!(

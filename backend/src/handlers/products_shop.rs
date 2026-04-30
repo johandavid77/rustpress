@@ -184,7 +184,13 @@ pub async fn create_product(
     body: web::Json<CreateProductDto>,
 ) -> AppResult<HttpResponse> {
     let slug = body.slug.clone().unwrap_or_else(|| slugify(&body.name));
-    let p = sqlx::query!(
+    let images_vec: Vec<String> = body.images.as_ref()
+        .and_then(|v| serde_json::from_value(v.clone()).ok())
+        .unwrap_or_default();
+    let tags_vec: Vec<String> = body.tags.as_ref()
+        .and_then(|v| serde_json::from_value(v.clone()).ok())
+        .unwrap_or_default();
+        let p = sqlx::query!(
         r#"INSERT INTO products (name,slug,description,price,compare_price,sku,stock,status,category_id,images,tags)
            VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
            RETURNING id,name,slug,status,price,stock,created_at"#,
@@ -192,8 +198,8 @@ pub async fn create_product(
         body.sku, body.stock.unwrap_or(0),
         body.status.clone().unwrap_or_else(|| "draft".into()),
         body.category_id,
-        &body.images.clone().unwrap_or_default(),
-        &body.tags.clone().unwrap_or_default(),
+        &images_vec,
+        &tags_vec,
     ).fetch_one(pool.get_ref()).await?;
     Ok(HttpResponse::Created().json(serde_json::json!({
         "id": p.id, "name": p.name, "slug": p.slug,

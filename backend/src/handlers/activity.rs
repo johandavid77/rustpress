@@ -10,11 +10,11 @@ pub struct ActivityLog {
     pub user_id: Option<uuid::Uuid>,
     pub username: Option<String>,
     pub action: String,
-    pub resource: String,
+    pub resource: Option<String>,
     pub resource_id: Option<String>,
     pub details: Option<serde_json::Value>,
-    pub ip_addr: Option<String>,
-    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub ip: Option<String>,
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 #[derive(Deserialize)]
@@ -35,14 +35,14 @@ pub async fn list_logs(
 
     let rows = if let Some(ref resource) = query.resource {
         sqlx::query_as!(ActivityLog,
-            "SELECT id, user_id, username, action, resource, resource_id, details, ip_addr, created_at
+            "SELECT id, user_id, username, action, resource, resource_id, details, ip, created_at
              FROM activity_logs WHERE resource = $1
              ORDER BY created_at DESC LIMIT $2 OFFSET $3",
             resource, limit, offset
         ).fetch_all(pool.get_ref()).await?
     } else {
         sqlx::query_as!(ActivityLog,
-            "SELECT id, user_id, username, action, resource, resource_id, details, ip_addr, created_at
+            "SELECT id, user_id, username, action, resource, resource_id, details, ip, created_at
              FROM activity_logs ORDER BY created_at DESC LIMIT $1 OFFSET $2",
             limit, offset
         ).fetch_all(pool.get_ref()).await?
@@ -80,7 +80,7 @@ pub async fn log_activity(
     ip: Option<&str>,
 ) {
     let _ = sqlx::query!(
-        "INSERT INTO activity_logs (user_id, username, action, resource, resource_id, details, ip_addr)
+        "INSERT INTO activity_logs (user_id, username, action, resource, resource_id, details, ip)
          VALUES ($1, $2, $3, $4, $5, $6, $7)",
         user_id, username, action, resource, resource_id, details, ip
     ).execute(pool).await;

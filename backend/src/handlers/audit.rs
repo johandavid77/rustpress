@@ -63,7 +63,7 @@ async fn list_logs(
         "resource_id": r.resource_id,
         "details":     r.details,
         "ip":          r.ip,
-        "created_at":  r.created_at.format("%Y-%m-%d %H:%M:%S").to_string(),
+        "created_at":  r.created_at.map(|d| d.format("%Y-%m-%d %H:%M:%S").to_string()).unwrap_or_default(),
     })).collect::<Vec<_>>();
 
     Ok(HttpResponse::Ok().json(serde_json::json!({"data": data, "count": data.len()})))

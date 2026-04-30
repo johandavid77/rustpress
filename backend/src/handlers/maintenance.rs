@@ -7,18 +7,18 @@ use crate::middleware::auth::AuthUserWithRole;
 #[derive(Serialize)]
 pub struct MaintenanceConfig {
     pub enabled: bool,
-    pub message: String,
+    pub message: Option<String>,
     pub ends_at: Option<chrono::DateTime<chrono::Utc>>,
     pub allowed_ips: Vec<String>,
-    pub updated_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 #[derive(Deserialize)]
 pub struct UpdateMaintenance {
-    pub enabled: Option<bool>,
+    pub enabled: bool,
     pub message: Option<String>,
     pub ends_at: Option<chrono::DateTime<chrono::Utc>>,
-    pub allowed_ips: Option<Vec<String>>,
+    pub allowed_ips: Vec<String>,
 }
 
 async fn fetch_config(pool: &PgPool) -> Result<MaintenanceConfig, sqlx::Error> {
@@ -26,7 +26,7 @@ async fn fetch_config(pool: &PgPool) -> Result<MaintenanceConfig, sqlx::Error> {
         "SELECT enabled, message, ends_at, allowed_ips, updated_at FROM maintenance_mode WHERE id = 1"
     ).fetch_one(pool).await?;
     Ok(MaintenanceConfig {
-        enabled: row.enabled,
+        enabled: row.enabled.unwrap_or(false),
         message: row.message,
         ends_at: row.ends_at,
         allowed_ips: row.allowed_ips.unwrap_or_default(),
@@ -44,10 +44,8 @@ pub async fn update_status(
     _auth: AuthUserWithRole,
     body: web::Json<UpdateMaintenance>,
 ) -> AppResult<HttpResponse> {
-    if let Some(enabled) = body.enabled {
-        sqlx::query!("UPDATE maintenance_mode SET enabled = $1, updated_at = NOW() WHERE id = 1", enabled)
+    sqlx::query!("UPDATE maintenance_mode SET enabled = $1, updated_at = NOW() WHERE id = 1", body.enabled)
             .execute(pool.get_ref()).await?;
-    }
     if let Some(ref msg) = body.message {
         sqlx::query!("UPDATE maintenance_mode SET message = $1, updated_at = NOW() WHERE id = 1", msg)
             .execute(pool.get_ref()).await?;
@@ -56,11 +54,9 @@ pub async fn update_status(
         sqlx::query!("UPDATE maintenance_mode SET ends_at = $1, updated_at = NOW() WHERE id = 1", ends_at)
             .execute(pool.get_ref()).await?;
     }
-    if let Some(ref ips) = body.allowed_ips {
-        let ips_slice: Vec<&str> = ips.iter().map(|s| s.as_str()).collect();
+        let ips_slice: Vec<&str> = body.allowed_ips.iter().map(|s| s.as_str()).collect();
         sqlx::query!("UPDATE maintenance_mode SET allowed_ips = $1, updated_at = NOW() WHERE id = 1", &ips_slice as &[&str])
             .execute(pool.get_ref()).await?;
-    }
     let cfg = fetch_config(pool.get_ref()).await?;
     Ok(HttpResponse::Ok().json(cfg))
 }

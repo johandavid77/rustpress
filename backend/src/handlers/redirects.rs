@@ -9,9 +9,9 @@ pub struct Redirect {
     pub id: uuid::Uuid,
     pub from_path: String,
     pub to_path: String,
-    pub status_code: i32,
-    pub active: bool,
-    pub hits: i64,
+    pub status_code: Option<i32>,
+    pub active: Option<bool>,
+    pub hits: Option<i32>,
 }
 
 #[derive(Deserialize)]
@@ -59,7 +59,7 @@ pub async fn handle_redirect(pool: web::Data<PgPool>, req: actix_web::HttpReques
 
     match row {
         Ok(Some(r)) => {
-            if r.status_code == 302 {
+            if r.status_code.unwrap_or(301) == 302 {
                 HttpResponse::Found().insert_header(("Location", r.to_path)).finish()
             } else {
                 HttpResponse::MovedPermanently().insert_header(("Location", r.to_path)).finish()
