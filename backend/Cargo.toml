@@ -109,6 +109,11 @@ totp-rs = { version = "5", features = ["gen_secret", "qr"] }
 # PDF
 printpdf = "0.7"
 
+# S3/R2 Backup
+aws-sdk-s3 = { version = "1", features = ["behavior-version-latest"] }
+aws-config = { version = "1", features = ["behavior-version-latest"] }
+tokio-cron-scheduler = "0.13"
+
 # Rate limiting
 actix-governor = "0.7"
 
