@@ -7,6 +7,7 @@ import { postsApi } from '../api/posts'
 import NewPost from './Posts/NewPost'
 import EditPost from './Posts/EditPost'
 import Stats from './Stats'
+import DraggableDashboard from '../components/DraggableDashboard'
 import { LayoutDashboard, FileText, Image, Users, Puzzle, ExternalLink, Palette, MessageSquare, Tag, Webhook, Activity, Key, UserCircle, Shield, Package, ShoppingBag, Star, Archive } from 'lucide-react'
 import SlidersAdmin from './Plugins/SlidersAdmin'
 import MenusAdmin from './Plugins/MenusAdmin'
@@ -197,7 +198,8 @@ export default function Dashboard() {
               className="flex items-center gap-2 px-4 py-1.5 border border-[#2a2a3a] rounded-lg text-xs text-[#888899] hover:text-white hover:border-[#7c6aff] font-semibold transition-all">
               <ShoppingBag size={13} /> {t('nav.viewStore')}
             </a>
-        <NotificationBell onNavigate={(v) => setView(v as any)} />
+        <DraggableDashboard />
+          <NotificationBell onNavigate={(v) => setView(v as any)} />
         </header>
 
         <main className="flex-1 overflow-auto p-10">
