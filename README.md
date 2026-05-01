@@ -689,16 +689,16 @@ eas build --platform ios      # IPA
 - [x] Content Security Policy headers
 
 ### UX Admin
-- [ ] Dashboard con drag & drop para reordenar widgets
+- [x] Dashboard con drag & drop para reordenar widgets
 - [x] Modo oscuro/claro con persistencia
 - [x] Atajos de teclado globales (Cmd+K command palette)
 
 ### E-commerce
 - [x] Sistema de cupones y descuentos
-- [ ] Carrito abandonado — email de recuperación automático
-- [ ] Reportes de ventas en PDF descargable
+- [x] Carrito abandonado — email de recuperación automático
+- [x] Reportes de ventas en PDF descargable
 
 ### DevOps
 - [x] Dockerfile optimizado multi-stage para producción
 - [x] Healthcheck en docker-compose con reinicio automático
-- [ ] Backup automático de DB a S3/R2
+- [x] Backup automático de DB a S3/R2
