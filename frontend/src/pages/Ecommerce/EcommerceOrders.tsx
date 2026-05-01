@@ -12,7 +12,7 @@ const SC: any = {
   refunded:   { label:'Reembolsado', color:'text-gray-400 bg-gray-500/10',     icon: XCircle },
 }
 
-export default function EcommerceOrders() {
+export default function EcommerceOrders({ initialStatus = '' }: { initialStatus?: string }) {
   const [orders, setOrders]   = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [status, setStatus]   = useState('')

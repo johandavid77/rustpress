@@ -49,6 +49,7 @@ export default function Dashboard() {
   const roleName = (user as any)?.role_name ?? 'admin'
   const isAdmin  = ['admin', 'super_admin'].includes(roleName)
   const isEditor = ['admin', 'super_admin', 'editor'].includes(roleName)
+  const [initialOrderStatus, setInitialOrderStatus] = useState('')
   const [view, setView] = useState<View>('home')
   const [showEcommerce, setShowEcommerce] = useState(false)
   const [posts, setPosts] = useState<any[]>([])
@@ -122,7 +123,7 @@ export default function Dashboard() {
     <div className="flex h-screen bg-[#0a0a0f] text-white overflow-hidden">
       {showEcommerce && (
         <div className="fixed inset-0 z-50 bg-[#0a0a0f] overflow-auto">
-          <EcommerceHome onBack={() => setShowEcommerce(false)} />
+              <EcommerceHome onBack={() => setShowEcommerce(false)} initialTab={initialOrderStatus ? "orders" as any : undefined} initialOrderStatus={initialOrderStatus} />
         </div>
       )}
       <aside className="w-60 min-w-60 bg-[#111118] border-r border-[#2a2a3a] flex flex-col justify-between p-5">
@@ -206,7 +207,7 @@ export default function Dashboard() {
                 <h1 className="text-4xl font-black tracking-tight mb-1">{t('dashboard.summary')}</h1>
                 <p className="text-[#888899] text-sm">{t('dashboard.welcome')}, {user?.username}</p>
               </div>
-              <Stats />
+              <Stats onNavigate={(v) => { if (v === "shop-orders-pending") { setInitialOrderStatus("pending"); setShowEcommerce(true); } else { setInitialOrderStatus(""); setView(v as any); } }} />
             <ViewsChart />
             </div>
           )}

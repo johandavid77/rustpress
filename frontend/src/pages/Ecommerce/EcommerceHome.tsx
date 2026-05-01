@@ -11,7 +11,7 @@ import EcommerceSettings from './EcommerceSettings'
 
 type Tab = 'overview'|'products'|'orders'|'customers'|'coupons'|'inventory'|'settings'
 
-interface Props { onBack: () => void }
+interface Props { onBack: () => void; initialTab?: Tab; initialOrderStatus?: string }
 
 const tabs = [
   { id: 'overview'   as Tab, icon: BarChart2,  label: 'Resumen'    },
@@ -23,9 +23,9 @@ const tabs = [
   { id: 'settings'   as Tab, icon: Settings,    label: 'Ajustes'    },
 ]
 
-export default function EcommerceHome({ onBack }: Props) {
+export default function EcommerceHome({ onBack, initialTab, initialOrderStatus }: Props) {
   const { t } = useTranslation()
-  const [tab, setTab] = useState<Tab>('overview')
+  const [tab, setTab] = useState<Tab>(initialTab ?? 'overview')
 
   return (
     <div className="flex h-full min-h-screen bg-[#0a0a0f] text-white">

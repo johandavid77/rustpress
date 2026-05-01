@@ -54,7 +54,7 @@ export default function Stats({ onNavigate }: { onNavigate?: (v: string) => void
   const alerts = [
     stats?.out_of_stock > 0 && { type: 'error',   icon: XCircle,       msg: `${stats.out_of_stock} producto(s) sin stock`, action: 'shop-products' },
     stats?.low_stock > 0    && { type: 'warning',  icon: AlertTriangle, msg: `${stats.low_stock} producto(s) con stock bajo (< 5)`, action: 'shop-products' },
-    stats?.orders_pending > 0 && { type: 'info',  icon: Clock,         msg: `${stats.orders_pending} pedido(s) pendiente(s) de atender`, action: 'orders' },
+    stats?.orders_pending > 0 && { type: 'info',  icon: Clock,         msg: `${stats.orders_pending} pedido(s) pendiente(s) de atender`, action: 'shop-orders-pending' },
   ].filter(Boolean) as any[]
 
   return (
