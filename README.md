@@ -1,704 +1,294 @@
-# RustPress CMS
+content = r"""# 🦀 RustPress
 
-> 🇪🇸 [Español](#español) | 🇺🇸 [English](#english)
+> CMS de alto rendimiento construido con **Rust + Actix-web** en el backend y **React + TypeScript** en el frontend.
 
----
-
-# Español
-
-> CMS moderno construido con Rust (Actix-Web) + React (TypeScript) + PostgreSQL.
-> Inspirado en WordPress pero más rápido, más seguro y extensible por diseño.
-
-## Stack
-
-| Capa | Tecnología |
-|------|------------|
-| Backend | Rust 1.75+ · Actix-Web 4 · SQLx · JWT · bcrypt |
-| Frontend | React 18 · TypeScript · Vite · Tailwind CSS · recharts |
-| Base de datos | PostgreSQL 16 |
-| Cache | Redis 7 |
-| Infra | Docker · Nginx · certbot (SSL) |
-| i18n | react-i18next (ES / EN) |
-| SEO | react-helmet-async · Open Graph · Twitter Cards |
-| Pagos | Stripe · PayPal |
-| Analytics | Propio sin Google (pageviews, top posts, funnel, realtime) |
+![Rust](https://img.shields.io/badge/Rust-1.75+-orange?logo=rust)
+![React](https://img.shields.io/badge/React-18-blue?logo=react)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791?logo=postgresql)
+![License](https://img.shields.io/badge/license-MIT-green)
 
 ---
 
-## Inicio rápido
+## ✨ Características
+
+- 🔐 Autenticación JWT + 2FA (TOTP)
+- 📝 Gestión de posts con editor rico
+- 🛒 Ecommerce completo (productos, órdenes, cupones, carrito)
+- 📊 Dashboard con drag & drop de widgets
+- 📄 Reportes de ventas en PDF descargables
+- 🔔 Notificaciones de pedidos pendientes en tiempo real
+- 🗃️ Gestor de medios con imágenes
+- 📧 Newsletter con campañas
+- 🔒 Audit log de acciones
+- 💾 Backup automático de base de datos
+- 🌐 Modo mantenimiento configurable
+- ⚡ Command Palette (Cmd+K)
+
+---
+
+## 🛠️ Requisitos
+
+| Herramienta        | Versión mínima |
+|--------------------|---------------|
+| Rust               | 1.75+         |
+| Node.js            | 18+           |
+| PostgreSQL         | 14+           |
+| Podman o Docker    | cualquiera    |
+
+---
+
+## 🚀 Instalación rápida
+
+### 1. Clonar el repositorio
 
 ```bash
 git clone https://github.com/johandavid77/rustpress.git
 cd rustpress
-docker compose up -d
-cd backend && cp .env.example .env && cargo run
-cd frontend && npm install --legacy-peer-deps && npm run dev
 ```
 
-Acceder en: http://localhost:5173
-
----
-
-## Credenciales por defecto
-
-| Rol | Email | Contraseña |
-|-----|-------|------------|
-| Admin | johan@rustcms.dev | admin123 |
-| Editor | editor@rustcms.dev | editor123 |
-
-> ⚠️ Cambiar antes de ir a producción.
-
----
-
-## Producción con Docker + Nginx + SSL
+### 2. Levantar la base de datos
 
 ```bash
-cp .env.prod.example .env.prod
-nano .env.prod
-./ssl-init.sh
-./deploy.sh
+# Con Podman
+podman-compose up -d
+
+# Con Docker
+docker-compose up -d
+
+# Verificar que PostgreSQL esté corriendo
+podman ps
 ```
+
+### 3. Configurar el backend
+
+```bash
+cd backend
+
+cat > .env << 'ENVEOF'
+DATABASE_URL=postgres://rustcms:rustcms_secret@localhost/rustcms
+JWT_SECRET=cambia_esto_por_un_secreto_seguro
+REDIS_URL=redis://localhost:6379
+SMTP_HOST=localhost
+SMTP_PORT=1025
+SMTP_FROM=noreply@tudominio.com
+APP_URL=http://localhost:8080
+ENVEOF
+```
+
+### 4. Compilar y correr el backend
+
+```bash
+# Dentro de backend/
+cargo build --release
+
+# Desarrollo
+DATABASE_URL="postgres://rustcms:rustcms_secret@localhost/rustcms" \
+JWT_SECRET="cambia_esto_por_un_secreto_seguro" \
+cargo run
+```
+
+> El backend estará en `http://localhost:8080`
+> Verifica con: `curl http://localhost:8080/health`
+
+### 5. Instalar y correr el frontend
+
+```bash
+cd ../frontend
+npm install --legacy-peer-deps
+npm run dev
+```
+
+> El frontend estará en `http://localhost:5173`
+
+### 6. Cargar datos de demostración
+
+```bash
+# Desde la raíz del proyecto
+podman exec -i rustcms-postgres psql -U rustcms -d rustcms < seed.sql
+
+# Con Docker
+docker exec -i rustcms-postgres psql -U rustcms -d rustcms < seed.sql
+```
+
+#### Usuarios de prueba
+
+| Usuario  | Email                | Contraseña  | Rol    |
+|----------|----------------------|-------------|--------|
+| admin    | admin@rustpress.dev  | password123 | Admin  |
+| editor1  | editor@rustpress.dev | password123 | Editor |
+| autor1   | autor@rustpress.dev  | password123 | Author |
+| johndoe  | john@example.com     | password123 | Viewer |
 
 ---
 
-## Estructura
+## 📁 Estructura del proyecto
 
 ```
 rustpress/
-├── backend/src/handlers/
-│   ├── activity.rs            Log de actividad
-│   ├── analytics.rs           Dashboard analítico
-│   ├── api_keys.rs            API Keys
-│   ├── auth.rs                Login, registro, recuperación de contraseña
-│   ├── backup.rs              Backup con pg_dump y restore
-│   ├── bookings.rs            Sistema de reservas
-│   ├── cache_admin.rs         Panel cache Redis
-│   ├── cart.rs                Carrito de compras
-│   ├── categories.rs          Taxonomías para posts y productos
-│   ├── comments.rs            Moderación de comentarios
-│   ├── contact.rs             Formularios de contacto
-│   ├── coupons.rs             Cupones de descuento
-│   ├── csv_io.rs              Import/Export CSV
-│   ├── feed.rs                RSS feed automático
-│   ├── maintenance.rs         Modo mantenimiento con whitelist IPs
-│   ├── media.rs               Subida y gestión de archivos multimedia
-│   ├── menus.rs               Navegación personalizable
-│   ├── newsletter.rs          Suscriptores y campañas SMTP
-│   ├── notifications.rs       SSE en tiempo real
-│   ├── orders.rs              Pedidos y estado
-│   ├── payments.rs            Stripe y PayPal
-│   ├── plugins.rs             Sistema de plugins dinámico
-│   ├── posts.rs               CRUD posts, stats, views
-│   ├── products_shop.rs       Tienda pública y CRUD admin
-│   ├── redirects.rs           Redirecciones 301/302 con hits
-│   ├── reviews.rs             Reseñas de productos
-│   ├── roles.rs               Roles y permisos por recurso
-│   ├── search.rs              Búsqueda global Ctrl+K
-│   ├── settings.rs            Configuración del sitio
-│   ├── sliders.rs             Carrusel de imágenes
-│   ├── updates.rs             Actualizaciones vía git pull
-│   ├── users.rs               CRUD usuarios
-│   ├── variants.rs            Variantes de productos
-│   └── webhooks.rs            Notificaciones HTTP externas
-└── frontend/src/
-    ├── pages/
-    │   ├── Analytics.tsx          Dashboard analítico
-    │   ├── Dashboard.tsx          Panel principal con métricas
-    │   ├── Stats.tsx              Estadísticas detalladas
-    │   ├── Login.tsx / Register.tsx / ForgotPassword.tsx / ResetPassword.tsx
-    │   ├── Blog/                  Gestión de posts
-    │   ├── Gallery/               Galería con lightbox y drag & drop
-    │   ├── Media/                 Archivos multimedia
-    │   ├── Posts/                 Editor con preview
-    │   ├── Shop/                  Productos, pedidos, variantes
-    │   ├── Ecommerce/             Tienda pública con carrito
-    │   ├── Users/                 Gestión de usuarios
-    │   ├── Settings/              Configuración
-    │   ├── Plugins/               Todos los plugins admin
-    │   └── public/                Blog público, tienda, checkout, mantenimiento
-    ├── plugins/pluginRegistry.ts  Registro central con lazy loading
-    ├── components/
-    │   ├── SEO/                   Meta tags, Open Graph, Twitter Cards
-    │   ├── GlobalSearch/          Búsqueda global Ctrl+K
-    │   ├── NotificationBell/      Notificaciones SSE
-    │   └── Newsletter/            Widget público de suscripción
-    └── locales/
-        ├── es/translation.json
-        └── en/translation.json
+├── backend/
+│   ├── src/
+│   │   ├── handlers/
+│   │   │   ├── auth.rs
+│   │   │   ├── posts.rs
+│   │   │   ├── products_shop.rs
+│   │   │   ├── orders.rs
+│   │   │   ├── reports.rs
+│   │   │   ├── backup.rs
+│   │   │   └── ...
+│   │   ├── middleware/
+│   │   ├── errors.rs
+│   │   └── main.rs
+│   ├── migrations/
+│   └── Cargo.toml
+├── frontend/
+│   ├── src/
+│   │   ├── pages/
+│   │   ├── components/
+│   │   └── api/
+│   └── package.json
+├── docker-compose.yml
+├── seed.sql
+└── README.md
 ```
 
 ---
 
-## Sistema de Plugins
-
-Los plugins se registran en la DB y en un registry central. El Dashboard los carga automáticamente con lazy loading.
-
-### Agregar un plugin nuevo
-
-1. Crear `frontend/src/pages/Plugins/MiPlugin.tsx`
-2. Registrar en `frontend/src/plugins/pluginRegistry.ts` con lazy import
-3. Insertar en la DB:
-
-```sql
-INSERT INTO plugins (id, name, version, description, is_enabled, config)
-VALUES (gen_random_uuid(), 'mi-plugin', '1.0.0', 'Descripcion', true,
-  '{"title":"Mi Plugin","icon":"Zap","color":"from-blue-500/20 to-blue-600/5 border-blue-500/20","category":"content"}');
-```
-
-4. Aparece automáticamente con toggle activo/inactivo.
-
-### Plugins disponibles
-
-| Plugin | Categoría | Descripción |
-|--------|-----------|-------------|
-| Sliders | Contenido | Carrusel de imágenes para la home |
-| Menús | Contenido | Navegación personalizable |
-| Comentarios | Contenido | Moderación de comentarios |
-| Categorías | Contenido | Taxonomías para posts y productos |
-| Galería | Contenido | Grid con lightbox y drag & drop |
-| Formularios de contacto | Contenido | Constructor con bandeja y notificación email |
-| Webhooks | Integraciones | Notificaciones HTTP externas |
-| Newsletter | Integraciones | Suscriptores y envío masivo SMTP real |
-| Reservas | Integraciones | Sistema de bookings |
-| Ecommerce | Ecommerce | Tienda completa con Stripe y PayPal |
-| Cupones | Ecommerce | Descuentos por porcentaje o monto fijo |
-| Variantes | Ecommerce | Talla, color, etc. |
-| Reseñas | Ecommerce | Sistema de reseñas de productos |
-| Healthcheck | Sistema | Estado servidor, DB y Redis en tiempo real |
-| Backup | Sistema | pg_dump con restore desde el admin |
-| Actualizaciones | Sistema | git pull + cargo build desde el admin |
-| Redirecciones | Sistema | 301/302 con contador de hits y toggle |
-| Cache Redis | Sistema | Estadísticas y limpieza por prefijo |
-| CSV Import/Export | Sistema | Exportar datos e importar productos en bulk |
-| Modo Mantenimiento | Sistema | Página pública con countdown y whitelist IPs |
-| Roles y Permisos | Sistema | Gestión de roles y permisos por recurso |
-| Log de Actividad | Sistema | Auditoría completa con filtros y paginación |
-| API Keys | Sistema | Gestión de claves de API |
-| Feed RSS | Sistema | Feed RSS automático de posts |
-
----
-
-## API Endpoints
-
-Base URL: `http://localhost:8080/api/v1`
+## 🔌 API Endpoints principales
 
 ### Auth
-| Método | Ruta | Auth | Descripción |
-|--------|------|------|-------------|
-| POST | /auth/login | No | Login, retorna JWT |
-| POST | /auth/register | No | Registro de usuario |
-| GET | /auth/me | Sí | Perfil actual |
-| POST | /auth/forgot-password | No | Solicitar recuperación |
-| POST | /auth/reset-password | No | Restablecer contraseña |
+```
+POST   /api/v1/auth/login
+POST   /api/v1/auth/register
+POST   /api/v1/auth/refresh
+POST   /api/v1/auth/2fa/enable
+```
 
 ### Posts
-| Método | Ruta | Auth | Descripción |
-|--------|------|------|-------------|
-| GET | /posts | No | Listar posts publicados |
-| POST | /posts | Sí | Crear post |
-| GET | /posts/:id | No | Obtener post |
-| PUT | /posts/:id | Sí | Editar post |
-| DELETE | /posts/:id | Sí | Eliminar post |
-| POST | /posts/:slug/view | No | Incrementar vistas |
-| GET | /posts/stats | Sí | Estadísticas generales |
-| GET | /posts/stats/views | Sí | Vistas por día para gráfica |
+```
+GET    /api/v1/posts
+POST   /api/v1/posts
+PUT    /api/v1/posts/:id
+DELETE /api/v1/posts/:id
+```
 
-### Shop público
-| Método | Ruta | Auth | Descripción |
-|--------|------|------|-------------|
-| GET | /shop/products | No | Productos con filtros y paginación |
-| GET | /shop/products/slug/:slug | No | Detalle por slug |
-| GET | /shop/categories | No | Categorías de productos |
+### Ecommerce
+```
+GET    /api/v1/products
+POST   /api/v1/orders
+GET    /api/v1/orders
+POST   /api/v1/coupons/validate
+```
 
-### Productos admin
-| Método | Ruta | Auth | Descripción |
-|--------|------|------|-------------|
-| GET | /products | Sí | Listar todos |
-| POST | /products | Sí | Crear producto |
-| PUT | /products/:id | Sí | Editar producto |
-| DELETE | /products/:id | Sí | Eliminar producto |
-
-### Carrito
-| Método | Ruta | Auth | Descripción |
-|--------|------|------|-------------|
-| GET | /cart | Sí | Ver carrito |
-| POST | /cart/items | Sí | Agregar ítem |
-| PUT | /cart/items/:id | Sí | Actualizar cantidad |
-| DELETE | /cart/items/:id | Sí | Eliminar ítem |
-
-### Pedidos y Pagos
-| Método | Ruta | Auth | Descripción |
-|--------|------|------|-------------|
-| GET | /orders | Sí | Listar pedidos |
-| POST | /orders | Sí | Crear pedido |
-| GET | /orders/:id | Sí | Detalle de pedido |
-| PUT | /orders/:id/status | Sí | Actualizar estado |
-| POST | /payments/init | Sí | Iniciar pago Stripe o PayPal |
-| POST | /payments/stripe/webhook | No | Webhook Stripe |
-| POST | /payments/paypal/webhook | No | Webhook PayPal |
-| GET | /payments/status/:order_id | Sí | Estado del pago |
-
-### Analytics
-| Método | Ruta | Auth | Descripción |
-|--------|------|------|-------------|
-| POST | /analytics/track | No | Registrar evento |
-| GET | /analytics/dashboard | Sí | Métricas generales |
-| GET | /analytics/top-posts | Sí | Posts más vistos |
-| GET | /analytics/top-products | Sí | Productos más vistos |
-| GET | /analytics/funnel | Sí | Funnel de conversión |
-| GET | /analytics/realtime | Sí | Visitantes en tiempo real |
-
-### Plugins y utilidades
-| Método | Ruta | Auth | Descripción |
-|--------|------|------|-------------|
-| POST | /newsletter/subscribe | No | Suscribirse al newsletter |
-| GET | /newsletter/subscribers | Sí | Listar suscriptores |
-| POST | /newsletter/campaigns/:id/send | Sí | Enviar campaña |
-| POST | /contact/forms/:id/submit | No | Enviar mensaje de contacto |
-| GET | /contact/admin/forms | Sí | Bandeja de mensajes |
-| GET | /coupons/validate/:code | No | Validar cupón |
-| GET | /redirects | Sí | Listar redirecciones |
-| GET | /cache/stats | Sí | Estadísticas Redis |
-| POST | /cache/flush | Sí | Limpiar cache |
-| GET | /csv/export/products | Sí | Exportar productos CSV |
-| POST | /csv/import/products | Sí | Importar productos CSV |
-| GET | /maintenance/status | No | Estado modo mantenimiento |
-| GET | /roles | Sí | Listar roles |
-| GET | /permissions | Sí | Listar permisos |
-| GET | /activity/logs | Sí | Log de actividad |
-| GET | /search?q=... | Sí | Búsqueda global |
-| GET | /notifications/stream | Sí | SSE tiempo real |
-| GET | /sitemap.xml | No | Sitemap dinámico |
-| GET | /robots.txt | No | Robots.txt |
-| GET | /health | No | Health check básico |
-| GET | /health/detailed | No | Estado detallado DB y Redis |
+### Reportes y Backup
+```
+GET    /api/v1/reports/sales/pdf
+GET    /api/v1/reports/orders/pdf
+POST   /api/v1/backup
+GET    /api/v1/backup/list
+GET    /api/v1/backup/status
+```
 
 ---
 
-## i18n (ES / EN)
+## 🐳 Docker / Podman compose
 
-Bilingüe con react-i18next. Selector de idioma en el sidebar del admin y footer del sitio público.
+El archivo `docker-compose.yml` levanta:
 
-- `frontend/src/locales/es/translation.json`
-- `frontend/src/locales/en/translation.json`
-
----
-
-## SEO
-
-Implementado con react-helmet-async en todas las páginas públicas: title dinámico, meta description, Open Graph completo, Twitter Cards, canonical URLs, sitemap.xml desde la DB, robots.txt con Disallow en /admin y /api.
-
----
-
-## Carrito y Checkout
-
-El carrito usa **localStorage** para visitantes no autenticados — pueden agregar productos libremente. Al ir al checkout sin sesión, se redirige a `/login?redirect=/checkout` y se regresa automáticamente después del login.
-
----
-
-## Tests
+- **PostgreSQL 15** — puerto `5432`
+- **Redis** — puerto `6379`
+- **MailHog** (SMTP de pruebas) — puerto `1025` / UI en `8025`
 
 ```bash
-cd backend && cargo test
-```
+# Levantar
+podman-compose up -d
 
-32 tests — 0 failed
+# Ver logs
+podman-compose logs -f
 
-| Módulo | Tests | Qué cubren |
-|--------|-------|------------|
-| coupon_tests | 6 | Descuentos, protección negativos |
-| payments_tests | 6 | HMAC-SHA256, payload adulterado |
-| reviews_tests | 7 | Gateways, PaymentStatus |
-| auth_service | 7 | JWT, bcrypt, tokens |
-| email_service | 6 | Plantillas, validación |
-
----
-
-## CI/CD
-
-GitHub Actions en `.github/workflows/ci.yml`. Se ejecuta en cada push y PR a `main`:
-- **Backend**: `cargo build` + `cargo test` con PostgreSQL y Redis como servicios
-- **Frontend**: `npm ci --legacy-peer-deps` + `npm run build`
-
----
-
-## Variables de entorno
-
-### Backend (`backend/.env`)
-```env
-DATABASE_URL=postgres://rustcms:rustcms_secret@localhost:5432/rustcms
-REDIS_URL=redis://localhost:6379
-JWT_SECRET=cambiar_en_produccion
-JWT_EXPIRY_HOURS=720
-PORT=8080
-SITE_URL=http://localhost:5173
-BACKUP_DIR=./backups
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USERNAME=tu@email.com
-SMTP_PASSWORD=tu_app_password
-SMTP_FROM=noreply@tudominio.com
-STRIPE_SECRET_KEY=sk_test_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-PAYPAL_CLIENT_ID=...
-PAYPAL_CLIENT_SECRET=...
-PAYPAL_SANDBOX=true
-```
-
-### Frontend (`frontend/.env`)
-```env
-VITE_API_URL=/api/v1
+# Detener
+podman-compose down
 ```
 
 ---
 
-## Licencia
+## ⚙️ Variables de entorno
 
-GPL-3.0 © 2026 Johan David — [github.com/johandavid77/rustpress](https://github.com/johandavid77/rustpress)
-
----
----
-
-# English
-
-> Modern CMS built with Rust (Actix-Web) + React (TypeScript) + PostgreSQL.
-> Inspired by WordPress but faster, more secure, and extensible by design.
-
-## Stack
-
-| Layer | Technology |
-|-------|------------|
-| Backend | Rust 1.75+ · Actix-Web 4 · SQLx · JWT · bcrypt |
-| Frontend | React 18 · TypeScript · Vite · Tailwind CSS · recharts |
-| Database | PostgreSQL 16 |
-| Cache | Redis 7 |
-| Infra | Docker · Nginx · certbot (SSL) |
-| i18n | react-i18next (ES / EN) |
-| SEO | react-helmet-async · Open Graph · Twitter Cards |
-| Payments | Stripe · PayPal |
-| Analytics | Own system — no Google (pageviews, top posts, funnel, realtime) |
+| Variable      | Descripción                    | Ejemplo                                  |
+|---------------|--------------------------------|------------------------------------------|
+| DATABASE_URL  | Conexión a PostgreSQL          | postgres://user:pass@localhost/rustcms   |
+| JWT_SECRET    | Secreto para tokens JWT        | cadena aleatoria de 64+ caracteres       |
+| REDIS_URL     | Conexión a Redis               | redis://localhost:6379                   |
+| SMTP_HOST     | Servidor de correo saliente    | smtp.gmail.com                           |
+| SMTP_PORT     | Puerto SMTP                    | 587                                      |
+| SMTP_FROM     | Email remitente                | noreply@tudominio.com                    |
+| APP_URL       | URL pública del backend        | https://api.tudominio.com                |
+| S3_BUCKET     | Bucket para backups (opcional) | rustpress-backups                        |
+| S3_ENDPOINT   | Endpoint S3/R2 (opcional)      | https://xxx.r2.cloudflarestorage.com     |
 
 ---
 
-## Quick Start
+## 🔧 Comandos útiles
 
 ```bash
-git clone https://github.com/johandavid77/rustpress.git
-cd rustpress
-docker compose up -d
-cd backend && cp .env.example .env && cargo run
-cd frontend && npm install --legacy-peer-deps && npm run dev
-```
+# Ver errores de compilación Rust
+cargo build 2>&1 | grep "^error"
 
-Open: http://localhost:5173
+# Correr tests
+cargo test
 
----
+# Build producción frontend
+cd frontend && npm run build
 
-## Default Credentials
+# Conectar a la DB
+podman exec -it rustcms-postgres psql -U rustcms -d rustcms
 
-| Role | Email | Password |
-|------|-------|----------|
-| Admin | johan@rustcms.dev | admin123 |
-| Editor | editor@rustcms.dev | editor123 |
-
-> ⚠️ Change before going to production.
-
----
-
-## Production Deploy (Docker + Nginx + SSL)
-
-```bash
-cp .env.prod.example .env.prod
-nano .env.prod
-./ssl-init.sh
-./deploy.sh
+# Limpiar y re-seedear
+podman exec -i rustcms-postgres psql -U rustcms -d rustcms -c \
+  "TRUNCATE users, posts, products, orders, media CASCADE;"
+podman exec -i rustcms-postgres psql -U rustcms -d rustcms < seed.sql
 ```
 
 ---
 
-## Available Plugins
+## 📦 Tech Stack
 
-| Plugin | Category | Description |
-|--------|----------|-------------|
-| Sliders | Content | Image carousel for homepage |
-| Menus | Content | Customizable navigation |
-| Comments | Content | Comment moderation |
-| Categories | Content | Taxonomies for posts and products |
-| Gallery | Content | Media grid with lightbox and drag & drop |
-| Contact Forms | Content | Form builder with inbox and email notification |
-| Webhooks | Integrations | External HTTP notifications |
-| Newsletter | Integrations | Subscribers and bulk email via real SMTP |
-| Bookings | Integrations | Booking system |
-| Ecommerce | Ecommerce | Full store with Stripe and PayPal |
-| Coupons | Ecommerce | Percentage or fixed amount discounts |
-| Variants | Ecommerce | Size, color, etc. |
-| Reviews | Ecommerce | Product review system |
-| Healthcheck | System | Server, DB and Redis status |
-| Backup | System | pg_dump with restore from admin |
-| Updates | System | git pull + cargo build from admin |
-| Redirects | System | 301/302 with hit counter and toggle |
-| Redis Cache | System | Stats and prefix-based clearing |
-| CSV Import/Export | System | Export data and bulk import products |
-| Maintenance Mode | System | Public page with countdown and IP whitelist |
-| Roles & Permissions | System | Role and resource-level permission management |
-| Activity Log | System | Full audit log with filters and pagination |
-| API Keys | System | API key management |
-| RSS Feed | System | Automatic RSS feed for posts |
+**Backend**
+- [Rust](https://www.rust-lang.org/) — lenguaje de sistemas
+- [Actix-web 4](https://actix.rs/) — framework HTTP
+- [SQLx](https://github.com/launchbadge/sqlx) — queries SQL async
+- [PostgreSQL](https://www.postgresql.org/) — base de datos
+- [printpdf](https://github.com/fschutt/printpdf) — generación de PDFs
+
+**Frontend**
+- [React 18](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Vite](https://vitejs.dev/)
+- [@dnd-kit](https://dndkit.com/) — drag & drop
+- [Lucide Icons](https://lucide.dev/)
 
 ---
 
-## Cart & Checkout
+## 🤝 Contribuir
 
-The cart uses **localStorage** for unauthenticated visitors — they can freely add products. When going to checkout without a session, the user is redirected to `/login?redirect=/checkout` and returned automatically after login.
-
----
-
-## Tests
-
-```bash
-cd backend && cargo test
-```
-
-32 tests — 0 failed
+1. Fork del repositorio
+2. Crea tu rama: `git checkout -b feature/mi-feature`
+3. Commit: `git commit -m "feat: descripción"`
+4. Push: `git push origin feature/mi-feature`
+5. Abre un Pull Request
 
 ---
 
-## CI/CD
+## 📄 Licencia
 
-GitHub Actions at `.github/workflows/ci.yml`. Runs on every push and PR to `main`:
-- **Backend**: `cargo build` + `cargo test` with PostgreSQL and Redis services
-- **Frontend**: `npm ci --legacy-peer-deps` + `npm run build`
+GPL3 © 2026 Johan David
 
 ---
 
-## Environment Variables
+<p align="center">Construido con 🦀 Rust y ❤️</p>
+"""
 
-### Backend (`backend/.env`)
-```env
-DATABASE_URL=postgres://rustcms:rustcms_secret@localhost:5432/rustcms
-REDIS_URL=redis://localhost:6379
-JWT_SECRET=change_in_production
-JWT_EXPIRY_HOURS=720
-PORT=8080
-SITE_URL=http://localhost:5173
-BACKUP_DIR=./backups
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USERNAME=you@email.com
-SMTP_PASSWORD=your_app_password
-SMTP_FROM=noreply@yourdomain.com
-STRIPE_SECRET_KEY=sk_test_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-PAYPAL_CLIENT_ID=...
-PAYPAL_CLIENT_SECRET=...
-PAYPAL_SANDBOX=true
-```
+with open('/home/johan/Desarrollo/Rust/rustpress/README.md', 'w') as f:
+    f.write(content)
 
----
-
-## License
-
-GPL-3.0 © 2026 Johan David — [github.com/johandavid77/rustpress](https://github.com/johandavid77/rustpress)
-
----
-
-## Roadmap
-
-> Estado actual: v1.0.0 — Sistema completo con 24 plugins, tienda, pagos, i18n ES/EN, Docker producción.
-
-### 🔴 v1.1.0 — Fixes urgentes
-- [x] Claves i18n faltantes en dashboard (`overview.ofStock`, `overview.users3`, subclaves de tarjetas)
-- [x] "Ver tienda" en header del admin no cambia de idioma en EN
-- [x] Subclaves de stats hardcodeadas en Stats.tsx (Low stock, Borradores, Total)
-- [x] Carrito: sincronizar localStorage → backend al hacer login
-- [x] Checkout: mostrar resumen con imágenes y precios reales
-- [x] Página pública de mantenimiento: verificar que bloquea realmente a visitantes
-
-### 🟡 v1.2.0 — Seguridad y permisos reales
-- [x] Middleware de permisos en frontend — rutas del admin protegidas por rol (Editor, Moderador, Admin)
-- [x] Ocultar secciones del sidebar según rol del usuario logueado
-- [x] Proteger endpoints del backend con has_permission() por recurso
-- [x] Log de actividad: registrar automáticamente create/update/delete en posts, productos y usuarios
-- [x] Sesiones: invalidar JWT al cambiar contraseña
-
-### 🟡 v1.3.0 — Tienda mejorada
-- [x] UI pública de reseñas — formulario desde página de producto
-- [x] Filtros avanzados en tienda — rango de precio, ordenar por precio/popularidad/nuevo
-- [x] Filtro por categoría desde URL (/shop?category=ropa)
-- [x] Página de producto mejorada — galería, zoom, variantes con selector visual
-- [x] Wishlist / Lista de deseos
-- [x] Historial de pedidos para el cliente desde su perfil
-- [x] Email de confirmación de pedido automático
-- [x] Stock en tiempo real sin recargar
-
-### 🟡 v1.4.0 — Experiencia de usuario
-- [x] Onboarding wizard al primer login (sitio, logo, primer post, primer producto, SMTP)
-- [x] Página 404 personalizable con links sugeridos y buscador
-- [x] Perfil de usuario — cambiar avatar, contraseña y preferencias
-- [x] Editor de posts mejorado — bloques al estilo Notion
-- [x] Preview en tiempo real del post mientras se escribe
-- [x] Borrador automático cada 30 segundos en el editor
-
-### 🟢 v1.5.0 — Performance y optimización
-- [x] Optimización automática de imágenes al subir (resize + compress + WebP)
-- [x] Lazy loading de imágenes en tienda y galería
-- [x] Cache de páginas públicas en Redis (TTL configurable desde admin)
-- [x] CDN-ready — servir uploads desde S3/R2/Cloudflare
-- [x] Lighthouse score > 90 en todas las páginas públicas
-
-### 🟢 v1.6.0 — Analytics avanzados
-- [x] Gráfica de ingresos por mes (últimos 12 meses)
-- [x] Productos más vendidos con cantidad e ingresos
-- [x] Tasa de conversión carrito → checkout → pago completado
-- [x] Origen del tráfico (referrer, UTM params)
-- [x] Exportar estadísticas a CSV
-- [x] Alertas configurables por email (ventas, stock bajo)
-
-### 🟢 v1.7.0 — Integraciones externas
-- [x] Plugin Google Analytics / Plausible
-- [x] Plugin Mailchimp / Brevo — sincronizar suscriptores
-- [x] Plugin WhatsApp Business — botón flotante configurable
-- [x] Plugin Livechat (Tawk.to / Crisp)
-- [x] Login social — Google OAuth y GitHub OAuth
-- [x] Plugin de mapa con ubicación del negocio
-
-### 🟢 v1.8.0 — Multi-tenant y escalabilidad
-- [x] Soporte multi-idioma en contenido (posts y productos en ES/EN/FR etc.)
-- [x] Multi-sitio — un backend, varios frontends independientes
-- [x] Backup automático programado — cron a S3/R2
-- [x] Monitoreo de uptime con alertas por email/Slack
-
-### 🔵 v2.0.0 — Plataforma
-- [x] Marketplace de plugins — instalar de terceros desde el admin
-- [x] Marketplace de temas — cambiar diseño del sitio público desde admin
-- [x] API pública documentada con Swagger/OpenAPI
-- [x] SDK JavaScript para integrar con cualquier frontend
-- [x] CLI tool — rustpress new, rustpress deploy, rustpress backup
-- [x] App móvil admin (React Native)
-
-### ✅ v1.0.0 — Completado
-- [x] Backend Rust con Actix-Web, SQLx, JWT, bcrypt
-- [x] Frontend React 18 + TypeScript + Tailwind CSS
-- [x] 24 plugins: Sliders, Menús, Comentarios, Categorías, Galería, Formularios, Webhooks, Newsletter, Reservas, Ecommerce, Cupones, Variantes, Reseñas, Healthcheck, Backup, Actualizaciones, Redirecciones, Cache Redis, CSV Import/Export, Modo Mantenimiento, Roles y Permisos, Log de Actividad, API Keys, Feed RSS
-- [x] Tienda completa con carrito (localStorage para invitados)
-- [x] Pagos con Stripe y PayPal
-- [x] Analytics propio sin Google (pageviews, funnel, realtime)
-- [x] i18n bilingüe ES/EN con react-i18next
-- [x] SEO completo (Open Graph, Twitter Cards, sitemap.xml, robots.txt)
-- [x] Búsqueda global Ctrl+K
-- [x] Notificaciones SSE en tiempo real
-- [x] Docker producción con Nginx + SSL + certbot
-- [x] CI/CD con GitHub Actions
-- [x] 32 tests automatizados (0 failed)
-
----
-
-## SDK JavaScript / TypeScript
-
-Instala el SDK para integrar RustPress en cualquier proyecto:
-
-```bash
-npm install @rustpress/sdk
-```
-
-```typescript
-import { createClient } from '@rustpress/sdk'
-
-const client = createClient({ baseUrl: 'https://tu-sitio.com' })
-
-const { token } = await client.login('admin@ejemplo.com', 'password')
-const posts     = await client.getPosts({ limit: 10 })
-const products  = await client.getProducts({ sort: 'newest' })
-```
-
-Métodos disponibles: `login`, `register`, `getPosts`, `getProducts`, `createOrder`, `initPayment`, `uploadMedia`, `trackEvent`, `subscribe`, `search`, `health`, `uptime` y más.
-
----
-
-## CLI Tool
-
-```bash
-npm install -g @rustpress/cli
-
-rustpress login --url https://tu-sitio.com
-rustpress status
-rustpress posts list
-rustpress stats
-rustpress backup
-rustpress deploy
-rustpress whoami
-rustpress logout
-```
-
-
-## App Móvil (React Native / Expo)
-
-App admin para Android e iOS en `mobile/`:
-
-```bash
-cd mobile
-npm install
-npx expo start
-```
-
-**Pantallas:**
-- Login con URL configurable del servidor
-- Dashboard — KPIs en tiempo real (posts, pedidos, ingresos, uptime)
-- Posts — lista y eliminar
-- Orders — pedidos con estado y totales
-
-**Build para producción:**
-```bash
-eas build --platform android  # APK/AAB
-eas build --platform ios      # IPA
-```
-
-## Pendientes v2.1
-
-### Actualizaciones de dependencias
-- [x] Actualizar actix-web 4.x → 4.13.0
-- [x] Actualizar sqlx 0.7.x → 0.8.6
-- [x] Actualizar dependencias frontend (Vite, React, TipTap, Recharts)
-
-### API & Documentación
-- [x] OpenAPI/Swagger auto-generado con utoipa
-- [x] GraphQL endpoint con async-graphql
-
-### Tiempo real
-- [x] WebSockets nativos para notificaciones dashboard en tiempo real
-- [x] Chat interno entre admins vía WebSocket
-
-### Base de datos
-- [x] Aprovechar PostgreSQL full-text search para búsqueda de posts y productos
-- [x] Índices de búsqueda vectorial para recomendaciones de productos
-
-### DevOps
-- [x] GitHub Actions CI/CD — build + test automático en cada push
-- [x] Health check endpoint con versión, DB status y uptime
-
-## Pendientes v2.2
-
-### Performance & Caché
-- [x] Redis caché para endpoints de alta demanda (posts, productos, analytics)
-- [x] Rate limiting por IP y por usuario
-- [x] Compresión gzip/brotli en respuestas HTTP
-
-### Seguridad
-- [x] 2FA (autenticación de dos factores) con TOTP
-- [x] Audit log inmutable — registro de todas las acciones admin
-- [x] Content Security Policy headers
-
-### UX Admin
-- [x] Dashboard con drag & drop para reordenar widgets
-- [x] Modo oscuro/claro con persistencia
-- [x] Atajos de teclado globales (Cmd+K command palette)
-
-### E-commerce
-- [x] Sistema de cupones y descuentos
-- [x] Carrito abandonado — email de recuperación automático
-- [x] Reportes de ventas en PDF descargable
-
-### DevOps
-- [x] Dockerfile optimizado multi-stage para producción
-- [x] Healthcheck en docker-compose con reinicio automático
-- [x] Backup automático de DB a S3/R2
+print("README.md escrito correctamente")
+print(f"Líneas: {len(content.splitlines())}")
