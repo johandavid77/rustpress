@@ -145,10 +145,9 @@ async fn main() -> anyhow::Result<()> {
             .max_age(3600);
 
         App::new()
-                .wrap(Governor::new(&governor_conf))
+            .wrap(Governor::new(&governor_conf))
             .wrap(cors)
             .wrap(middleware::Compress::default())
-            .wrap(Governor::new(&governor_conf))
             .wrap(tracing_actix_web::TracingLogger::default())
             .app_data(pool_data.clone())
                     .app_data(redis_data.clone())

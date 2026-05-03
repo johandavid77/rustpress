@@ -60,7 +60,7 @@ bcrypt       = "0.15"
 async-trait = "0.1"
 
 # File storage (local + S3-compatible)
-object_store = { version = "0.9", features = ["aws"] }
+object_store = { version = "0.10", features = ["aws"] }
 mime         = "0.3"
 mime_guess   = "2"
 

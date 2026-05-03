@@ -1,0 +1,26 @@
+[advisories]
+ignore = [
+    # rsa - Marvin Attack timing sidechannel. Sin fix upstream. Viene de totp-rs.
+    "RUSTSEC-2023-0071",
+    "RUSTSEC-2024-0370",
+
+    # idna - Punycode labels. Viene de reqwest (transitiva). Fix en >=1.0.0.
+    # Actualizar cuando reqwest lo adopte.
+    "RUSTSEC-2024-0421",
+
+    # rustls-webpki - wildcard/URI cert constraints + CRL panic.
+    # Dependencia transitiva de sqlx/reqwest. Sin control directo.
+    "RUSTSEC-2026-0099",
+    "RUSTSEC-2026-0104",
+    "RUSTSEC-2026-0098",
+
+    # core2 + paste - crates unmaintained/yanked. Transitivas profundas.
+    "RUSTSEC-2026-0105",
+    "RUSTSEC-2024-0436",
+
+    # lru - IterMut Stacked Borrows. Transitiva, no usamos LRU directamente.
+    "RUSTSEC-2026-0002",
+
+    # rand - unsound con custom logger. No usamos custom logger.
+    "RUSTSEC-2026-0097",
+]
